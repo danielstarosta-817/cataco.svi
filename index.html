@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Puerto Rico - Water Hazard SVI Intelligence Tool</title>
+<title>Puerto Rico · Social Vulnerability & Hazard Intelligence</title>
+<meta name="description" content="An interactive tool mapping physical hazard, social vulnerability, and community resilience across Puerto Rico's 78 municipalities — from Hurricane Maria to today.">
+<meta property="og:title" content="Puerto Rico · Social Vulnerability & Hazard Intelligence">
+<meta property="og:description" content="An interactive tool mapping physical hazard, social vulnerability, and community resilience across Puerto Rico's 78 municipalities — from Hurricane Maria to today.">
+<meta property="og:type" content="website">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" onerror="this.remove()"/>
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"
@@ -37,9 +41,9 @@ function polygonToCells(polygon,res){
   var R=RES_R[res]||RES_R[7];
   var midLat=(minLat+maxLat)/2;
   var cosLat=Math.cos(midLat*Math.PI/180)||0.001;
-  // Pointy-top hexagonal grid spacing
-  var rowStep=R*1.5;            // vertical center-to-center
-  var colStep=R*S3/cosLat;      // horizontal center-to-center
+  // Flat-top hexagonal grid spacing (classic honeycomb nesting)
+  var rowStep=R*S3;             // vertical center-to-center
+  var colStep=R*1.5/cosLat;     // horizontal center-to-center
   var cells=[];
   var row=0;
   var lat=minLat-R*2;
@@ -59,14 +63,14 @@ function polygonToCells(polygon,res){
 // Get [lat,lng] center of a cell
 function cellToLatLng(cell){return[cell[0],cell[1]];}
 
-// Get 6-vertex boundary [[lat,lng],...] of a pointy-top hexagon
+// Get 6-vertex boundary [[lat,lng],...] of a flat-top hexagon (classic honeycomb)
 function cellToBoundary(cell){
   var lat=cell[0],lng=cell[1],res=cell[2];
   var R=RES_R[res]||RES_R[7];
   var cosLat=Math.cos(lat*Math.PI/180)||0.001;
   var verts=[];
   for(var i=0;i<6;i++){
-    var a=i*Math.PI/3; // 0°,60°,120°,180°,240°,300° from east, CCW
+    var a=i*Math.PI/3-Math.PI/6; // -30° offset → flat-top orientation
     verts.push([lat+R*Math.sin(a),lng+R*Math.cos(a)/cosLat]);
   }
   return verts;
@@ -79,7 +83,7 @@ window.h3={polygonToCells:polygonToCells,cellToLatLng:cellToLatLng,cellToBoundar
 :root{
   --bg:#080C18;--surface:#0F1628;--surface2:#161F35;
   --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
-  --text:#E2E8F4;--text-dim:#9BAABB;--text-faint:#7A8FA6;
+  --text:#E2E8F4;--text-dim:#C2D2E2;--text-faint:#A4B8CC;
   --cyan:#00D4FF;--green:#00E096;--yellow:#FFD93D;
   --orange:#FF6B35;--red:#FF2D55;--purple:#A855F7;
   --phys:#38BDF8;--svi:#FB923C;--res:#34D399;
@@ -203,7 +207,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',-apple-system,sans-ser
 .lp-desc strong{color:var(--text)}
 .lp-action-callout{display:flex;align-items:flex-start;gap:9px;margin:0;padding:11px 14px 13px;background:rgba(0,212,255,.05);border-top:1px solid rgba(0,212,255,.15)}
 .lac-icon{font-size:16px;flex-shrink:0;margin-top:1px}
-.lac-text{font-size:11px;line-height:1.5;color:var(--text-dim)}
+.lac-text{font-size:11px;line-height:1.5;color:var(--text-dim)}.str-composite-note{margin:0 8px 10px;padding:9px 12px;background:rgba(255,210,100,.06);border:1px solid rgba(255,210,100,.22);border-radius:6px}.scn-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,210,100,.8);margin-bottom:5px}.scn-body{font-size:10.5px;line-height:1.55;color:var(--text-dim)}
 .lac-text strong{color:var(--cyan)}
 .layer-row{display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer}
 .layer-row input[type=checkbox]{accent-color:var(--cyan);width:13px;height:13px;flex-shrink:0;margin-top:1px;cursor:pointer}
@@ -543,7 +547,7 @@ input[type=range].sim-range::-webkit-slider-thumb:hover{transform:scale(1.2)}
 .src-replicate-hdr{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#C084FC;margin-bottom:6px}
 .src-replicate-body{font-size:11px;color:var(--text-faint);line-height:1.65}
 .src-replicate-body strong{color:var(--text);font-weight:600}
-.src-composite-note{font-size:10.5px;color:rgba(255,255,255,.28);line-height:1.6;padding-top:14px;border-top:1px solid rgba(255,255,255,.06);margin-top:4px}
+.src-composite-note{font-size:10.5px;color:var(--text-dim);line-height:1.6;padding-top:14px;border-top:1px solid rgba(255,255,255,.1);margin-top:4px}
 /* ── Data modal tabs ─────────────────────────────────────────────────────── */
 #src-tabs{display:flex;border-bottom:1px solid rgba(56,189,248,.15);flex-shrink:0;padding:0 4px;background:#0c1624}
 .src-tab{background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);font-size:11px;font-weight:600;padding:10px 14px 9px;cursor:pointer;transition:color .15s,border-color .15s;white-space:nowrap;letter-spacing:.02em}
@@ -621,7 +625,7 @@ input[type=range].sim-range::-webkit-slider-thumb:hover{transform:scale(1.2)}
 .str-pc-icon{font-size:24px;line-height:1;flex-shrink:0;padding-top:1px}
 .str-pc-info{flex:1;min-width:0}
 .str-pc-name{font-size:11.5px;font-weight:700;color:var(--text)}
-.str-pc-tagline{font-size:9.5px;color:rgba(255,255,255,.45);line-height:1.4;margin-top:1px;font-style:italic}
+.str-pc-tagline{font-size:9.5px;color:rgba(255,255,255,.45);line-height:1.4;margin-top:1px;font-style:italic;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .str-pc-loc{font-size:9px;color:var(--cyan);font-weight:600;margin-top:2px;letter-spacing:.02em}
 .str-pc-tags{display:flex;flex-wrap:wrap;gap:2px;margin-top:4px}
 .str-tag{font-size:8px;padding:1px 5px;border-radius:3px;font-weight:600}
@@ -2165,6 +2169,10 @@ input[type=range].sim-range::-webkit-slider-thumb:hover{transform:scale(1.2)}
       <div class="lp-gi-label">Human Stories</div>
       <p>Thirteen households. Eleven municipalities. Same storm, different worlds: <strong>the social conditions that determine who survives, who gets help, and who gets left behind.</strong></p>
     </div>
+    <div class="str-composite-note" style="margin:8px 10px 4px">
+      <div class="scn-label">&#9432;&nbsp; Composite portraits</div>
+      <div class="scn-body">These are <strong>not portraits of real individuals</strong>. Every detail is drawn from documented fieldwork, research, and community accounts. The people are composite; the experiences are real.</div>
+    </div>
     <div class="lp-accord lp-accord-open" data-mode="str">
       <div class="lp-accord-hdr" onclick="toggleAccord(this)">
         <span class="lp-accord-question">Choose a household to explore</span>
@@ -2370,7 +2378,7 @@ var STRINGS={
     'nav.str.label':'Human Stories',
     'nav.str.q':'What did it feel like to live it?',
     'lpg.str.label':'The human record',
-    'lpg.str.intro':'The data shows who is most exposed. These stories show what that actually meant: in the hours before landfall, in the weeks without power, and in the years that followed. Composite portraits drawn from documented events and community accounts across four storms.',
+    'lpg.str.intro':'The data shows who is most exposed. These stories show what that actually meant: in the hours before landfall, in the weeks without power, and in the years that followed. Composite portraits &mdash; not based on real individuals, but drawn entirely from documented fieldwork, research, and community accounts across four storms.',
     // Right panel tabs
     'rp.tab.profile':'① Vulnerability Profile',
     'rp.tab.use':'② How to Use It',
@@ -2474,7 +2482,7 @@ var STRINGS={
     'nav.str.label':'Historias Humanas',
     'nav.str.q':'&iquest;C&oacute;mo se sinti&oacute; vivirlo?',
     'lpg.str.label':'El registro humano',
-    'lpg.str.intro':'Los datos muestran qui&eacute;n est&aacute; m&aacute;s expuesto. Estas historias muestran lo que eso signific&oacute; en realidad &mdash; en las horas antes del impacto, en las semanas sin luz y en los a&ntilde;os que siguieron. Retratos compuestos basados en eventos documentados y testimonios comunitarios de cuatro tormentas.',
+    'lpg.str.intro':'Los datos muestran qui&eacute;n est&aacute; m&aacute;s expuesto. Estas historias muestran lo que eso signific&oacute; en realidad &mdash; en las horas antes del impacto, en las semanas sin luz y en los a&ntilde;os que siguieron. Retratos compuestos &mdash; no basados en personas reales, sino elaborados &iacute;ntegramente a partir de investigaci&oacute;n de campo, estudios y testimonios comunitarios de cuatro tormentas.',
     // Right panel tabs
     'rp.tab.profile':'① Perfil de Vulnerabilidad',
     'rp.tab.use':'② C&oacute;mo Usarlo',
@@ -4686,6 +4694,12 @@ function setMode(mode){
   if(descEl) descEl.textContent=t('mode.'+mode)||'';
   // Clean up story pins when leaving story mode
   if(mode!=='str' && _storyPinLayer){ _storyPinLayer.clearLayers(); }
+  // On Resilience tab, clear any selected tract highlight and close stuck tooltips
+  if(mode==='res'){
+    if(_selectedTractLayer){try{_selectedTractLayer.setStyle({fillOpacity:0,weight:1.2,color:'rgba(255,255,255,0.7)'});}catch(e){}}
+    _selectedTractLayer=null; _selectedTractFips=null;
+    _closeStuckTooltips();
+  }
   // Clean up culture pins when leaving culture/resilience modes
   if(mode!=='cult'&&mode!=='res'&&_cultPins){ _cultPins.clearLayers(); }
   // Clean up res story panel when leaving resilience mode
@@ -5363,6 +5377,7 @@ function loadTractLayer(){
         var _selectedStyle={fillColor:_hoverCol,fillOpacity:0.22,weight:2.8,color:_hoverCol};
         function _applySelectedStyle(l){l.bringToFront();l.setStyle(_selectedStyle);}
         layer.on('click',function(e){
+          if(curMode==='res') return;
           L.DomEvent.stopPropagation(e);
           if(e.originalEvent&&e.originalEvent.target) e.originalEvent.target.blur();
           _tractClickActive=true; setTimeout(function(){_tractClickActive=false;},300);
@@ -5382,10 +5397,17 @@ function loadTractLayer(){
           });
         });
         layer.on('mouseover',function(){
+          // On Resilience tab, suppress all tract interaction — only hub pins are interactive
+          if(curMode==='res'){try{layer.closeTooltip();}catch(e){} return;}
+          // Close any tooltips stuck open on other tract layers before showing this one
+          if(_tractLayer){_tractLayer.eachLayer(function(l){if(l!==layer){try{l.closeTooltip();}catch(e){}}});}
           this.bringToFront();
           this.setStyle({fillOpacity:0,weight:2.5,color:_hoverCol});
         });
         layer.on('mouseout',function(){
+          if(curMode==='res') return;
+          // Always close this layer's tooltip on mouseout to prevent stacking
+          try{layer.closeTooltip();}catch(e){}
           // If this tract is selected, keep its selected style visible
           if(_selectedTractLayer===layer){_applySelectedStyle(layer);return;}
           // Otherwise restore to muni-glow or default
@@ -8811,11 +8833,10 @@ function activateStoryMode(){
   _buildStoryPins();
   // Show welcome placeholder in right panel
   var rp=document.getElementById('rightpanel');
-  if(rp) rp.innerHTML='<div class="rp-ph" style="padding-top:40px"><div style="font-size:32px;margin-bottom:14px;opacity:.18">🧑</div><div style="font-size:12px;font-weight:700;color:var(--text-dim);line-height:1.5">Choose a household to read their story</div><div style="margin-top:8px;font-size:10px;color:var(--text-faint);line-height:1.6;opacity:.8">Composite portraits drawn from documented events and community accounts, showing what four storms meant at the household level.</div></div>';
+  if(rp) rp.innerHTML='<div class="rp-ph" style="padding-top:40px"><div style="font-size:32px;margin-bottom:14px;opacity:.18">🧑</div><div style="font-size:12px;font-weight:700;color:var(--text-dim);line-height:1.5">Choose a household to read their story</div><div style="margin-top:12px;padding:9px 12px;background:rgba(255,210,100,.06);border:1px solid rgba(255,210,100,.2);border-radius:5px"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:rgba(255,210,100,.8);margin-bottom:4px">&#9432;&nbsp; Composite portraits</div><div style="font-size:10.5px;line-height:1.5;color:var(--text-dim)">Not based on real individuals &mdash; drawn from documented events, fieldwork, and community accounts across four storms.</div></div></div>';
   var lp=document.getElementById('lp-str');
   if(lp){
     var h='<div class="lp-sec">';
-    h+='<div class="lp-desc">These are <em>composite portraits</em> drawn from documented events, fieldwork, and community accounts. They are not based on specific individuals.</div>';
     h+='</div>';
     h+='<div class="lp-action-callout">';
     h+='<div class="lac-icon">&#127744;</div>';
