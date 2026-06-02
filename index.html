@@ -278,10 +278,10 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',-apple-system,sans-ser
 .fp-track{height:6px;background:rgba(255,255,255,.18);border-radius:3px;overflow:hidden}
 .fp-fill{height:100%;border-radius:3px}
 /* ── Right-panel tabs ──────────────────────────────────────────────────────── */
-.rp-tabs{display:flex;border-bottom:1px solid var(--border);background:var(--surface2);position:sticky;top:0;z-index:5}
-.rp-tab{flex:1;padding:10px 6px;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-faint);cursor:pointer;text-align:center;border:none;border-bottom:2px solid transparent;background:none;transition:all .2s}
-.rp-tab.active{color:var(--text);border-bottom-color:var(--cyan)}
-.rp-tab:hover:not(.active){color:var(--text-dim);background:rgba(255,255,255,.03)}
+.rp-tabs{display:flex;background:var(--surface2);position:sticky;top:0;z-index:5;padding:8px 14px;gap:4px;border-bottom:1px solid var(--border)}
+.rp-tab{flex:1;padding:9px 6px;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);cursor:pointer;text-align:center;border:none;border-radius:7px;background:rgba(255,255,255,.06);transition:all .2s}
+.rp-tab.active{color:#080C18;background:var(--orange);box-shadow:0 1px 5px rgba(0,0,0,.4)}
+.rp-tab:hover:not(.active){color:var(--text);background:rgba(255,255,255,.11)}
 .rp-tab-content{display:none}
 .rp-tab-content.active{display:block}
 /* ── How-to-use tab elements ───────────────────────────────────────────────── */
@@ -490,10 +490,10 @@ input[type=range].sim-range::-webkit-slider-thumb:hover{transform:scale(1.2)}
 .leaflet-tooltip.cas-tooltip{background:rgba(8,12,30,.92)!important;border:1px solid rgba(255,255,255,.15)!important;color:#E2E8F4!important;font-size:11px;padding:5px 8px;border-radius:5px;box-shadow:0 2px 8px rgba(0,0,0,.5)!important}
 .leaflet-tooltip.cas-tooltip::before{display:none!important}
 /* ── Recovery Horizon tab system ─────────────────────────────────────────── */
-.cas-rp-tabs{display:flex;border-bottom:1px solid var(--border);background:var(--surface2);flex-shrink:0}
-.cas-rp-tab{flex:1;padding:9px 4px;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-faint);cursor:pointer;text-align:center;border:none;border-bottom:2px solid transparent;background:none;transition:all .2s}
-.cas-rp-tab.active{color:var(--text);border-bottom-color:var(--orange)}
-.cas-rp-tab:hover:not(.active){color:var(--text-dim);background:rgba(255,255,255,.03)}
+.cas-rp-tabs{display:flex;background:var(--surface2);flex-shrink:0;padding:8px 14px;gap:4px;border-bottom:1px solid var(--border)}
+.cas-rp-tab{flex:1;padding:9px 4px;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);cursor:pointer;text-align:center;border:none;border-radius:7px;background:rgba(255,255,255,.06);transition:all .2s}
+.cas-rp-tab.active{color:#080C18;background:var(--orange);box-shadow:0 1px 5px rgba(0,0,0,.4)}
+.cas-rp-tab:hover:not(.active){color:var(--text);background:rgba(255,255,255,.11)}
 /* ── Recovery timeline bars ──────────────────────────────────────────────── */
 .rh-section{padding:10px 12px 6px}
 .rh-sec-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-faint);margin-bottom:8px;display:flex;align-items:center;gap:6px}
@@ -885,8 +885,8 @@ input[type=range].sim-range::-webkit-slider-thumb:hover{transform:scale(1.2)}
 #app.panel-focus #rp-name{font-size:23px}
 #app.panel-focus #rp-meta{font-size:12.5px;margin-bottom:0}
 /* Tab bar: slightly taller, easier to tap */
-#app.panel-focus .rp-tabs{padding:0 4px}
-#app.panel-focus .rp-tab{font-size:10.5px;padding:12px 8px}
+#app.panel-focus .rp-tabs{padding:10px 16px}
+#app.panel-focus .rp-tab{font-size:10.5px;padding:11px 8px}
 
 /* ── Section cards: 2-column widget grid, max-width constrained ──────────
    Only apply to the ACTIVE tab — inactive tabs must stay hidden.
@@ -1911,13 +1911,9 @@ input[type=range].sim-range::-webkit-slider-thumb:hover{transform:scale(1.2)}
   </div>
   <!-- Vertical nav -->
   <div id="lp-nav">
-    <button class="lp-nav-btn active" data-grp="hazard" onclick="setModeGroup('hazard')">
-      <span class="lp-nav-icon">🌊</span>
-      <span class="lp-nav-text"><span class="lp-nav-label" data-i18n="nav.hazard.label">Hazard</span><span class="lp-nav-q" data-i18n="nav.hazard.q">What physical risks exist?</span></span>
-    </button>
-    <button class="lp-nav-btn" data-grp="vuln" onclick="setModeGroup('vuln')">
+    <button class="lp-nav-btn active" data-grp="vuln" onclick="setModeGroup('vuln')">
       <span class="lp-nav-icon">👥</span>
-      <span class="lp-nav-text"><span class="lp-nav-label" data-i18n="nav.vuln.label">Vulnerability</span><span class="lp-nav-q" data-i18n="nav.vuln.q">Who is most at risk, and why?</span></span>
+      <span class="lp-nav-text"><span class="lp-nav-label" data-i18n="nav.vuln.label">Risk Layers</span><span class="lp-nav-q" data-i18n="nav.vuln.q">What risks exist, and who bears them?</span></span>
     </button>
     <button class="lp-nav-btn" data-grp="fail" onclick="setModeGroup('fail')">
       <span class="lp-nav-icon">⚡</span>
@@ -1934,8 +1930,8 @@ input[type=range].sim-range::-webkit-slider-thumb:hover{transform:scale(1.2)}
     </button>
   </div>
 
-  <!-- Group: hazard -->
-  <div id="lpg-hazard" class="lp-group">
+  <!-- Group: hazard — merged into vuln; kept here only so setModeGroup('hazard') calls don't 404 -->
+  <div id="lpg-hazard" class="lp-group" style="display:none">
     <div class="lp-group-intro">
       <div class="lp-gi-label" data-i18n="lpg.hazard.label">Start here</div>
       <p data-i18n="lpg.hazard.intro">Most disaster plans only show where the water goes. This section shows where it goes <strong>and which communities cannot get out of the way.</strong> Turn layers on one at a time. The order you add them changes which towns look most at risk and why - and the result might surprise you.</p>
@@ -1982,11 +1978,37 @@ input[type=range].sim-range::-webkit-slider-thumb:hover{transform:scale(1.2)}
     </div>
   </div>
 
-  <!-- Group: vuln -->
-  <div id="lpg-vuln" class="lp-group" style="display:none">
+  <!-- Group: vuln — now also contains physical hazard layers -->
+  <div id="lpg-vuln" class="lp-group">
     <div class="lp-group-intro">
-      <div class="lp-gi-label" data-i18n="lpg.vuln.label">The deeper picture</div>
-      <p data-i18n="lpg.vuln.intro">Physical damage is just the beginning. <strong>The communities that struggle for years are not always the ones that got hit hardest.</strong> They are the ones with the fewest resources to recover. This section shows who is actually most exposed once you account for the human side - and what you can do about it.</p>
+      <div class="lp-gi-label">Start here</div>
+      <p>Most disaster plans only show where the water goes. <strong>This section shows where it goes — and which communities cannot get out of the way.</strong> Start with physical hazards, then add social layers to see who is actually most at risk.</p>
+    </div>
+    <!-- Physical hazard accordion (folded in from former Hazard tab) -->
+    <div class="lp-accord" data-mode="phys">
+      <div class="lp-accord-hdr" onclick="toggleAccord(this)">
+        <span class="lp-accord-question">🌊 Physical hazard layers</span>
+        <span class="lp-accord-chev">▼</span>
+      </div>
+      <div class="lp-accord-body">
+        <div id="lp-phys">
+          <div class="lp-sec">
+            <div class="lp-desc">Standard risk maps focus on the coast. Add landslide risk and watch what happens — interior mountain towns often outrank coastal cities. Toggle layers one at a time to see what's driving each community's score.</div>
+          </div>
+          <div class="lp-leg-ticks"><span>0.0</span><span>0.25</span><span>0.50</span><span>0.75</span><span>1.0</span></div>
+          <div class="lp-leg-bands">
+            <div class="lp-leg-band"><div class="lp-leg-dot" style="background:#00E096"></div><div class="lp-leg-band-body"><div class="lp-leg-band-label">0.0 – 0.25 &nbsp;Low exposure</div><div class="lp-leg-band-note">Minimal multi-hazard overlap. Physical risk is present but not compounding.</div></div></div>
+            <div class="lp-leg-band"><div class="lp-leg-dot" style="background:#FFD93D"></div><div class="lp-leg-band-body"><div class="lp-leg-band-label">0.25 – 0.50 &nbsp;Moderate</div><div class="lp-leg-band-note">One dominant hazard type (flood or wind) with limited secondary overlap.</div></div></div>
+            <div class="lp-leg-band"><div class="lp-leg-dot" style="background:#FF6B35"></div><div class="lp-leg-band-body"><div class="lp-leg-band-label">0.50 – 0.75 &nbsp;Elevated</div><div class="lp-leg-band-note">Two or more hazard types compounding. Interior mountain communities often land here once landslide is added.</div></div></div>
+            <div class="lp-leg-band"><div class="lp-leg-dot" style="background:#B40032"></div><div class="lp-leg-band-body"><div class="lp-leg-band-label">0.75 – 1.0 &nbsp;Critical</div><div class="lp-leg-band-note">Severe simultaneous exposure. Yabucoa, Toa Baja, Loíza.</div></div></div>
+          </div>
+          <div class="lp-sec" style="margin-top:8px">
+            <button class="story-btn" onclick="focusMuni('Utuado')"><div class="sbn">Utuado</div><div class="sbs">Invisible to physical flood model — try toggling landslide.</div><span class="sbt ti">Hidden Vulnerability</span></button>
+            <button class="story-btn" onclick="focusMuni('Loiza')"><div class="sbn">Loíza</div><div class="sbs">High physical AND social risk. Last to receive aid after Maria.</div><span class="sbt td">Doubly Exposed</span></button>
+            <button class="story-btn" onclick="focusMuni('Ciales')"><div class="sbn">Ciales</div><div class="sbs">321 days without power. One road. Zero dialysis access.</div><span class="sbt ti">Hidden Vulnerability</span></button>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="lp-accord" data-mode="soc">
       <div class="lp-accord-hdr" onclick="toggleAccord(this)">
@@ -2251,7 +2273,7 @@ input[type=range].sim-range::-webkit-slider-thumb:hover{transform:scale(1.2)}
         <div class="layer-row"><input type="checkbox" id="pl-slide" checked onchange="togglePhys('slide',this.checked)"><div class="layer-info"><div class="layer-name checked" id="pln-slide">&#9968; Landslide Risk</div></div></div>
       </div>
       </div>
-      <div id="lc-soc-sec" style="display:none">
+      <div id="lc-soc-sec">
       <div class="lc-div"></div>
       <div class="lc-grp-ttl" data-i18n="lctrl.soc">SOCIAL VULNERABILITY</div>
       <div class="lc-note">Each layer adds weight to the social vulnerability score</div>
@@ -3896,7 +3918,7 @@ function normalize(arr){var mn=Math.min.apply(null,arr),mx=Math.max.apply(null,a
 // ================================================================
 var activePhys=new Set(['flood','wind','surge','slide']);
 var activeSoc=new Set();
-var curMode='phys',curOrg='all',_hexSelected=false;
+var curMode='soc',curOrg='all',_hexSelected=false;
 
 function calcPhys(m){
   // Uses per-municipality calibrated sub-scores (historically derived):
@@ -4047,6 +4069,117 @@ var CU_POLY=[
 // missing land hexes are not. EXCL_ZONES kept as empty array for code compatibility.
 var EXCL_ZONES=[];
 
+// ================================================================
+// AUTO-DISSOLVE LAND CLIP ENGINE (ported from Phil tool)
+// buildLandPolysFromADM(geojson, epsilon)
+// Derives LAND_POLYS from a GeoJSON FeatureCollection of sub-region polygons.
+// Algorithm: collect exterior rings → count shared edges → keep outer edges (count===1)
+//   → trace closed polygons → RDP-simplify → sort by area (largest first).
+// Input GeoJSON uses [lng,lat] coordinate order (standard GeoJSON).
+// Output LAND_POLYS is array of [[lat,lng],...] rings — Leaflet-ready.
+// ================================================================
+function buildLandPolysFromADM(geojson,epsilon){
+  epsilon=epsilon||0.0005;
+  var PREC=4;
+  function rnd(v){return Math.round(v*Math.pow(10,PREC))/Math.pow(10,PREC);}
+  function rndPt(pt){return rnd(pt[0])+','+rnd(pt[1]);}
+  var exteriorRings=[];
+  geojson.features.forEach(function(feat){
+    var geom=feat.geometry;
+    var parts=[];
+    if(geom.type==='Polygon') parts=[geom.coordinates];
+    if(geom.type==='MultiPolygon') parts=geom.coordinates;
+    parts.forEach(function(part){
+      var ring=part[0].map(function(c){return[c[1],c[0]];});// [lng,lat]→[lat,lng]
+      exteriorRings.push(ring);
+    });
+  });
+  var edgeCount={};
+  exteriorRings.forEach(function(ring){
+    for(var i=0;i<ring.length-1;i++){
+      var a=rndPt(ring[i]),b=rndPt(ring[i+1]);
+      var key=a<b?a+'|'+b:b+'|'+a;
+      edgeCount[key]=(edgeCount[key]||0)+1;
+    }
+  });
+  var adj={};
+  function addAdj(a,b){if(!adj[a])adj[a]=[];if(adj[a].indexOf(b)<0)adj[a].push(b);}
+  Object.keys(edgeCount).forEach(function(key){
+    if(edgeCount[key]!==1) return;// shared interior edges appear twice — skip
+    var pts=key.split('|');
+    addAdj(pts[0],pts[1]); addAdj(pts[1],pts[0]);
+  });
+  var visitedEdges={};
+  function edgeKey(a,b){return a<b?a+'>'+b:b+'>'+a;}
+  function parseKey(k){var p=k.split(',');return[parseFloat(p[0]),parseFloat(p[1])];}
+  function traceFrom(startKey){
+    var path=[startKey],current=startKey,prev=null;
+    for(var safety=0;safety<20000;safety++){
+      var neighbors=(adj[current]||[]).filter(function(n){return n!==prev&&!visitedEdges[edgeKey(current,n)];});
+      if(!neighbors.length) break;
+      var next=neighbors[0];
+      visitedEdges[edgeKey(current,next)]=true;
+      prev=current; current=next;
+      if(current===startKey) break;
+      path.push(current);
+    }
+    return path;
+  }
+  var visitedStarts={},rawPolygons=[];
+  Object.keys(adj).sort().forEach(function(pt){
+    if(visitedStarts[pt]||!adj[pt].length) return;
+    var path=traceFrom(pt);
+    if(path.length>3){rawPolygons.push(path);path.forEach(function(p){visitedStarts[p]=true;});}
+  });
+  function ptLineDist(pt,s,e){
+    var sp=parseKey(s),ep=parseKey(e),pp=parseKey(pt);
+    if(s===e) return Math.hypot(pp[0]-sp[0],pp[1]-sp[1]);
+    var dx=ep[0]-sp[0],dy=ep[1]-sp[1];
+    return Math.abs(dy*pp[0]-dx*pp[1]+ep[0]*sp[1]-ep[1]*sp[0])/Math.hypot(dx,dy);
+  }
+  function rdp(pts,eps){
+    if(pts.length<3) return pts;
+    var dmax=0,idx=0;
+    for(var i=1;i<pts.length-1;i++){var d=ptLineDist(pts[i],pts[0],pts[pts.length-1]);if(d>dmax){dmax=d;idx=i;}}
+    if(dmax>=eps) return rdp(pts.slice(0,idx+1),eps).slice(0,-1).concat(rdp(pts.slice(idx),eps));
+    return[pts[0],pts[pts.length-1]];
+  }
+  var result=[];
+  rawPolygons.forEach(function(path){
+    if(path.length<5) return;
+    var simplified=rdp(path,epsilon);
+    if(simplified.length<4) return;
+    var coords=simplified.map(parseKey);
+    var lats=coords.map(function(p){return p[0];}),lngs=coords.map(function(p){return p[1];});
+    var area=(Math.max.apply(null,lats)-Math.min.apply(null,lats))*(Math.max.apply(null,lngs)-Math.min.apply(null,lngs));
+    result.push({coords:coords,area:area});
+  });
+  result.sort(function(a,b){return b.area-a.area;});
+  return result.map(function(r){return r.coords;});
+}
+
+// Wrap existing hand-crafted coastline polygons into a GeoJSON FeatureCollection
+// so buildLandPolysFromADM can process them. GeoJSON uses [lng,lat] order.
+// When a proper ADM3 municipio GeoJSON for PR becomes available, replace PR_ADM_GJ
+// with that dataset — the rest of the pipeline requires no changes.
+var PR_ADM_GJ={
+  type:'FeatureCollection',
+  features:[
+    {type:'Feature',properties:{name:'Puerto Rico mainland'},
+     geometry:{type:'Polygon',coordinates:[PR_POLY.map(function(p){return[p[1],p[0]];})]}},
+    {type:'Feature',properties:{name:'Vieques'},
+     geometry:{type:'Polygon',coordinates:[VI_POLY.map(function(p){return[p[1],p[0]];})]}},
+    {type:'Feature',properties:{name:'Culebra'},
+     geometry:{type:'Polygon',coordinates:[CU_POLY.map(function(p){return[p[1],p[0]];})]}},
+  ]
+};
+
+// LAND_POLYS — use raw polygons directly (already in [[lat,lng],...] format).
+// buildLandPolysFromADM is used in the Phil tool for multi-municipality dissolve;
+// for PR we have pre-drawn coastline polygons so we use them directly.
+var LAND_POLYS=[PR_POLY,VI_POLY,CU_POLY];
+console.log('[SVI] LAND_POLYS:',LAND_POLYS.length,'polygons (PR mainland + Vieques + Culebra)');
+
 function ptInPoly(lat,lng,poly){
   var inside=false;
   for(var i=0,j=poly.length-1;i<poly.length;j=i++){
@@ -4062,7 +4195,11 @@ function ptInPR(lat,lng){
   for(var ez=0;ez<EXCL_ZONES.length;ez++){
     if(ptInPoly(lat,lng,EXCL_ZONES[ez])) return false;
   }
-  return ptInPoly(lat,lng,PR_POLY)||ptInPoly(lat,lng,VI_POLY)||ptInPoly(lat,lng,CU_POLY);
+  // Check all land polygons derived from PR_ADM_GJ
+  for(var p=0;p<LAND_POLYS.length;p++){
+    if(ptInPoly(lat,lng,LAND_POLYS[p])) return true;
+  }
+  return false;
 }
 
 // ================================================================
@@ -4070,9 +4207,15 @@ function ptInPR(lat,lng){
 // Clips the canvas visually to the coastline polygon so hexes near
 // the boundary are rendered right to the shore without ocean fringe.
 // ================================================================
+// ================================================================
+// COAST CLIP ENGINE — clips canvas to LAND_POLYS boundary (DO NOT MODIFY)
+// Creates one SVG <polygon> per entry in LAND_POLYS (main island + offshore islands).
+// Polygon screen coordinates are recomputed on every pan/zoom via refreshCoastClip().
+// ================================================================
 function initCoastClip(){
   var mapDiv=document.getElementById('map');
   if(!mapDiv||document.getElementById('coast-clip-svg')) return;
+  if(!LAND_POLYS||!LAND_POLYS.length) return;
   var ns='http://www.w3.org/2000/svg';
   var svg=document.createElementNS(ns,'svg');
   svg.id='coast-clip-svg';
@@ -4081,9 +4224,9 @@ function initCoastClip(){
   var cp=document.createElementNS(ns,'clipPath');
   cp.id='coast-clip';
   cp.setAttribute('clipPathUnits','userSpaceOnUse');
-  ['main','vi','cu'].forEach(function(id){
+  LAND_POLYS.forEach(function(poly,i){
     var p=document.createElementNS(ns,'polygon');
-    p.id='coast-cp-'+id;
+    p.id='coast-cp-'+i;
     cp.appendChild(p);
   });
   defs.appendChild(cp);
@@ -4092,34 +4235,23 @@ function initCoastClip(){
 }
 
 function refreshCoastClip(){
-  // Apply an SVG clip-path to the canvas renderer so hexes are masked to
-  // the PR coastline. Points are recomputed in canvas-local pixel coords
-  // after every hex redraw (pan/zoom). During smooth pan Leaflet CSS-
-  // translates the canvas pane, so the clip moves with the canvas automatically.
-  var canvas=canvasRenderer&&canvasRenderer._canvas;
+  if(!LAND_POLYS||!LAND_POLYS.length) return;
+  var canvas=canvasRenderer&&canvasRenderer._container;
   if(!canvas) return;
-  var mpEl=document.getElementById('coast-cp-main');
-  var viEl=document.getElementById('coast-cp-vi');
-  var cuEl=document.getElementById('coast-cp-cu');
-  if(!mpEl||!viEl||!cuEl) return;
-
-  // Offset of canvas top-left from map container top-left (accounts for L.canvas padding)
   var mapDiv=document.getElementById('map');
   var cr=canvas.getBoundingClientRect();
   var mr=mapDiv.getBoundingClientRect();
-  var ox=cr.left-mr.left;
-  var oy=cr.top-mr.top;
-
+  var ox=cr.left-mr.left, oy=cr.top-mr.top;
   function polyPts(ring){
     return ring.map(function(ll){
       var p=map.latLngToContainerPoint(L.latLng(ll[0],ll[1]));
       return (p.x-ox)+','+(p.y-oy);
     }).join(' ');
   }
-
-  mpEl.setAttribute('points',polyPts(PR_POLY));
-  viEl.setAttribute('points',polyPts(VI_POLY));
-  cuEl.setAttribute('points',polyPts(CU_POLY));
+  LAND_POLYS.forEach(function(poly,i){
+    var el=document.getElementById('coast-cp-'+i);
+    if(el) el.setAttribute('points',polyPts(poly));
+  });
   canvas.style.clipPath='url(#coast-clip)';
 }
 
@@ -4514,7 +4646,8 @@ function generateHexes(){
   // Culture mode uses no hex overlay - clear and bail
   if(curMode==='cult'){
     hexLayer.clearLayers();
-    if(canvasRenderer&&canvasRenderer._canvas) canvasRenderer._canvas.style.clipPath='';
+    var _cc=canvasRenderer&&canvasRenderer._container;
+    if(_cc) _cc.style.clipPath='';
     return;
   }
   var bounds=map.getBounds();
@@ -4797,8 +4930,8 @@ function setMode(mode){
   if(selectedMuni) showDetail(selectedMuni);
 }
 
-var MODE_TO_GROUP={phys:'hazard',soc:'vuln',sim:'vuln',res:'res',cas:'fail',exp:'fail',str:'str',cult:'res'};
-var GROUP_DEFAULTS={hazard:'phys',vuln:'soc',fail:'cas',res:'res',str:'str'};
+var MODE_TO_GROUP={phys:'vuln',soc:'vuln',sim:'vuln',res:'res',cas:'fail',exp:'fail',str:'str',cult:'res'};
+var GROUP_DEFAULTS={vuln:'soc',fail:'cas',res:'res',str:'str'};
 
 function setModeGroup(g){
   document.querySelectorAll('.lp-nav-btn').forEach(function(b){
