@@ -1,0 +1,84 @@
+{
+    "id": "caf116df-f984-4deb-85ca-41b349d3f313",
+    "title": "Philippines - Subnational Administrative Boundaries",
+    "name": "cod-ab-phl",
+    "notes": "Philippines administrative level 0-4 boundaries (COD-AB) dataset.  The date that these administrative boundaries were established is unknown.  NOTE:  See COD-PS caveat about treatment of National Capital (Manila) data.  OCHA acknowledges PSA and the National Mapping and Resource Information Authority (NAMRIA) as the sources. LMB is the source of official administrative boundaries of the Philippines. In the absence of available official administrative boundary, the IMTWG have agreed to clean and use the PSA administrative boundaries which are used to facilitate data collection of surveys and censuses. The dataset can only be considered as indicative boundaries and not official. Its updated to reflect the new areas within BARMM; It uses the new 10-digit pcode consistent with government PSGC as of 2023  This COD-AB was most recently reviewed for accuracy and necessary changes in April 2024.  The COD-AB does not require any update.  Sourced from National Mapping and Resource Information Authority (NAMRIA), Philippines Statistics Authority (PSA)  Vetting by Information Technology Outreach Services (ITOS) with funding from USAID.  This COD-AB is suitable for database or GIS linkage to the Philippines <a href=\"https://data.humdata.org/dataset/cod-ps-phl\">COD-PS</a>.  As this is an island country, no edge-matched (COD-EM) version of this COD-AB is required.  Please see the <a href=\"https://cod.unocha.org/\">COD Portal</a>.  Administrative level 1 contains 17 feature(s).  The normal administrative level 1 feature type is \"\"currently not known\"\".  Administrative level 2 contains 88 feature(s).  The normal administrative level 2 feature type is \"\"currently not known\"\".  Administrative level 3 contains 1,642 feature(s).  The normal administrative level 3 feature type is \"\"currently not known\"\".  Administrative level 4 contains 42,048 feature(s).  The normal administrative level 4 feature type is \"\"currently not known\"\".  Recommended cartographic projection:  Asia South Albers Equal Area Conic  This metadata was last updated on January 13, 2025.",
+    "dataset_source": "National Mapping and Resource Information Authority (NAMRIA), Philippines Statistics Authority (PSA)",
+    "organization": "OCHA Philippines",
+    "dataset_date": "[2018-02-09T00:00:00 TO 2024-04-30T23:59:59]",
+    "last_modified": "2023-11-09T18:01:09.529384",
+    "data_update_frequency": "As needed",
+    "groups": [
+        "Philippines"
+    ],
+    "license_title": "Creative Commons Attribution for Intergovernmental Organisations (CC BY-IGO)",
+    "methodology": "Census",
+    "methodology_other": null,
+    "caveats": "Prepared by OCHA\r\n\r\nThe two administrative level 2 features that were previously represented as comprising the \u2018Negros Island Region\u2019 administrative level 1 features [then coded PH1800000000] have been restored to administrative level 1 features PH060000000 and PH070000000. (Negros Island Region officially existed only from 29 May 2015 to 9 August 2017.) This adjustment has been propagated to administrative levels 2 and 3.\r\n\r\nITOS have prepared three versions of the administrative 0 layer to assist mapping:\r\n\u2022 phl_admbnda_adm0_psa_namria_itos_20200529 with one part, as usual,\r\n\u2022 phl_admbnda_adm0_3part_psa_namria_20180130 with three multipart sections covering the North, middle and South portions of the country, and\r\n\u2022 phl_admbnda_adm0_singlepart_psa_namria_20180130 with all 3,656 polygons represented as separate features.",
+    "tags": [
+        "administrative boundaries-divisions",
+        "gazetteer"
+    ],
+    "resources": [
+        {
+            "created": "2021-12-24T09:44:36.891392",
+            "description": "Philippines administrative level 0-4 gazetteer",
+            "format": "XLSX",
+            "download_url": "https://data.humdata.org/dataset/caf116df-f984-4deb-85ca-41b349d3f313/resource/e74fd350-3728-427f-8b4c-0589dc563c87/download/phl_adminboundaries_tabulardata.xlsx",
+            "id": "e74fd350-3728-427f-8b4c-0589dc563c87",
+            "last_modified": "2023-11-09T16:25:44.999071",
+            "metadata_modified": "2025-02-25T20:16:33.809939",
+            "microdata": false,
+            "dataset_id": "caf116df-f984-4deb-85ca-41b349d3f313",
+            "resource_type": "file.upload",
+            "name": "PHL_AdminBoundaries_TabularData.xlsx",
+            "mimetype": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "size": "3.7M"
+        },
+        {
+            "created": "2023-11-09T16:58:24.983370",
+            "description": "Philippines administrative level 0-4 geodatabase",
+            "format": "Geodatabase",
+            "download_url": "https://data.humdata.org/dataset/caf116df-f984-4deb-85ca-41b349d3f313/resource/314cbaea-c7a0-4ce9-a4ea-e5af2a788ac1/download/phl_adm_psa_namria_20231106_gdb.gdb.zip",
+            "id": "314cbaea-c7a0-4ce9-a4ea-e5af2a788ac1",
+            "last_modified": "2023-11-09T16:58:24.713085",
+            "metadata_modified": "2025-02-25T20:16:52.239071",
+            "microdata": false,
+            "dataset_id": "caf116df-f984-4deb-85ca-41b349d3f313",
+            "resource_type": "file.upload",
+            "name": "phl_adm_psa_namria_20231106_GDB.gdb.zip",
+            "mimetype": "application/x-zip-compressed",
+            "size": "345.6M"
+        },
+        {
+            "created": "2020-06-03T12:01:02.077228",
+            "description": "Philippines administrative level 0-4 shapefiles",
+            "format": "SHP",
+            "download_url": "https://data.humdata.org/dataset/caf116df-f984-4deb-85ca-41b349d3f313/resource/12457689-6a86-4474-8032-5ca9464d38a8/download/phl_adm_psa_namria_20231106_shp.zip",
+            "id": "12457689-6a86-4474-8032-5ca9464d38a8",
+            "last_modified": "2023-11-09T18:00:52.493559",
+            "metadata_modified": "2025-02-25T20:17:45.587364",
+            "microdata": false,
+            "dataset_id": "caf116df-f984-4deb-85ca-41b349d3f313",
+            "resource_type": "file.upload",
+            "name": "phl_adm_psa_namria_20231106_SHP.zip",
+            "mimetype": "application/x-zip-compressed",
+            "size": "882.7M"
+        },
+        {
+            "created": "2020-06-03T11:18:14.238165",
+            "description": "Philippines administrative level 0-4 EMF files",
+            "format": "EMF",
+            "download_url": "https://data.humdata.org/dataset/caf116df-f984-4deb-85ca-41b349d3f313/resource/82cda4bf-19f1-47bf-9469-f8bb8e5446d3/download/phl_adm_psa_namria_20231106_emf.zip",
+            "id": "82cda4bf-19f1-47bf-9469-f8bb8e5446d3",
+            "last_modified": "2023-11-09T18:01:09.529384",
+            "metadata_modified": "2023-11-09T18:01:13.526506",
+            "microdata": false,
+            "dataset_id": "caf116df-f984-4deb-85ca-41b349d3f313",
+            "resource_type": "file.upload",
+            "name": "phl_adm_psa_namria_20231106_EMF.zip",
+            "mimetype": "application/x-zip-compressed",
+            "size": "2.8M"
+        }
+    ]
+}

@@ -1,0 +1,20 @@
+municipality,latitude,longitude,population,in_pdz,phys_score_0_1,pvol_volcanic_0_1,ptyph_typhoon_0_1,pfl_flood_0_1,svi_score_0_1,svi_housing_0_1,svi_poverty_0_1,svi_elderly_0_1,svi_road_isolation_0_1,svi_cell_comms_0_1,svi_doc_tenure_0_1,ptenure_informal_pct,composite_svi_0_1,gap_soc_vs_phys,resilience_0_1,est_power_restore_days,road_risk_level,resilience_tag
+Camalig,13.1742,123.6541,59145,1,0.92,0.95,0.45,0.68,0.72,0.78,0.68,0.42,0.65,0.6,0.72,42.0,1.0,0.08,0.5,145,medium,PDZ Core: Drills Active
+Guinobatan,13.1783,123.5941,75143,1,0.85,0.82,0.45,0.62,0.68,0.75,0.65,0.4,0.6,0.55,0.62,38.0,1.0,0.15,0.52,138,medium,SW Flank Exposure
+Daraga,13.0992,123.6868,130246,1,0.88,0.88,0.5,0.72,0.62,0.7,0.62,0.38,0.55,0.48,0.65,38.0,1.0,0.12,0.58,118,medium,Miisi Gully: Lahar Corridor
+Santo Domingo,13.2528,123.7622,41324,1,0.9,0.88,0.65,0.75,0.75,0.82,0.75,0.48,0.78,0.65,0.78,52.0,1.0,0.1,0.45,158,high,North Flank: Highest Informal Tenure
+Malilipot,13.1733,123.8183,33875,1,0.82,0.78,0.7,0.7,0.72,0.72,0.7,0.45,0.62,0.58,0.68,45.0,1.0,0.18,0.5,148,medium,NE Flank: Dual Hazard
+Jovellar,13.0569,123.6003,20284,1,0.62,0.55,0.52,0.5,0.68,0.65,0.65,0.4,0.6,0.58,0.62,42.0,1.0,0.38,0.48,155,medium,Southern Flank: Limited Capacity
+Legazpi City,13.1391,123.7438,196764,0,0.72,0.7,0.6,0.65,0.42,0.45,0.42,0.35,0.28,0.22,0.38,25.0,1.0,0.28,0.72,95,low,Provincial Capital: Institutional Anchor
+Tabaco City,13.3544,123.7316,126152,0,0.75,0.38,0.88,0.72,0.58,0.52,0.58,0.4,0.32,0.35,0.48,32.0,1.0,0.25,0.62,115,low,Typhoon Corridor Hub: NHA Risk Hotspot
+Bacacay,13.2917,123.7967,55318,0,0.72,0.45,0.8,0.75,0.65,0.65,0.62,0.42,0.55,0.52,0.58,40.0,1.0,0.28,0.55,132,medium,North Coast: Storm Surge Corridor
+Ligao City,13.2228,123.5308,89814,0,0.52,0.48,0.62,0.45,0.6,0.55,0.58,0.38,0.48,0.42,0.52,35.0,1.0,0.48,0.62,128,medium,Western Evacuation Hub
+Polangui,13.2919,123.4867,71492,0,0.42,0.35,0.58,0.4,0.62,0.48,0.6,0.35,0.45,0.4,0.45,28.0,0.888,0.468,0.58,135,medium,Manila Road Corridor
+Oas,13.2553,123.5064,71836,0,0.38,0.32,0.55,0.35,0.58,0.42,0.55,0.32,0.42,0.38,0.4,25.0,0.805,0.425,0.62,130,medium,Interior Buffer
+Libon,13.3044,123.4706,54829,0,0.58,0.28,0.68,0.52,0.65,0.58,0.62,0.4,0.58,0.52,0.5,32.0,1.0,0.42,0.52,145,medium,NW Typhoon Corridor
+Tiwi,13.4569,123.6806,48362,0,0.65,0.18,0.82,0.6,0.68,0.62,0.65,0.42,0.58,0.5,0.55,38.0,1.0,0.35,0.58,142,medium,Geothermal-Typhoon Interface
+Malinao,13.4028,123.6494,33214,0,0.65,0.22,0.78,0.58,0.7,0.65,0.68,0.44,0.62,0.55,0.58,40.0,1.0,0.35,0.5,148,medium,North Interior: Typhoon Corridor
+Pio Duran,13.0308,123.5356,47312,0,0.48,0.4,0.58,0.42,0.65,0.58,0.62,0.38,0.52,0.48,0.55,38.0,1.0,0.52,0.52,148,medium,Sorsogon Border
+Rapu-Rapu,13.1878,124.1192,31548,0,0.8,0.08,0.85,0.78,0.82,0.8,0.8,0.48,0.95,0.72,0.75,62.0,1.0,0.2,0.38,198,high,Island Isolation: Maximum Compound Risk
+Manito,13.2953,124.0656,21456,0,0.72,0.12,0.78,0.68,0.72,0.68,0.7,0.42,0.82,0.65,0.62,48.0,1.0,0.28,0.45,168,high,East Coast: Road Isolation
+

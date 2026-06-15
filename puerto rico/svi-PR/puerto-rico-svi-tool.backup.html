@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Puerto Rico — Water Hazard SVI Intelligence Tool</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<style>
+:root {
+  --bg:#080C18;--surface:#0F1628;--surface2:#161F35;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --text:#E2E8F4;--text-dim:#8896AA;--text-faint:#4A5568;
+  --cyan:#00D4FF;--green:#00E096;--yellow:#FFD93D;
+  --orange:#FF6B35;--red:#FF2D55;--purple:#A855F7;
+  --phys:#38BDF8;--svi:#FB923C;--res:#34D399;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:13px}
+#app{display:grid;grid-template-rows:52px 1fr;grid-template-columns:270px 1fr 340px;height:100vh}
+#topbar{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:0 14px;background:var(--surface);border-bottom:1px solid var(--border2);z-index:1000;overflow:hidden}
+#leftpanel{grid-row:2;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;z-index:100}
+#mapwrap{grid-row:2;position:relative}
+#map{width:100%;height:100%}
+#rightpanel{grid-row:2;background:var(--surface);border-left:1px solid var(--border);overflow-y:auto}
+/* topbar */
+.tb-brand{font-weight:800;font-size:13px;letter-spacing:-.02em;white-space:nowrap}
+.tb-brand span{color:var(--cyan)}
+.tb-sep{width:1px;height:28px;background:var(--border2);flex-shrink:0}
+.tb-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);white-space:nowrap}
+#mode-tog{display:flex;background:var(--bg);border-radius:6px;border:1px solid var(--border2);overflow:hidden}
+.mb{padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--text-dim);white-space:nowrap;transition:all .2s;letter-spacing:.02em}
+.mb.ap{background:linear-gradient(135deg,#1a3a5c,#1a5c8a);color:var(--phys)}
+.mb.as{background:linear-gradient(135deg,#5c2800,#8a4200);color:var(--svi)}
+.mb.ar{background:linear-gradient(135deg,#0a3a22,#0f5c38);color:var(--res)}
+#res-tog{display:flex;background:var(--bg);border-radius:6px;border:1px solid var(--border2);overflow:hidden}
+.rb{padding:5px 9px;font-size:10px;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--text-dim);white-space:nowrap;transition:all .2s}
+.rb.active{background:rgba(0,212,255,.12);color:var(--cyan)}
+#org-sel{background:var(--bg);border:1px solid var(--border2);color:var(--text);padding:5px 8px;border-radius:6px;font-size:11px;cursor:pointer;outline:none}
+#org-sel option{background:#1a2a3a}
+#shift-badge{margin-left:auto;border-radius:14px;padding:4px 12px;font-size:11px;font-weight:700;white-space:nowrap;transition:all .3s;background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.3);color:var(--phys)}
+#shift-badge.warn{background:rgba(255,45,85,.12);border-color:rgba(255,45,85,.3);color:var(--red)}
+#shift-badge.good{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.3);color:var(--res)}
+/* left panel */
+.lp-sec{padding:12px 14px;border-bottom:1px solid var(--border)}
+.lp-sec h3{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text-dim);margin-bottom:8px}
+.lp-desc{font-size:11.5px;line-height:1.55;color:var(--text-dim)}
+.lp-desc strong{color:var(--text)}
+/* layer checkboxes */
+.layer-row{display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer}
+.layer-row input[type=checkbox]{accent-color:var(--cyan);width:13px;height:13px;flex-shrink:0;margin-top:1px;cursor:pointer}
+.layer-info{flex:1}
+.layer-name{font-size:11px;font-weight:600;color:var(--text-dim);line-height:1.3}
+.layer-name.checked{color:var(--text)}
+.layer-desc{font-size:10px;color:var(--text-faint);line-height:1.3;margin-top:1px}
+.layer-sep{height:1px;background:var(--border);margin:6px 0}
+/* active layer count badge */
+.active-count{display:inline-flex;align-items:center;gap:6px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:10px;padding:3px 9px;font-size:10px;font-weight:700;color:var(--cyan);margin-bottom:8px}
+/* legend */
+.legend-bar{height:10px;border-radius:5px;margin-bottom:5px;background:linear-gradient(to right,#00E096,#4ADE80 22%,#FFD93D 42%,#FF6B35 64%,#FF2D55 82%,#B40032)}
+.legend-bar.res-bar{background:linear-gradient(to right,#4A5568,#B7791F 35%,#38A169 58%,#00E096 80%,#00D4FF)}
+.legend-ticks{display:flex;justify-content:space-between;font-size:9px;color:var(--text-faint);font-variant-numeric:tabular-nums;margin-bottom:2px}
+.legend-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--text-dim)}
+/* resilience programs */
+.res-program{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)}
+.res-program:last-child{border:none}
+.rp-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.rp-body{flex:1}
+.rp-name{font-size:11px;font-weight:700;color:var(--text);margin-bottom:1px}
+.rp-note{font-size:10px;color:var(--text-dim);line-height:1.4}
+/* story buttons */
+.story-btn{width:100%;text-align:left;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 10px;margin-bottom:5px;cursor:pointer;color:var(--text);transition:all .2s}
+.story-btn:hover{border-color:var(--border2);background:rgba(255,255,255,.04)}
+.sbn{font-weight:700;font-size:11.5px;margin-bottom:2px}
+.sbs{font-size:10px;color:var(--text-dim);line-height:1.4}
+.sbt{display:inline-block;padding:1px 5px;border-radius:3px;font-size:9px;font-weight:700;text-transform:uppercase;margin-top:3px}
+.ti{background:rgba(168,85,247,.2);color:var(--purple)}
+.td{background:rgba(255,45,85,.2);color:var(--red)}
+.tis{background:rgba(56,189,248,.2);color:var(--phys)}
+.tr{background:rgba(0,224,150,.15);color:var(--green)}
+.dn{font-size:10px;color:var(--text-faint);line-height:1.4;font-style:italic}
+/* right panel */
+.rp-hd{padding:12px 14px 0}
+#rp-name{font-size:19px;font-weight:800;letter-spacing:-.02em;margin-bottom:2px}
+#rp-meta{font-size:11px;color:var(--text-dim);margin-bottom:12px}
+.rp-ph{padding:36px 22px;text-align:center;color:var(--text-faint);font-size:12px;line-height:1.6}
+.rp-ph .big{font-size:26px;margin-bottom:8px;opacity:.25}
+.rp-sec{padding:10px 14px;border-bottom:1px solid var(--border)}
+.rp-sec h4{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text-dim);margin-bottom:8px}
+.sc-row{margin-bottom:7px}
+.sc-lbl{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px}
+.sc-lbl span:first-child{color:var(--text-dim);font-weight:600}
+.sc-lbl span:last-child{font-weight:800;font-variant-numeric:tabular-nums}
+.sc-track{height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.sc-fill{height:100%;border-radius:3px;transition:width .5s}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.sc{background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:7px 9px}
+.sc .sv{font-size:15px;font-weight:800;margin-bottom:1px;font-variant-numeric:tabular-nums}
+.sc .sl{font-size:10px;color:var(--text-dim);line-height:1.3}
+.beh-item{display:flex;gap:7px;padding:7px 9px;border-radius:5px;background:var(--surface2);border:1px solid var(--border);margin-bottom:5px}
+.bi{font-size:13px;flex-shrink:0;margin-top:1px}
+.bt{font-size:11px;color:var(--text-dim);line-height:1.4}
+.bt strong{color:var(--text);display:block;font-size:11px;margin-bottom:1px}
+.fac-item{display:flex;gap:7px;margin-bottom:5px;font-size:11px}
+.frisk{display:inline-block;padding:1px 4px;border-radius:3px;font-size:9px;font-weight:700;margin-left:3px}
+.fh{background:rgba(255,45,85,.2);color:var(--red)}
+.fm{background:rgba(255,107,53,.2);color:var(--orange)}
+.rec-item{display:flex;gap:7px;font-size:11px;color:var(--text-dim);line-height:1.4;margin-bottom:4px}
+.rec-item::before{content:'→';color:var(--cyan);flex-shrink:0}
+.comm-box{background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.18);border-radius:5px;padding:8px 10px;font-size:11px;color:var(--text-dim);line-height:1.5}
+.comm-box strong{color:var(--cyan)}
+/* fingerprint bars */
+.fp-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.fp-row{margin-bottom:3px}
+.fp-lbl{font-size:9px;color:var(--text-faint);margin-bottom:2px;display:flex;justify-content:space-between}
+.fp-track{height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.fp-fill{height:100%;border-radius:3px}
+/* map badge */
+#map-badge{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(8,12,24,.9);backdrop-filter:blur(8px);border:1px solid var(--border2);border-radius:14px;padding:5px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--phys);z-index:999;pointer-events:none;transition:all .3s}
+#map-badge.soc{color:var(--svi)}
+#map-badge.res{color:var(--res)}
+/* layer control */
+#lctrl{position:absolute;top:10px;right:10px;z-index:999;background:rgba(8,12,24,.93);backdrop-filter:blur(10px);border:1px solid var(--border2);border-radius:8px;width:192px;font-size:11px}
+#lctrl-hdr{display:flex;align-items:center;justify-content:space-between;padding:7px 11px;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);cursor:pointer;user-select:none}
+#lctrl-body{padding:6px 0}
+.lc-grp-ttl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-faint);padding:4px 11px 3px}
+.lc-r{display:flex;align-items:center;gap:6px;padding:3px 11px;cursor:pointer}
+.lc-r:hover{background:rgba(255,255,255,.03)}
+.lc-r input{accent-color:var(--cyan);width:11px;height:11px;cursor:pointer;flex-shrink:0}
+.lc-r label{color:var(--text-dim);cursor:pointer;font-size:11px;line-height:1.4}
+.lc-r label.on{color:var(--text)}
+.lc-bases{display:flex;gap:3px;padding:3px 9px}
+.lc-bb{flex:1;padding:4px 2px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--text-dim);font-size:9px;cursor:pointer;text-align:center;transition:all .15s}
+.lc-bb.active{border-color:var(--cyan);color:var(--cyan);background:rgba(0,212,255,.08)}
+.lc-div{height:1px;background:var(--border);margin:4px 0}
+/* popup */
+.leaflet-popup-content-wrapper{background:var(--surface);border:1px solid var(--border2);border-radius:8px;color:var(--text);box-shadow:0 8px 32px rgba(0,0,0,.6)}
+.leaflet-popup-tip{background:var(--surface)}
+.leaflet-popup-content{margin:9px 13px;font-size:12px}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+</style>
+</head>
+<body>
+<div id="app">
+<div id="topbar">
+  <div class="tb-brand">SVI<span>Intel</span> · Puerto Rico</div>
+  <div class="tb-sep"></div>
+  <div class="tb-lbl">Lens:</div>
+  <select id="org-sel" onchange="setOrg(this.value)">
+    <option value="all">All Organizations</option>
+    <option value="gov">Government / Emergency Mgmt</option>
+    <option value="ngo">NGO / Civil Society</option>
+    <option value="fin">Lender / Micro-finance</option>
+    <option value="ins">Insurance / Reinsurance</option>
+    <option value="res">Researcher / Field Team</option>
+  </select>
+  <div class="tb-sep"></div>
+  <div class="tb-lbl">Mode:</div>
+  <div id="mode-tog">
+    <button class="mb ap" onclick="setMode('phys')">🌊 Physical Baseline</button>
+    <button class="mb" onclick="setMode('soc')">🔍 Social Complexity</button>
+    <button class="mb" onclick="setMode('res')">🌱 Resilience Map</button>
+  </div>
+  <div class="tb-sep"></div>
+  <div class="tb-lbl">Resolution:</div>
+  <div id="res-tog">
+    <button class="rb active" id="rb-muni" onclick="setRes('muni')">⬡ Municipal</button>
+    <button class="rb" id="rb-fine" onclick="setRes('fine')">⬡ Census-Tract</button>
+  </div>
+  <div id="shift-badge">—</div>
+</div>
+
+<div id="leftpanel">
+  <!-- Physical mode panel -->
+  <div id="lp-phys">
+    <div class="lp-sec">
+      <h3>Physical Hazard Layers</h3>
+      <div class="lp-desc">Toggle physical threats to see where risk concentrates. Each layer reveals a distinct dimension. <strong>Flood + landslide together</strong> show the coast-to-interior inversion that standard models miss.</div>
+    </div>
+    <div class="lp-sec">
+      <h3>Active Layers</h3>
+      <div id="phys-layers">
+        <div class="layer-row"><input type="checkbox" id="pl-flood" checked onchange="togglePhys('flood',this.checked)"><div class="layer-info"><div class="layer-name checked" id="pln-flood">🌊 FEMA Flood Zones</div><div class="layer-desc">100-yr floodplain (AE/VE zones) — coastal rivers, lagoons, low-lying coast</div></div></div>
+        <div class="layer-row"><input type="checkbox" id="pl-surge" onchange="togglePhys('surge',this.checked)"><div class="layer-info"><div class="layer-name" id="pln-surge">💧 Storm Surge Cat.3-4</div><div class="layer-desc">NOAA SLOSH inundation zones — low-elevation coastal exposure</div></div></div>
+        <div class="layer-row"><input type="checkbox" id="pl-wind" checked onchange="togglePhys('wind',this.checked)"><div class="layer-info"><div class="layer-name checked" id="pln-wind">🌀 Hurricane Wind Zones</div><div class="layer-desc">Saffir-Simpson wind speed risk — elevated on coasts and east</div></div></div>
+        <div class="layer-row"><input type="checkbox" id="pl-slide" onchange="togglePhys('slide',this.checked)"><div class="layer-info"><div class="layer-name" id="pln-slide">⛰ Landslide Risk</div><div class="layer-desc">USGS susceptibility — interior mountains (inverts coastal bias)</div></div></div>
+      </div>
+    </div>
+    <div class="lp-sec">
+      <h3>Risk Scale</h3>
+      <div class="legend-bar"></div>
+      <div class="legend-ticks"><span>0.0</span><span>0.25</span><span>0.50</span><span>0.75</span><span>1.0</span></div>
+      <div class="legend-labels"><span>Low</span><span></span><span>Moderate</span><span></span><span>Critical</span></div>
+      <div style="margin-top:8px" class="dn">Normalized within current active layer set. Click any hex for detail.</div>
+    </div>
+    <div class="lp-sec">
+      <h3>Key Stories</h3>
+      <button class="story-btn" onclick="focusMuni('Utuado')"><div class="sbn">Utuado</div><div class="sbs">Invisible to physical flood model — try toggling landslide.</div><span class="sbt ti">Hidden Vulnerability</span></button>
+      <button class="story-btn" onclick="focusMuni('Loíza')"><div class="sbn">Loíza</div><div class="sbs">High physical AND social risk. Last to receive aid after Maria.</div><span class="sbt td">Doubly Exposed</span></button>
+      <button class="story-btn" onclick="focusMuni('Vieques')"><div class="sbn">Vieques</div><div class="sbs">Island isolation. Ferry + cell failure = total blackout.</div><span class="sbt tis">Island Isolation</span></button>
+      <button class="story-btn" onclick="focusMuni('Ciales')"><div class="sbn">Ciales</div><div class="sbs">321 days without power. One road. Zero dialysis access.</div><span class="sbt ti">Hidden Vulnerability</span></button>
+      <button class="story-btn" onclick="focusMuni('San Juan')"><div class="sbn">San Juan</div><div class="sbs">High physical exposure — resources change everything.</div><span class="sbt tr">Model Contrast</span></button>
+    </div>
+  </div>
+
+  <!-- Social complexity panel -->
+  <div id="lp-soc" style="display:none">
+    <div class="lp-sec">
+      <h3>Social Complexity Builder</h3>
+      <div class="lp-desc">Start from physical baseline. <strong>Check social dimensions one by one</strong> and watch the map morph. Each layer reveals communities the physical model underestimates.</div>
+    </div>
+    <div class="lp-sec">
+      <div id="soc-count" class="active-count">0 of 9 social layers active</div>
+      <div id="soc-layers">
+        <div class="layer-row"><input type="checkbox" id="sl-power" onchange="toggleSoc('power',this.checked)"><div class="layer-info"><div class="layer-name" id="sln-power">⚡ Power Grid Vulnerability</div><div class="layer-desc">PREPA fragility + transmission risk — mountain communities, single-line feeds</div></div></div>
+        <div class="layer-sep"></div>
+        <div class="layer-row"><input type="checkbox" id="sl-roads" onchange="toggleSoc('roads',this.checked)"><div class="layer-info"><div class="layer-name" id="sln-roads">🌉 Road &amp; Bridge Access</div><div class="layer-desc">Washout risk + NBI bridge ratings — isolation multiplier</div></div></div>
+        <div class="layer-sep"></div>
+        <div class="layer-row"><input type="checkbox" id="sl-cell" onchange="toggleSoc('cell',this.checked)"><div class="layer-info"><div class="layer-name" id="sln-cell">📡 Communication Dead Zones</div><div class="layer-desc">Cell coverage gaps + internet access — predicts signal-seeking behavior</div></div></div>
+        <div class="layer-sep"></div>
+        <div class="layer-row"><input type="checkbox" id="sl-health" onchange="toggleSoc('health',this.checked)"><div class="layer-info"><div class="layer-name" id="sln-health">🏥 Healthcare Access</div><div class="layer-desc">Distance to dialysis, ER, pharmacy — medical cascade risk</div></div></div>
+        <div class="layer-sep"></div>
+        <div class="layer-row"><input type="checkbox" id="sl-school" onchange="toggleSoc('school',this.checked)"><div class="layer-info"><div class="layer-name" id="sln-school">🏫 School Infrastructure</div><div class="layer-desc">Childcare + education continuity cascade — parent employment risk</div></div></div>
+        <div class="layer-sep"></div>
+        <div class="layer-row"><input type="checkbox" id="sl-fema" onchange="toggleSoc('fema',this.checked)"><div class="layer-info"><div class="layer-name" id="sln-fema">📋 Aid Access Gap</div><div class="layer-desc">FEMA denial rates + documentation barriers — post-event recovery ceiling</div></div></div>
+        <div class="layer-sep"></div>
+        <div class="layer-row"><input type="checkbox" id="sl-econ" onchange="toggleSoc('econ',this.checked)"><div class="layer-info"><div class="layer-name" id="sln-econ">💰 Economic Vulnerability</div><div class="layer-desc">Poverty, income, employment informality — recovery capital</div></div></div>
+        <div class="layer-sep"></div>
+        <div class="layer-row"><input type="checkbox" id="sl-pop" onchange="toggleSoc('pop',this.checked)"><div class="layer-info"><div class="layer-name" id="sln-pop">👴 Population Fragility</div><div class="layer-desc">Elderly %, disability, language isolation — aid utilization floor</div></div></div>
+        <div class="layer-sep"></div>
+        <div class="layer-row"><input type="checkbox" id="sl-housing" onchange="toggleSoc('housing',this.checked)"><div class="layer-info"><div class="layer-name" id="sln-housing">🏠 Housing Quality Risk</div><div class="layer-desc">Wood/informal structures, density, NFIP enrollment — physical damage amplifier</div></div></div>
+      </div>
+    </div>
+    <div class="lp-sec">
+      <h3>Risk Scale</h3>
+      <div class="legend-bar"></div>
+      <div class="legend-ticks"><span>0.0</span><span>0.25</span><span>0.50</span><span>0.75</span><span>1.0</span></div>
+      <div class="legend-labels"><span>Low</span><span></span><span>Moderate</span><span></span><span>Critical</span></div>
+      <div style="margin-top:8px" class="dn">Scores normalized to full range so every active layer set is visually comparable. Watch interior mountains shift as social layers are added.</div>
+    </div>
+  </div>
+
+  <!-- Resilience panel -->
+  <div id="lp-res" style="display:none">
+    <div class="lp-sec">
+      <h3>Community Resilience Index</h3>
+      <div class="lp-desc">What has communities <strong>built since Maria</strong>? This layer shows community-driven investment — solar microgrids, mutual aid infrastructure, food sovereignty, communication networks. <strong>Gray = stagnant. Teal = exemplary.</strong></div>
+    </div>
+    <div class="lp-sec">
+      <h3>Scale</h3>
+      <div class="legend-bar res-bar"></div>
+      <div class="legend-ticks"><span>0.0</span><span>0.25</span><span>0.50</span><span>0.75</span><span>1.0</span></div>
+      <div class="legend-labels"><span>Stagnant</span><span></span><span>Developing</span><span></span><span>Exemplary</span></div>
+    </div>
+    <div class="lp-sec">
+      <h3>Key Programs</h3>
+      <div id="res-programs"></div>
+    </div>
+    <div class="lp-sec">
+      <div class="dn">Sources: Casa Pueblo, Mutual Aid Disaster Relief, DOE Programa Acceso Solar (2024), María Fund, WPI Puerto Rico Project. Data as of late 2024.</div>
+    </div>
+  </div>
+</div>
+
+<div id="mapwrap">
+  <div id="map"></div>
+  <div id="map-badge">Physical Hazard Baseline</div>
+  <div id="lctrl">
+    <div id="lctrl-hdr" onclick="toggleCtrl()">🗂 Map Layers <span id="lc-chev">▲</span></div>
+    <div id="lctrl-body">
+      <div class="lc-grp-ttl">BASE MAP</div>
+      <div class="lc-bases">
+        <button class="lc-bb active" id="bb-dark" onclick="setBase('dark')">Dark</button>
+        <button class="lc-bb" id="bb-sat" onclick="setBase('sat')">Satellite</button>
+        <button class="lc-bb" id="bb-topo" onclick="setBase('topo')">Terrain</button>
+      </div>
+      <div class="lc-div"></div>
+      <div class="lc-grp-ttl">RISK OVERLAYS</div>
+      <div class="lc-r"><input type="checkbox" id="ov-fema" onchange="toggleOv('fema',this.checked)"><label for="ov-fema">🌊 FEMA Flood Zones (WMS)</label></div>
+      <div class="lc-r"><input type="checkbox" id="ov-surge-ov" onchange="toggleOv('surge',this.checked)"><label for="ov-surge-ov">💧 Storm Surge Zones</label></div>
+      <div class="lc-r"><input type="checkbox" id="ov-maria" checked onchange="toggleOv('maria',this.checked)"><label for="ov-maria" class="on">🌀 Hurricane Maria Track</label></div>
+      <div class="lc-r"><input type="checkbox" id="ov-irma" onchange="toggleOv('irma',this.checked)"><label for="ov-irma">🌀 Hurricane Irma Track</label></div>
+      <div class="lc-r"><input type="checkbox" id="ov-bridges" onchange="toggleOv('bridges',this.checked)"><label for="ov-bridges">🌉 Bridge Conditions</label></div>
+      <div class="lc-r"><input type="checkbox" id="ov-cell" onchange="toggleOv('cell',this.checked)"><label for="ov-cell">📡 Cell Dead Zones</label></div>
+      <div class="lc-r"><input type="checkbox" id="ov-power" onchange="toggleOv('power',this.checked)"><label for="ov-power">⚡ Power Grid Risk</label></div>
+    </div>
+  </div>
+</div>
+
+<div id="rightpanel">
+  <div class="rp-ph"><div class="big">⬡</div><strong style="color:var(--text-dim);display:block;margin-bottom:8px">Click any hex</strong>Community vulnerability profile, behavioral predictions, cascade dependencies, and organization-specific actions appear here.</div>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+// ═══════════════════════════════════════════════
+// MUNICIPIO DATA — 78 PR municipios
+// phys:physical hazard 0-1, svi:social vulnerability 0-1
+// pwr:days without power post-Maria, road:access risk
+// ═══════════════════════════════════════════════
+const MUNICIPIOS = [
+  {n:"San Juan",     lat:18.4655,lng:-66.1057,pop:343000,phys:.78,svi:.48,pwr:78, road:"low"},
+  {n:"Bayamón",      lat:18.3994,lng:-66.1563,pop:208116,phys:.58,svi:.52,pwr:102,road:"low"},
+  {n:"Carolina",     lat:18.3808,lng:-65.9577,pop:158172,phys:.65,svi:.50,pwr:95, road:"low"},
+  {n:"Guaynabo",     lat:18.3617,lng:-66.1130,pop:89976, phys:.52,svi:.38,pwr:84, road:"low"},
+  {n:"Toa Baja",     lat:18.4433,lng:-66.2519,pop:79726, phys:.72,svi:.62,pwr:132,road:"medium"},
+  {n:"Toa Alta",     lat:18.3883,lng:-66.2481,pop:72025, phys:.52,svi:.58,pwr:125,road:"medium"},
+  {n:"Cataño",       lat:18.4339,lng:-66.1660,pop:24888, phys:.88,svi:.75,pwr:89, road:"medium"},
+  {n:"Dorado",       lat:18.4592,lng:-66.2700,pop:37012, phys:.68,svi:.42,pwr:108,road:"low"},
+  {n:"Vega Alta",    lat:18.4119,lng:-66.3228,pop:38381, phys:.62,svi:.60,pwr:138,road:"medium"},
+  {n:"Vega Baja",    lat:18.4442,lng:-66.3892,pop:53563, phys:.65,svi:.62,pwr:142,road:"medium"},
+  {n:"Loíza",        lat:18.4314,lng:-65.8792,pop:26463, phys:.85,svi:.90,pwr:215,road:"medium"},
+  {n:"Canóvanas",    lat:18.3778,lng:-65.9014,pop:43765, phys:.62,svi:.68,pwr:165,road:"medium"},
+  {n:"Trujillo Alto",lat:18.3617,lng:-66.0169,pop:74842, phys:.40,svi:.52,pwr:118,road:"low"},
+  {n:"Río Grande",   lat:18.3792,lng:-65.8322,pop:50549, phys:.65,svi:.62,pwr:178,road:"medium"},
+  {n:"Luquillo",     lat:18.3731,lng:-65.7131,pop:18547, phys:.72,svi:.58,pwr:168,road:"medium"},
+  {n:"Fajardo",      lat:18.3253,lng:-65.6519,pop:33894, phys:.75,svi:.55,pwr:148,road:"medium"},
+  {n:"Ceiba",        lat:18.2678,lng:-65.6481,pop:11853, phys:.70,svi:.60,pwr:161,road:"medium"},
+  {n:"Naguabo",      lat:18.2119,lng:-65.7339,pop:23555, phys:.68,svi:.65,pwr:188,road:"high"},
+  {n:"Humacao",      lat:18.1492,lng:-65.8272,pop:53466, phys:.72,svi:.62,pwr:176,road:"medium"},
+  {n:"Yabucoa",      lat:18.0547,lng:-65.8792,pop:33551, phys:.72,svi:.72,pwr:200,road:"high"},
+  {n:"Maunabo",      lat:17.9992,lng:-65.9003,pop:11023, phys:.72,svi:.72,pwr:218,road:"high"},
+  {n:"Patillas",     lat:17.9903,lng:-66.0119,pop:17789, phys:.75,svi:.75,pwr:198,road:"high"},
+  {n:"Arroyo",       lat:17.9658,lng:-66.0619,pop:18024, phys:.78,svi:.72,pwr:172,road:"medium"},
+  {n:"Guayama",      lat:17.9847,lng:-66.1139,pop:43166, phys:.72,svi:.68,pwr:165,road:"low"},
+  {n:"Salinas",      lat:17.9781,lng:-66.2981,pop:28633, phys:.78,svi:.72,pwr:174,road:"medium"},
+  {n:"Santa Isabel", lat:17.9664,lng:-66.4039,pop:22399, phys:.72,svi:.68,pwr:162,road:"low"},
+  {n:"Coamo",        lat:18.0808,lng:-66.3578,pop:39265, phys:.32,svi:.65,pwr:168,road:"medium"},
+  {n:"Juana Díaz",   lat:18.0531,lng:-66.5039,pop:47643, phys:.42,svi:.68,pwr:155,road:"medium"},
+  {n:"Ponce",        lat:18.0114,lng:-66.6147,pop:166327,phys:.65,svi:.58,pwr:138,road:"low"},
+  {n:"Peñuelas",     lat:17.9992,lng:-66.7231,pop:21093, phys:.62,svi:.72,pwr:192,road:"medium"},
+  {n:"Guayanilla",   lat:17.9878,lng:-66.7908,pop:19094, phys:.78,svi:.75,pwr:210,road:"medium"},
+  {n:"Yauco",        lat:18.0353,lng:-66.8508,pop:35755, phys:.55,svi:.65,pwr:185,road:"medium"},
+  {n:"Guánica",      lat:17.9719,lng:-66.9083,pop:16783, phys:.82,svi:.75,pwr:180,road:"medium"},
+  {n:"Sabana Grande",lat:18.0783,lng:-66.9614,pop:23202, phys:.42,svi:.68,pwr:172,road:"medium"},
+  {n:"San Germán",   lat:18.0831,lng:-67.0442,pop:34668, phys:.48,svi:.60,pwr:162,road:"medium"},
+  {n:"Lajas",        lat:17.9758,lng:-67.0592,pop:23027, phys:.68,svi:.70,pwr:188,road:"medium"},
+  {n:"Cabo Rojo",    lat:17.9853,lng:-67.1461,pop:50099, phys:.72,svi:.62,pwr:168,road:"medium"},
+  {n:"Hormigueros",  lat:18.1400,lng:-67.1297,pop:17236, phys:.48,svi:.60,pwr:152,road:"medium"},
+  {n:"Mayagüez",     lat:18.2008,lng:-67.1397,pop:89080, phys:.65,svi:.55,pwr:135,road:"low"},
+  {n:"Añasco",       lat:18.2811,lng:-67.1403,pop:27466, phys:.60,svi:.65,pwr:162,road:"medium"},
+  {n:"Rincón",       lat:18.3400,lng:-67.2500,pop:14767, phys:.70,svi:.55,pwr:145,road:"medium"},
+  {n:"Aguadilla",    lat:18.4272,lng:-67.1536,pop:54166, phys:.68,svi:.55,pwr:128,road:"low"},
+  {n:"Moca",         lat:18.3933,lng:-67.1122,pop:38698, phys:.48,svi:.65,pwr:148,road:"medium"},
+  {n:"Aguada",       lat:18.3792,lng:-67.1831,pop:41959, phys:.55,svi:.62,pwr:142,road:"medium"},
+  {n:"Isabela",      lat:18.5003,lng:-67.0222,pop:42420, phys:.65,svi:.65,pwr:145,road:"medium"},
+  {n:"Quebradillas", lat:18.4742,lng:-66.9383,pop:24032, phys:.65,svi:.65,pwr:148,road:"medium"},
+  {n:"Camuy",        lat:18.4839,lng:-66.8458,pop:33142, phys:.65,svi:.65,pwr:152,road:"medium"},
+  {n:"Hatillo",      lat:18.4872,lng:-66.8242,pop:40862, phys:.65,svi:.62,pwr:142,road:"medium"},
+  {n:"Arecibo",      lat:18.4722,lng:-66.7153,pop:87122, phys:.72,svi:.60,pwr:132,road:"low"},
+  {n:"Barceloneta",  lat:18.4469,lng:-66.5414,pop:24016, phys:.68,svi:.65,pwr:138,road:"medium"},
+  {n:"Florida",      lat:18.3658,lng:-66.5614,pop:12367, phys:.45,svi:.68,pwr:165,road:"high"},
+  {n:"Manatí",       lat:18.4292,lng:-66.4814,pop:43356, phys:.68,svi:.62,pwr:138,road:"medium"},
+  {n:"Utuado",       lat:18.2653,lng:-66.7003,pop:30124, phys:.30,svi:.86,pwr:295,road:"critical"},
+  {n:"Adjuntas",     lat:18.1628,lng:-66.7222,pop:19356, phys:.35,svi:.82,pwr:289,road:"critical"},
+  {n:"Jayuya",       lat:18.2189,lng:-66.5919,pop:15469, phys:.25,svi:.85,pwr:331,road:"critical"},
+  {n:"Ciales",       lat:18.3372,lng:-66.4692,pop:17783, phys:.28,svi:.87,pwr:321,road:"critical"},
+  {n:"Orocovis",     lat:18.2278,lng:-66.3919,pop:20952, phys:.28,svi:.87,pwr:319,road:"critical"},
+  {n:"Villalba",     lat:18.1228,lng:-66.4878,pop:23460, phys:.25,svi:.72,pwr:215,road:"high"},
+  {n:"Aibonito",     lat:18.1400,lng:-66.2658,pop:23908, phys:.20,svi:.60,pwr:185,road:"medium"},
+  {n:"Barranquitas", lat:18.1858,lng:-66.3061,pop:28727, phys:.22,svi:.70,pwr:225,road:"high"},
+  {n:"Corozal",      lat:18.3381,lng:-66.3172,pop:34653, phys:.28,svi:.70,pwr:218,road:"high"},
+  {n:"Naranjito",    lat:18.2997,lng:-66.2472,pop:28539, phys:.28,svi:.70,pwr:228,road:"high"},
+  {n:"Comerío",      lat:18.2197,lng:-66.2253,pop:19539, phys:.28,svi:.72,pwr:235,road:"high"},
+  {n:"Cidra",        lat:18.1753,lng:-66.1614,pop:43780, phys:.25,svi:.60,pwr:172,road:"medium"},
+  {n:"Cayey",        lat:18.1119,lng:-66.1672,pop:44530, phys:.25,svi:.58,pwr:165,road:"medium"},
+  {n:"Morovis",      lat:18.3253,lng:-66.4069,pop:30265, phys:.28,svi:.72,pwr:238,road:"high"},
+  {n:"Lares",        lat:18.2950,lng:-66.8778,pop:26451, phys:.28,svi:.82,pwr:279,road:"critical"},
+  {n:"Las Marías",   lat:18.2514,lng:-66.9922,pop:8927,  phys:.25,svi:.85,pwr:298,road:"critical"},
+  {n:"Maricao",      lat:18.1808,lng:-66.9783,pop:5835,  phys:.22,svi:.88,pwr:312,road:"critical"},
+  {n:"San Sebastián",lat:18.3358,lng:-66.9911,pop:38799, phys:.25,svi:.72,pwr:245,road:"high"},
+  {n:"Caguas",       lat:18.2339,lng:-66.0358,pop:127014,phys:.35,svi:.48,pwr:118,road:"low"},
+  {n:"Aguas Buenas", lat:18.2569,lng:-66.1033,pop:26430, phys:.30,svi:.65,pwr:168,road:"medium"},
+  {n:"Gurabo",       lat:18.2553,lng:-65.9753,pop:42149, phys:.35,svi:.55,pwr:138,road:"medium"},
+  {n:"San Lorenzo",  lat:18.1897,lng:-65.9703,pop:37873, phys:.35,svi:.62,pwr:165,road:"medium"},
+  {n:"Juncos",       lat:18.2281,lng:-65.9211,pop:36452, phys:.35,svi:.60,pwr:148,road:"medium"},
+  {n:"Las Piedras",  lat:18.1853,lng:-65.8722,pop:36539, phys:.35,svi:.62,pwr:162,road:"medium"},
+  {n:"Vieques",      lat:18.1261,lng:-65.4403,pop:8249,  phys:.88,svi:.85,pwr:314,road:"critical"},
+  {n:"Culebra",      lat:18.3022,lng:-65.3022,pop:1867,  phys:.90,svi:.80,pwr:289,road:"critical"},
+];
+
+// ═══════════════════════════════════════════════
+// ENRICH: add per-municipio sub-dimension scores
+// ═══════════════════════════════════════════════
+const RES_DATA = {
+  'Adjuntas':    {res:.92,rtag:'Solar Pioneer',   rnote:'Casa Pueblo: 350+ homes on solar, community-owned microgrid, Radio Casa Pueblo, food cooperative. Survived Hurricane Fiona 2022 with power on.'},
+  'Las Marías':  {res:.78,rtag:'Mutual Aid Hub',  rnote:'CAMBU (Centro de Apoyo Mutuo Bucarabones): community kitchen, art classes, cultural space in former school.'},
+  'Lares':       {res:.72,rtag:'Agroecology Node',rnote:'CAM Lares: abandoned school repurposed for food autonomy + agroecology. Community skill-building for self-sufficiency.'},
+  'Jayuya':      {res:.68,rtag:'Microrred Zone',  rnote:'Part of Microrred de la Montaña (Adjuntas-Jayuya-Lares-Utuado solar network). Organización Boricuá food sovereignty work.'},
+  'Utuado':      {res:.62,rtag:'Emerging Network',rnote:'Part of Microrred de la Montaña. Community radio + mutual aid organizing accelerated post-Maria.'},
+  'Humacao':     {res:.65,rtag:'Community Grid',  rnote:'Barrio Mariana: first community-owned solar microgrid in eastern PR. Solar laundromat, tool library, community meeting space.'},
+  'Ciales':      {res:.70,rtag:'Mutual Aid Hub',  rnote:'Centro de Apoyo Mutuo: documented community kitchen, tool sharing, food security programs.'},
+  'Orocovis':    {res:.58,rtag:'Active Organizing',rnote:'Active community organizing post-Maria + some solar installations. Growing food security network.'},
+  'Loíza':       {res:.62,rtag:'Community Health',rnote:'Taller Salud: community health workers, mental health, reproductive rights. One of PR most documented community health models.'},
+  'Caguas':      {res:.55,rtag:'Urban Mutual Aid',rnote:'CAM Las Carolinas (community food, workshops). Some urban resilience programs.'},
+  'San Juan':    {res:.48,rtag:'Mixed Results',   rnote:'Multiple orgs (BAM, urban mutual aid nodes) but highly uneven by neighborhood. LUMA Energy transition ongoing with continued outages.'},
+  'Ponce':       {res:.44,rtag:'Municipal Plan',  rnote:'Municipal resilience plan exists. Limited community-driven investment. Some infrastructure improvements.'},
+  'Vieques':     {res:.28,rtag:'Structural Gap',  rnote:'Ferry dependency is a hard structural ceiling. Limited programs despite ongoing advocacy. DOE solar access funding reaching island slowly.'},
+  'Culebra':     {res:.22,rtag:'Structural Gap',  rnote:'Smallest PR municipality. Very limited institutional capacity. Air/ferry dependent. Minimal documented programs.'},
+};
+
+function enrichAll() {
+  const RF={low:.05,medium:.20,high:.50,critical:.88};
+  MUNICIPIOS.forEach(m=>{
+    const rf=RF[m.road], isMtn=m.phys<.42&&m.road!=='low';
+    const isCo=m.phys>.62, isIs=m.n==='Vieques'||m.n==='Culebra';
+    const cl=(v)=>Math.min(1,Math.max(0,v));
+    m.svi_power  =cl(m.svi*.88+rf*.28+(isIs?.18:0));
+    m.svi_roads  =cl(rf*.85+m.svi*.18);
+    m.svi_cell   =cl(isMtn?m.svi*1.08+.05:isIs?.92:m.svi*.62);
+    m.svi_health =cl(m.svi*.78+rf*.28);
+    m.svi_school =cl(m.svi*.76);
+    m.svi_fema   =cl(m.svi*1.05-(isCo?.06:0));
+    m.svi_econ   =cl(m.svi*.98);
+    m.svi_pop    =cl(m.svi*.72);
+    m.svi_housing=cl(isCo?m.svi*1.10:m.svi*.86);
+    m.res=.30; m.rtag='Limited Data'; m.rnote='No documented community resilience programs in current dataset.';
+    if(RES_DATA[m.n]) Object.assign(m,RES_DATA[m.n]);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// PHYSICAL LAYER SETS
+// ═══════════════════════════════════════════════
+const FL_SET=new Set(['San Juan','Cataño','Toa Baja','Loíza','Canóvanas','Río Grande','Luquillo','Humacao','Yabucoa','Naguabo','Arroyo','Salinas','Guayama','Santa Isabel','Guánica','Lajas','Mayagüez','Vega Baja','Barceloneta','Manatí','Arecibo','Aguadilla','Isabela','Vieques','Culebra','Maunabo','Patillas','Guayanilla','Ponce','Carolina','Dorado','Hatillo','Camuy','Cabo Rojo','Añasco','Rincón','Quebradillas','Peñuelas','Aguada']);
+const SG_SET=new Set(['San Juan','Cataño','Loíza','Carolina','Toa Baja','Naguabo','Humacao','Yabucoa','Maunabo','Arroyo','Guayama','Salinas','Santa Isabel','Guánica','Lajas','Cabo Rojo','Ponce','Guayanilla','Mayagüez','Rincón','Aguadilla','Isabela','Vieques','Culebra','Barceloneta','Peñuelas','Añasco','Aguada','Dorado']);
+const WH_SET=new Set(['Vieques','Culebra','Fajardo','Luquillo','Naguabo','Yabucoa','Ceiba','Maunabo','Loíza','Río Grande','Carolina','San Juan','Cataño','Aguadilla','Rincón','Mayagüez','Guánica','Salinas','Arroyo','Patillas','Humacao','Canóvanas','Isabela']);
+const SL_SET=new Set(['Utuado','Ciales','Jayuya','Adjuntas','Lares','Las Marías','Maricao','Orocovis','Barranquitas','Comerío','Naranjito','Morovis','San Sebastián','Florida','Villalba','Corozal','Yauco','Peñuelas','Aguas Buenas','Aibonito','Cayey','Cidra','San Lorenzo']);
+
+// ═══════════════════════════════════════════════
+// SOCIAL LAYERS config
+// ═══════════════════════════════════════════════
+const SOC_LAYERS=[
+  {id:'power',key:'svi_power', w:.14},
+  {id:'roads',key:'svi_roads', w:.13},
+  {id:'cell', key:'svi_cell',  w:.10},
+  {id:'health',key:'svi_health',w:.13},
+  {id:'school',key:'svi_school',w:.10},
+  {id:'fema',  key:'svi_fema', w:.12},
+  {id:'econ',  key:'svi_econ', w:.12},
+  {id:'pop',   key:'svi_pop',  w:.10},
+  {id:'housing',key:'svi_housing',w:.09},
+];
+const SOC_MAX_W=SOC_LAYERS.reduce((a,l)=>a+l.w,0); // ~1.03
+
+// ═══════════════════════════════════════════════
+// DETAIL data for 5 key municipios
+// ═══════════════════════════════════════════════
+const DETAIL={
+  "Utuado":{
+    tag:"Hidden Vulnerability",tagC:"ti",
+    headline:"295 days without power. Near-invisible to flood models.",
+    stats:[{v:"76%",l:"Poverty rate"},{v:"295 days",l:"Post-Maria power outage"},{v:"<3%",l:"Flood insurance enrollment"},{v:"45+ min",l:"Nearest dialysis center"},{v:"2 bridges",l:"PR-111 crossings (both deficient)"}],
+    behaviors:[
+      {i:"🏠",t:"Shelter-in-place expected",b:"Strong place attachment + mobility barriers = residents shelter regardless of official orders."},
+      {i:"📡",t:"Signal-seeking on PR-111 ridge",b:"Residents walk/drive to high points on PR-111 for cell signal. These are natural aid convergence points."},
+      {i:"🤝",t:"Strong mutual aid activation",b:"Dense informal networks self-organize quickly. Supplies to community leaders distribute faster than door-to-door."},
+      {i:"⚠️",t:"Low FEMA uptake predicted",b:"Historical distrust + language barriers will suppress aid applications significantly below actual need."},
+    ],
+    facilities:[
+      {i:"🏥",t:"Hospital Dr. Susoni (Arecibo, 45 min)",r:"high"},
+      {i:"💊",t:"Dialysis: Arecibo only (45+ min if roads clear)",r:"high"},
+      {i:"🏫",t:"3 public schools, 4,200+ students in mountain zone",r:"med"},
+      {i:"🌉",t:"PR-111 bridges: 2 crossings, both structurally deficient",r:"high"},
+      {i:"⚡",t:"Single-line PREPA feed, no redundancy",r:"high"},
+    ],
+    comms:"PR-111 ridgeline at km 14 and PR-140 junction are highest accessible points — confirmed signal convergence during Maria. Pre-positioning a solar mesh node here would serve thousands.",
+    needs:["Insulin/medication cold chain (72hr priority)","Generator fuel pre-positioning","Dialysis patient evacuation plan","Community leader contact list (bypass official channels)"],
+  },
+  "Loíza":{
+    tag:"Doubly Exposed",tagC:"td",
+    headline:"High physical AND social risk. Last to receive aid after Maria.",
+    stats:[{v:"68%",l:"Poverty rate"},{v:"215 days",l:"Post-Maria power outage"},{v:"~65%",l:"FEMA aid denial rate (Maria)"},{v:"AE/VE",l:"FEMA flood zone designation"},{v:"Est. 35%",l:"Informal/unpermitted housing"}],
+    behaviors:[
+      {i:"🚫",t:"High FEMA rejection predicted",b:"Documentation barriers + distrust + informal housing status suppress aid uptake. Denial rates were extremely high post-Maria."},
+      {i:"⛪",t:"Aid routes through churches",b:"Church networks are the trusted distribution channel. Official aid trucks are often ignored. Partner with local religious institutions."},
+      {i:"🌊",t:"Surge + flash flood dual risk",b:"Residents face ocean surge AND inland flash flooding simultaneously — many don't distinguish these as requiring different responses."},
+      {i:"📢",t:"Information via informal leaders",b:"Official Spanish alerts may not propagate through trust channels. Trusted community figures must receive information first."},
+    ],
+    facilities:[
+      {i:"🏫",t:"2 public schools — designated evacuation shelters",r:"high"},
+      {i:"🌊",t:"Entire E coast in FEMA VE (wave action) zone",r:"high"},
+      {i:"🏠",t:"Estimated 35%+ informal/unpermitted housing",r:"high"},
+      {i:"💊",t:"No pharmacy in municipio — Carolina 25 min (road dependent)",r:"med"},
+    ],
+    comms:"No high-ground signal points within municipio. PR-187 is both only route and surge path. Communications nodes should be at the school complex (highest ground).",
+    needs:["Spanish-language FEMA navigation support","Informal housing documentation assistance","Evacuation transport for elderly coastal residents","Trusted messenger network activation"],
+  },
+  "Vieques":{
+    tag:"Island Isolation",tagC:"tis",
+    headline:"314 days without power. Complete isolation when ferry + cell fail.",
+    stats:[{v:"64%",l:"Poverty rate"},{v:"314 days",l:"Post-Maria power outage"},{v:"Ferry only",l:"Only surface exit route"},{v:"Air only",l:"Medical evacuation during storm"},{v:"1 tower",l:"Cell infrastructure (single point of failure)"}],
+    behaviors:[
+      {i:"🚢",t:"Complete supply chain isolation",b:"When ferry service is disrupted, the island has no road-based supply chain. All supplies + evacuations require air or sea."},
+      {i:"📵",t:"Total communication blackout possible",b:"If the single cell tower fails, Vieques goes completely dark. No way to communicate needs to mainland Puerto Rico."},
+      {i:"💊",t:"Dialysis patients at life-safety risk",b:"Multiple residents require regular dialysis. During Maria, patients required air evacuation at significant personal risk."},
+      {i:"🏥",t:"Hospital Susoni is 1+ hour away",b:"Medical emergencies during storm become life-threatening due to transport time + ferry unavailability."},
+    ],
+    facilities:[
+      {i:"⛴️",t:"Ferries Güeye — only surface transport, suspended in storm",r:"high"},
+      {i:"🏥",t:"Centro Salud Familiar: primary care only, no ER",r:"high"},
+      {i:"⚡",t:"Separate grid from PR main — full island outage risk",r:"high"},
+      {i:"📡",t:"Single cell tower — single point of failure",r:"high"},
+    ],
+    comms:"Cerro Matías (301m) is highest point on island. Residents reported walking here for signal during Maria. Pre-positioning a Starlink terminal here would serve entire island.",
+    needs:["30-day medical supply cache (insulin, dialysis supplies)","Emergency satellite comms node at Cerro Matías","Pre-identified medical evacuation list","Generator + fuel for health clinic"],
+  },
+  "Ciales":{
+    tag:"Hidden Vulnerability",tagC:"ti",
+    headline:"321 days without power. One road. Zero dialysis access.",
+    stats:[{v:"74%",l:"Poverty rate"},{v:"321 days",l:"Post-Maria power outage"},{v:"<2%",l:"Flood insurance enrollment"},{v:"PR-146",l:"Single road in (landslide prone)"},{v:"23%",l:"Elderly population"}],
+    behaviors:[
+      {i:"🚶",t:"Signal-seeking on PR-146 switchbacks",b:"Residents identified specific PR-146 points with 1-2 bars of signal. These became community information nodes during Maria."},
+      {i:"👴",t:"High elderly immobility — door-to-door required",b:"23% elderly with high disability rates. Official evacuation routes are functionally unusable without specific outreach."},
+      {i:"🌱",t:"Agricultural self-sufficiency extends survival window",b:"Strong farming tradition means food access persists longer than urban areas. Medical supplies — not food — are the critical shortage."},
+      {i:"📦",t:"Refrigerator problem risk",b:"Post-Maria, standard aid manifests sent inappropriate supplies. Pre-mapping actual needs (insulin, fuel, medication) would have prevented waste."},
+    ],
+    facilities:[
+      {i:"💊",t:"No dialysis center — nearest: Arecibo (45+ min)",r:"high"},
+      {i:"🏫",t:"2 schools — only community gathering points",r:"med"},
+      {i:"🌉",t:"PR-146: 3 bridges, 2 rated structurally deficient",r:"high"},
+      {i:"🏥",t:"Centro de Salud: primary care only",r:"med"},
+    ],
+    comms:"Loma Pelada ridge (~1,300m) is the identified signal point on PR-146. Community members self-organized a relay system here during Maria. Highest-priority location for emergency comms infrastructure.",
+    needs:["Dialysis patient registry + pre-evacuation plan","Pre-positioned insulin cold storage","Generator fuel cache at community center","Elderly welfare check protocol (door-to-door)"],
+  },
+  "San Juan":{
+    tag:"Model Contrast",tagC:"tr",
+    headline:"High physical exposure, but resources and access change outcomes.",
+    stats:[{v:"43%",l:"Poverty rate"},{v:"78 days",l:"Post-Maria power outage"},{v:"High",l:"Bilingual population"},{v:"Highest",l:"Hospital density in PR"},{v:"Higher",l:"Relative insurance penetration"}],
+    behaviors:[
+      {i:"🏃",t:"Higher evacuation compliance in formal housing",b:"Formal housing, insurance, and bilingual access to alerts produce higher evacuation rates in Condado/Miramar vs. La Perla/Caimito."},
+      {i:"⚠️",t:"Significant intra-municipio vulnerability gap",b:"San Juan contains both the most resourced and some of the most vulnerable populations in PR. Aggregate score masks this disparity."},
+      {i:"📱",t:"Faster information — but digital divide persists",b:"Higher smartphone penetration speeds response, but elderly and informal settlement residents remain outside digital reach."},
+      {i:"🏥",t:"Healthcare hub drives faster recovery",b:"PR Medical Center is the island's primary trauma hub. Its resilience is a system-level concern — if it fails, downstream effects are island-wide."},
+    ],
+    facilities:[
+      {i:"🏥",t:"Puerto Rico Medical Center — island's primary trauma center",r:"med"},
+      {i:"✈️",t:"Luis Muñoz Marín Airport — primary aid logistics hub",r:"high"},
+      {i:"💊",t:"Dialysis centers: multiple, with generator backup",r:"med"},
+      {i:"🏫",t:"Schools: highest density in PR, many designated shelters",r:"med"},
+    ],
+    comms:"Communications generally recover fast. Key vulnerability: informal settlements (La Perla, Caimito, Barrio Obrero) are often outside both digital and physical aid reach despite proximity to resources.",
+    needs:["Informal settlement-specific outreach","Language access beyond Spanish (Haitian Creole, English)","Digital-first vs. paper-first aid access stratification","Intra-municipio SVI mapping at census-tract level"],
+  },
+};
+
+// Org-specific recommendations
+const ORG_RECS={
+  all:["Pre-stage supplies for top 15 SVI municipios before storm season","Map cell dead zones to communication convergence points","Prioritize power restoration sequencing by SVI score, not population density","Engage mutual aid networks in high-social-vulnerability areas before events"],
+  gov:["Revise power restoration priority order to weight SVI, not population alone","Pre-identify dialysis + home-oxygen patients in critical-road municipios","Fund bridge repairs in top 10 SVI communities before next storm season","Integrate SVI scores into emergency broadcast targeting"],
+  ngo:["Map mutual aid organizations in high-SVI communities and pre-establish relationships","Pre-position culturally appropriate supplies in high-FEMA-denial-rate municipios","Train community health workers in SVI communities on pre-needs manifests","Prioritize informal housing documentation assistance in flood-zone communities"],
+  fin:["Redefine loss models to include road access + power fragility as recovery predictors","Design micro-loan products with SVI-adjusted grace periods post-disaster","Map NFIP gap in high-flood/low-enrollment communities as insurance opportunity","Partner with mutual aid orgs in high-SVI areas for post-event loan servicing"],
+  ins:["Overlay SVI scores with existing underwriting models — predict loss amplification","Price in power restoration delay (days without power drives claims, not flood depth alone)","Identify high-physical/low-SVI communities as stable expansion markets","Flag high-denial-rate communities for pre-event documentation support programs"],
+  res:["Compare SVI-inclusive vs physical-only model predictions against Maria outcomes","Map Microrred de la Montaña coverage to identify resilience diffusion patterns","Analyze FEMA aid denial spatial distribution against SVI sub-dimensions","Field-test pre-populated needs manifests in Utuado/Ciales as proof of concept"],
+};
+
+// ═══════════════════════════════════════════════
+// RISK OVERLAY DATA
+// ═══════════════════════════════════════════════
+const MARIA_TRACK=[[17.80,-65.45],[17.93,-65.60],[18.05,-65.82],[18.12,-65.98],[18.20,-66.18],[18.28,-66.42],[18.38,-66.65],[18.45,-66.88],[18.52,-67.10]];
+const IRMA_TRACK= [[18.65,-65.20],[18.67,-65.70],[18.68,-66.20],[18.70,-66.80],[18.72,-67.30],[18.74,-67.80]];
+const SURGE_ZONES=[
+  [[18.47,-66.17],[18.48,-66.05],[18.43,-65.93],[18.44,-65.82],[18.43,-65.73],[18.46,-65.65],[18.42,-65.62],[18.40,-65.65],[18.39,-65.77],[18.41,-65.88],[18.42,-66.01],[18.40,-66.13],[18.43,-66.17]],
+  [[18.00,-65.93],[18.05,-65.87],[18.10,-65.76],[18.16,-65.71],[18.18,-65.78],[18.10,-65.89],[18.03,-65.98],[18.00,-65.93]],
+  [[17.97,-66.38],[17.98,-66.20],[17.97,-66.08],[17.97,-65.97],[17.94,-65.92],[17.92,-65.97],[17.92,-66.10],[17.93,-66.30],[17.95,-66.42],[17.97,-66.38]],
+  [[18.12,-67.24],[18.10,-67.20],[18.03,-67.16],[17.99,-67.17],[17.97,-67.05],[17.98,-66.93],[17.97,-66.92],[17.96,-66.92],[17.96,-67.05],[17.99,-67.22],[18.05,-67.27],[18.12,-67.24]],
+];
+const BRIDGE_PTS=[
+  {lat:18.435,lng:-65.875,n:"PR-187 Loíza River Bridge",c:"Poor — post-Maria damage unrepaired",risk:"high"},
+  {lat:18.265,lng:-66.700,n:"PR-111 Utuado (km 14)",c:"Structurally deficient",risk:"high"},
+  {lat:18.338,lng:-66.470,n:"PR-146 Ciales (km 8)",c:"Structurally deficient",risk:"high"},
+  {lat:18.337,lng:-66.408,n:"PR-146 Ciales (km 12)",c:"Structurally deficient",risk:"high"},
+  {lat:18.460,lng:-66.716,n:"Arecibo River Bridge (PR-2)",c:"Fair — monitoring recommended",risk:"med"},
+  {lat:18.435,lng:-66.163,n:"Puente Teodoro Moscoso (SJ)",c:"Good — major infrastructure",risk:"med"},
+  {lat:18.219,lng:-66.592,n:"PR-143 Jayuya Mountain",c:"Structurally deficient",risk:"high"},
+  {lat:18.252,lng:-66.993,n:"PR-105 Las Marías",c:"Structurally deficient",risk:"high"},
+];
+const CELL_DEAD=[
+  [[18.33,-66.55],[18.31,-66.50],[18.28,-66.50],[18.25,-66.55],[18.22,-66.62],[18.22,-66.72],[18.25,-66.77],[18.30,-66.76],[18.34,-66.70],[18.33,-66.55]],
+  [[18.22,-66.47],[18.20,-66.42],[18.18,-66.40],[18.15,-66.41],[18.14,-66.47],[18.17,-66.52],[18.22,-66.51],[18.22,-66.47]],
+  [[18.25,-66.95],[18.23,-66.92],[18.19,-66.90],[18.18,-66.97],[18.18,-67.02],[18.22,-67.04],[18.26,-67.00],[18.25,-66.95]],
+];
+const POWER_LINES=[
+  [[18.48,-65.60],[18.46,-65.80],[18.45,-66.00],[18.47,-66.15],[18.44,-66.25],[18.44,-66.39],[18.45,-66.54],[18.47,-66.72],[18.49,-66.85],[18.47,-66.94],[18.50,-67.05],[18.43,-67.15]],
+  [[18.48,-65.60],[18.40,-65.90],[18.23,-66.04],[18.13,-66.17],[18.11,-66.36],[18.04,-66.50],[18.02,-66.60],[18.01,-66.80],[17.97,-66.90],[17.97,-67.10],[18.05,-67.25]],
+  [[18.47,-66.72],[18.37,-66.73],[18.27,-66.70],[18.19,-66.72],[18.13,-66.65],[18.05,-66.60]],
+];
+
+// ═══════════════════════════════════════════════
+// COLOR SCALES
+// ═══════════════════════════════════════════════
+const RISK_STOPS=[[0,[0,224,150]],[.22,[74,222,128]],[.42,[255,217,61]],[.64,[255,107,53]],[.82,[255,45,85]],[1,[180,0,50]]];
+const RES_STOPS= [[0,[74,85,104]],[.35,[183,119,40]],[.58,[56,161,105]],[.80,[0,224,150]],[1,[0,212,255]]];
+
+function interpColor(t,stops){
+  const s=Math.max(0,Math.min(1,t));
+  for(let i=0;i<stops.length-1;i++){
+    const[a,ca]=stops[i],[b,cb]=stops[i+1];
+    if(s<=b){const f=(s-a)/(b-a);return`rgb(${Math.round(ca[0]+f*(cb[0]-ca[0]))},${Math.round(ca[1]+f*(cb[1]-ca[1]))},${Math.round(ca[2]+f*(cb[2]-ca[2]))})`;}
+  }
+  return`rgb(${stops[stops.length-1][1].join(',')})`;
+}
+const riskColor=t=>interpColor(t,RISK_STOPS);
+const resColor=t=>interpColor(t,RES_STOPS);
+
+function normalize(arr){
+  const mn=Math.min(...arr),mx=Math.max(...arr),r=mx-mn||.01;
+  return arr.map(v=>(v-mn)/r);
+}
+
+// ═══════════════════════════════════════════════
+// SCORE CALCULATION
+// ═══════════════════════════════════════════════
+let activePhys=new Set(['flood','wind']);
+let activeSoc=new Set();
+let curMode='phys', curRes='muni', curOrg='all';
+
+function calcPhys(m){
+  if(!activePhys.size) return m.phys*.5;
+  let s=0,w=0;
+  if(activePhys.has('flood')) {w++;s+=FL_SET.has(m.n)?.78:.12;}
+  if(activePhys.has('surge')) {w++;s+=SG_SET.has(m.n)?.82:.07;}
+  if(activePhys.has('wind'))  {w++;s+=WH_SET.has(m.n)?.76:.46;}
+  if(activePhys.has('slide')) {w++;s+=SL_SET.has(m.n)?.79:.11;}
+  return s/w;
+}
+
+function calcSoc(m){
+  const physS=calcPhys(m);
+  if(!activeSoc.size) return physS;
+  let sw=0,ss=0;
+  activeSoc.forEach(id=>{
+    const L=SOC_LAYERS.find(l=>l.id===id);
+    sw+=L.w; ss+=m[L.key]*L.w;
+  });
+  const frac=Math.min(.65,.65*sw/SOC_MAX_W);
+  return physS*(1-frac)+(ss/sw)*frac;
+}
+
+function calcScore(m){
+  if(curMode==='res') return m.res;
+  if(curMode==='phys') return calcPhys(m);
+  return calcSoc(m);
+}
+
+// ═══════════════════════════════════════════════
+// PR POLYGON (for hex masking)
+// ═══════════════════════════════════════════════
+const PR_POLY=[[18.513,-67.248],[18.493,-67.165],[18.509,-67.038],[18.504,-66.904],[18.481,-66.788],[18.530,-66.660],[18.525,-66.441],[18.506,-66.273],[18.473,-66.098],[18.481,-65.978],[18.476,-65.832],[18.464,-65.700],[18.423,-65.601],[18.325,-65.573],[18.211,-65.608],[18.080,-65.718],[17.953,-65.831],[17.926,-65.920],[17.924,-66.095],[17.932,-66.303],[17.947,-66.500],[17.955,-66.720],[17.970,-66.950],[17.988,-67.155],[18.001,-67.257],[18.052,-67.277],[18.153,-67.273],[18.301,-67.272],[18.430,-67.268],[18.513,-67.248]];
+const VI_POLY=[[18.164,-65.556],[18.178,-65.507],[18.168,-65.432],[18.157,-65.394],[18.132,-65.340],[18.104,-65.361],[18.083,-65.396],[18.083,-65.475],[18.108,-65.527],[18.147,-65.558],[18.164,-65.556]];
+const CU_POLY=[[18.330,-65.302],[18.346,-65.265],[18.330,-65.237],[18.298,-65.238],[18.291,-65.267],[18.310,-65.305],[18.330,-65.302]];
+
+function ptInPoly(lat,lng,poly){
+  let inside=false;
+  for(let i=0,j=poly.length-1;i<poly.length;j=i++){
+    const xi=poly[i][1],yi=poly[i][0],xj=poly[j][1],yj=poly[j][0];
+    if(((yi>lat)!==(yj>lat))&&(lng<(xj-xi)*(lat-yi)/(yj-yi)+xi))inside=!inside;
+  }
+  return inside;
+}
+function ptInPR(lat,lng){return ptInPoly(lat,lng,PR_POLY)||ptInPoly(lat,lng,VI_POLY)||ptInPoly(lat,lng,CU_POLY);}
+
+function nearestMuni(lat,lng){
+  let best=null,bd=Infinity;
+  MUNICIPIOS.forEach(m=>{
+    const d=(m.lat-lat)**2+((m.lng-lng)*Math.cos(lat*Math.PI/180))**2;
+    if(d<bd){bd=d;best=m;}
+  });
+  return best;
+}
+
+function phash(lat,lng){const s=Math.sin(lat*127.1+lng*311.7)*43758.5453;return s-Math.floor(s);}
+
+// ═══════════════════════════════════════════════
+// HEX GENERATION
+// ═══════════════════════════════════════════════
+function hexVerts(lat,lng,r){
+  const c=Math.cos(lat*Math.PI/180);
+  return Array.from({length:6},(_,i)=>{
+    const a=Math.PI/3*i;
+    return[lat+r*Math.sin(a),lng+r*Math.cos(a)/c];
+  });
+}
+
+let muniHexData=[], fineHexData=[], hexPolygons=[];
+let muniGroup, fineGroup, curHexGroup;
+// Separate score arrays for normalization
+let muniScores=[], fineScores=[];
+
+function buildMuniHexes(){
+  muniGroup=L.layerGroup();
+  muniHexData=[];
+  MUNICIPIOS.forEach(m=>{
+    const verts=hexVerts(m.lat,m.lng,.105);
+    const poly=L.polygon(verts,{weight:.5,color:'rgba(255,255,255,0.15)',fillOpacity:.75,fillColor:'#333'});
+    poly.on('click',()=>showDetail(m));
+    poly.on('mouseover',()=>{
+      poly.setStyle({weight:2,color:'rgba(255,255,255,0.6)'});
+      poly.bindPopup(`<strong>${m.n}</strong><br>Pop: ${m.pop.toLocaleString()}<br>Click for full analysis`).openPopup();
+    });
+    poly.on('mouseout',()=>{poly.setStyle({weight:.5,color:'rgba(255,255,255,0.15)'});poly.closePopup();});
+    muniGroup.addLayer(poly);
+    muniHexData.push({poly,muni:m});
+  });
+}
+
+function buildFineHexes(){
+  fineGroup=L.layerGroup();
+  fineHexData=[];
+  const R=.028, sqrt3=Math.sqrt(3);
+  const lngStep=R*1.5, latStep=R*sqrt3;
+  let col=0;
+  for(let lng=-67.32;lng<=-65.18;lng+=lngStep,col++){
+    const latOff=(col%2)*latStep/2;
+    for(let lat=17.88+latOff;lat<=18.56;lat+=latStep){
+      if(!ptInPR(lat,lng)) continue;
+      const m=nearestMuni(lat,lng);
+      const rnd=(phash(lat,lng)-.5)*2;
+      const isMtn=m.phys<.42&&m.road!=='low';
+      const isCoast=m.phys>.62;
+      const northBoost=Math.max(0,(lat-18.38)/.14)*.07;
+      const southBoost=Math.max(0,(18.02-lat)/.10)*.05;
+      const slideBoost=isMtn?Math.max(0,(.22-Math.abs(lat-18.20))*3)*.04:0;
+      const physV=Math.min(1,Math.max(0,m.phys+northBoost+southBoost+rnd*.05));
+      const sviV=Math.min(1,Math.max(0,m.svi+slideBoost+rnd*.07));
+      const verts=hexVerts(lat,lng,R*.96);
+      const poly=L.polygon(verts,{weight:.3,color:'rgba(255,255,255,0.1)',fillOpacity:.75,fillColor:'#333'});
+      const hm={...m,_physV:physV,_sviV:sviV};
+      poly.on('click',()=>showDetail(m));
+      poly.on('mouseover',()=>{
+        poly.setStyle({weight:1.5,color:'rgba(255,255,255,0.5)'});
+        poly.bindPopup(`<strong>${m.n}</strong><br>Census-tract approximation<br>Click for municipio analysis`).openPopup();
+      });
+      poly.on('mouseout',()=>{poly.setStyle({weight:.3,color:'rgba(255,255,255,0.1)'});poly.closePopup();});
+      fineGroup.addLayer(poly);
+      fineHexData.push({poly,muni:m,hm});
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════
+// MAP INIT
+// ═══════════════════════════════════════════════
+const map=L.map('map',{zoomControl:false}).setView([18.22,-66.50],9);
+L.control.zoom({position:'bottomright'}).addTo(map);
+
+const darkBase=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_matter_all/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © CARTO',maxZoom:19,subdomains:'abcd'});
+const satBase=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{attribution:'© Esri',maxZoom:19});
+const topoBase=L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',{attribution:'© OpenTopoMap',maxZoom:17,subdomains:'abc'});
+darkBase.addTo(map);
+let curBase='dark';
+
+// Risk overlays
+const femaLayer=L.tileLayer.wms('https://hazards.fema.gov/gis/nfhl/services/public/NFHL/MapServer/WMSServer',{layers:'28',format:'image/png',transparent:true,opacity:.55,version:'1.1.1',attribution:'FEMA NFHL'});
+
+const mariaLayer=L.layerGroup([
+  L.polyline(MARIA_TRACK,{color:'#FF2D55',weight:3,dashArray:'8,4',opacity:.85}).bindPopup('<strong>Hurricane Maria</strong><br>Category 4 landfall near Yabucoa<br>Sep 20, 2017'),
+  L.circleMarker([17.93,-65.60],{radius:8,color:'#FF2D55',fillColor:'#FF2D55',fillOpacity:.4,weight:2}).bindPopup('<strong>Maria Landfall</strong><br>Yabucoa, Sep 20 2017<br>Cat. 4 — 155 mph winds'),
+]);
+const irmaLayer=L.layerGroup([
+  L.polyline(IRMA_TRACK,{color:'#A855F7',weight:2.5,dashArray:'6,4',opacity:.7}).bindPopup('<strong>Hurricane Irma</strong><br>Passed north of PR as Cat. 5<br>Sep 6-7, 2017'),
+]);
+const surgeLayer=L.layerGroup(SURGE_ZONES.map(z=>L.polygon(z,{color:'#00D4FF',fillColor:'#00D4FF',fillOpacity:.15,weight:1.5,dashArray:'4,3'})));
+const bridgeLayer=L.layerGroup(BRIDGE_PTS.map(b=>L.circleMarker([b.lat,b.lng],{radius:b.risk==='high'?7:5,color:b.risk==='high'?'#FF2D55':'#FFD93D',fillColor:b.risk==='high'?'#FF2D55':'#FFD93D',fillOpacity:.8,weight:2}).bindPopup(`<strong>${b.n}</strong><br>${b.c}`)));
+const cellLayer=L.layerGroup(CELL_DEAD.map(z=>L.polygon(z,{color:'#A855F7',fillColor:'#A855F7',fillOpacity:.18,weight:1,dashArray:'5,3'})));
+const powerLayer=L.layerGroup(POWER_LINES.map(l=>L.polyline(l,{color:'#FFD93D',weight:2,opacity:.55,dashArray:'10,5'})));
+
+const OVERLAYS={fema:femaLayer,surge:surgeLayer,maria:mariaLayer,irma:irmaLayer,bridges:bridgeLayer,cell:cellLayer,power:powerLayer};
+
+// ═══════════════════════════════════════════════
+// REFRESH HEX COLORS
+// ═══════════════════════════════════════════════
+function refreshColors(){
+  const cf=curMode==='res'?resColor:riskColor;
+  if(curRes==='muni'){
+    const raw=muniHexData.map(h=>calcScore(h.muni));
+    const norm=normalize(raw);
+    muniHexData.forEach((h,i)=>h.poly.setStyle({fillColor:cf(norm[i]),fillOpacity:.78}));
+    updateShiftBadge(raw);
+  } else {
+    const raw=fineHexData.map(h=>{
+      const m=h.hm;
+      if(curMode==='res') return m.res;
+      if(curMode==='phys'){
+        const base=calcPhys(m);
+        // Use per-hex physical variation
+        const r=(phash(m.lat,m.lng)-.5)*.06;
+        return Math.max(0,Math.min(1,base+r));
+      }
+      const physS=calcPhys(m); if(!activeSoc.size) return physS;
+      let sw=0,ss=0;
+      activeSoc.forEach(id=>{const L=SOC_LAYERS.find(l=>l.id===id);sw+=L.w;ss+=m[L.key]*L.w;});
+      const frac=Math.min(.65,.65*sw/SOC_MAX_W);
+      const sviNorm=ss/sw;
+      const variation=(phash(m.lat,m.lng)-.5)*.06;
+      return Math.max(0,Math.min(1,physS*(1-frac)+sviNorm*frac+variation));
+    });
+    const norm=normalize(raw);
+    fineHexData.forEach((h,i)=>h.poly.setStyle({fillColor:cf(norm[i]),fillOpacity:.78}));
+    updateShiftBadge(raw);
+  }
+}
+
+function updateShiftBadge(raw){
+  const el=document.getElementById('shift-badge');
+  if(curMode==='res'){
+    const strong=raw.filter(s=>s>.65).length;
+    el.textContent=`${strong} municipios with active programs`;
+    el.className=strong>5?'good':'';
+    return;
+  }
+  if(curMode==='phys'){
+    const hi=raw.filter(s=>s>.6).length;
+    el.textContent=`${hi} municipios high/critical`;
+    el.className=hi>30?'warn':'';
+    return;
+  }
+  // soc mode — compare to physical baseline
+  const physRaw=curRes==='muni'?muniHexData.map(h=>calcPhys(h.muni)):fineHexData.map(h=>calcPhys(h.hm));
+  const pnorm=normalize(physRaw), rnorm=normalize(raw);
+  const shifted=pnorm.filter((ps,i)=>{
+    const tier=v=>v<.35?0:v<.55?1:v<.75?2:3;
+    return tier(rnorm[i])>tier(ps);
+  }).length;
+  if(activeSoc.size===0){el.textContent='Add social layers to see shifts';el.className='';return;}
+  el.textContent=`${shifted} shifted tier when social layers added`;
+  el.className=shifted>0?'warn':'';
+}
+
+// ═══════════════════════════════════════════════
+// UI FUNCTIONS
+// ═══════════════════════════════════════════════
+function setMode(mode){
+  curMode=mode;
+  document.querySelectorAll('.mb').forEach(b=>b.className='mb');
+  const badges={phys:'Physical Hazard Baseline',soc:'Social Complexity Builder',res:'Community Resilience Index'};
+  const badgeCls={phys:'',soc:' soc',res:' res'};
+  if(mode==='phys') document.querySelectorAll('.mb')[0].classList.add('ap');
+  else if(mode==='soc') document.querySelectorAll('.mb')[1].classList.add('as');
+  else document.querySelectorAll('.mb')[2].classList.add('ar');
+  document.getElementById('map-badge').textContent=badges[mode];
+  document.getElementById('map-badge').className='';
+  if(mode==='soc') document.getElementById('map-badge').classList.add('soc');
+  if(mode==='res') document.getElementById('map-badge').classList.add('res');
+  ['lp-phys','lp-soc','lp-res'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById(`lp-${mode}`).style.display='';
+  if(mode==='res') buildResPanel();
+  refreshColors();
+  if(selectedMuni) showDetail(selectedMuni);
+}
+
+function setRes(res){
+  curRes=res;
+  document.getElementById('rb-muni').className='rb'+(res==='muni'?' active':'');
+  document.getElementById('rb-fine').className='rb'+(res==='fine'?' active':'');
+  if(curHexGroup) map.removeLayer(curHexGroup);
+  curHexGroup=res==='muni'?muniGroup:fineGroup;
+  map.addLayer(curHexGroup);
+  refreshColors();
+}
+
+function togglePhys(id,on){
+  if(on) activePhys.add(id); else activePhys.delete(id);
+  const lbl=document.getElementById(`pln-${id}`);
+  if(lbl) lbl.className='layer-name'+(on?' checked':'');
+  refreshColors();
+}
+
+function toggleSoc(id,on){
+  if(on) activeSoc.add(id); else activeSoc.delete(id);
+  const lbl=document.getElementById(`sln-${id}`);
+  if(lbl) lbl.className='layer-name'+(on?' checked':'');
+  document.getElementById('soc-count').textContent=`${activeSoc.size} of 9 social layers active`;
+  refreshColors();
+}
+
+function setOrg(org){curOrg=org;if(selectedMuni) showDetail(selectedMuni);}
+
+function toggleOv(id,on){
+  if(OVERLAYS[id]){
+    if(on) OVERLAYS[id].addTo(map);
+    else map.removeLayer(OVERLAYS[id]);
+    const lbl=document.querySelector(`label[for="ov-${id}"]`)||document.querySelector(`label[for="ov-${id}-ov"]`);
+    if(lbl) lbl.className=on?'on':'';
+  }
+}
+
+function setBase(b){
+  [darkBase,satBase,topoBase].forEach(l=>map.removeLayer(l));
+  if(b==='dark') darkBase.addTo(map);
+  else if(b==='sat') satBase.addTo(map);
+  else topoBase.addTo(map);
+  ['dark','sat','topo'].forEach(id=>{
+    const el=document.getElementById(`bb-${id}`);
+    if(el) el.className='lc-bb'+(id===b?' active':'');
+  });
+  curBase=b;
+}
+
+let ctrlOpen=true;
+function toggleCtrl(){
+  ctrlOpen=!ctrlOpen;
+  document.getElementById('lctrl-body').style.display=ctrlOpen?'':'none';
+  document.getElementById('lc-chev').textContent=ctrlOpen?'▲':'▼';
+}
+
+// ═══════════════════════════════════════════════
+// DETAIL PANEL
+// ═══════════════════════════════════════════════
+let selectedMuni=null;
+
+function showDetail(m){
+  selectedMuni=m;
+  const rp=document.getElementById('rightpanel');
+  const D=DETAIL[m.n];
+  const score=calcScore(m);
+  const physS=calcPhys(m);
+  const cf=curMode==='res'?resColor:riskColor;
+
+  // Score bars
+  const socInclusive=(m.phys*.35+m.svi*.65);
+  const physNorm=physS; const socNorm=socInclusive;
+
+  // Org recs
+  const recs=(ORG_RECS[curOrg]||ORG_RECS.all);
+
+  // Vulnerability fingerprint (social sub-dimensions)
+  const fpDims=[
+    {k:'svi_power',l:'Power'},
+    {k:'svi_roads',l:'Roads'},
+    {k:'svi_cell',l:'Cell'},
+    {k:'svi_health',l:'Health'},
+    {k:'svi_fema',l:'Aid Access'},
+    {k:'svi_econ',l:'Economic'},
+  ];
+
+  let detailHTML=`
+    <div class="rp-hd">
+      <div id="rp-name">${m.n}</div>
+      <div id="rp-meta">Population ${m.pop.toLocaleString()} · ${m.road.charAt(0).toUpperCase()+m.road.slice(1)} road access · ${m.pwr} days without power (Maria)</div>
+    </div>`;
+
+  // Resilience mode detail
+  if(curMode==='res'){
+    detailHTML+=`
+      <div class="rp-sec">
+        <h4>Resilience Score</h4>
+        <div class="sc-row">
+          <div class="sc-lbl"><span>Community Resilience Investment</span><span style="color:${cf(m.res)}">${(m.res*100).toFixed(0)}%</span></div>
+          <div class="sc-track"><div class="sc-fill" style="width:${m.res*100}%;background:${cf(m.res)}"></div></div>
+        </div>
+        <div style="margin-top:8px;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:5px">
+          <div style="font-size:10px;font-weight:700;color:${cf(m.res)};text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">${m.rtag||'—'}</div>
+          <div style="font-size:11px;color:var(--text-dim);line-height:1.5">${m.rnote||'No documented programs in current dataset.'}</div>
+        </div>
+      </div>
+      <div class="rp-sec">
+        <h4>Underlying Risk Context</h4>
+        <div class="sc-row">
+          <div class="sc-lbl"><span>Physical Hazard</span><span>${(physS*100).toFixed(0)}</span></div>
+          <div class="sc-track"><div class="sc-fill" style="width:${physS*100}%;background:${riskColor(physS)}"></div></div>
+        </div>
+        <div class="sc-row">
+          <div class="sc-lbl"><span>Social Vulnerability</span><span>${(m.svi*100).toFixed(0)}</span></div>
+          <div class="sc-track"><div class="sc-fill" style="width:${m.svi*100}%;background:${riskColor(m.svi)}"></div></div>
+        </div>
+      </div>`;
+  } else {
+    detailHTML+=`
+      <div class="rp-sec">
+        <h4>Model Comparison</h4>
+        <div class="sc-row">
+          <div class="sc-lbl"><span>Physical Hazard Only</span><span style="color:var(--phys)">${(physS*100).toFixed(0)}</span></div>
+          <div class="sc-track"><div class="sc-fill" style="width:${physS*100}%;background:var(--phys)"></div></div>
+        </div>
+        <div class="sc-row">
+          <div class="sc-lbl"><span>SVI-Inclusive</span><span style="color:var(--svi)">${(socInclusive*100).toFixed(0)}</span></div>
+          <div class="sc-track"><div class="sc-fill" style="width:${socInclusive*100}%;background:var(--svi)"></div></div>
+        </div>
+        ${activeSoc.size>0?`<div class="sc-row">
+          <div class="sc-lbl"><span>Active Layer Score</span><span style="color:var(--cyan)">${(score*100).toFixed(0)}</span></div>
+          <div class="sc-track"><div class="sc-fill" style="width:${score*100}%;background:var(--cyan)"></div></div>
+        </div>`:''}
+        ${socInclusive>physS+.05?`<div style="font-size:10px;color:var(--red);margin-top:6px;padding:5px 8px;background:rgba(255,45,85,.08);border-radius:4px;border-left:2px solid var(--red)">⚠ Social vulnerability significantly exceeds physical model — this community is systematically underestimated</div>`:''}
+      </div>
+      <div class="rp-sec">
+        <h4>Vulnerability Fingerprint</h4>
+        <div class="fp-grid">${fpDims.map(d=>`<div class="fp-row"><div class="fp-lbl"><span>${d.l}</span><span>${(m[d.k]*100).toFixed(0)}</span></div><div class="fp-track"><div class="fp-fill" style="width:${m[d.k]*100}%;background:${riskColor(m[d.k])}"></div></div></div>`).join('')}</div>
+      </div>`;
+  }
+
+  if(D){
+    detailHTML+=`
+      <div class="rp-sec"><h4>Community Profile</h4>
+        <div class="stat-grid">${D.stats.slice(0,4).map(s=>`<div class="sc"><div class="sv">${s.v}</div><div class="sl">${s.l}</div></div>`).join('')}</div>
+      </div>
+      <div class="rp-sec"><h4>Predictable Behaviors Under Hazard</h4>
+        ${D.behaviors.map(b=>`<div class="beh-item"><div class="bi">${b.i}</div><div class="bt"><strong>${b.t}</strong>${b.b}</div></div>`).join('')}
+      </div>
+      <div class="rp-sec"><h4>Cascade Facility Dependencies</h4>
+        ${D.facilities.map(f=>`<div class="fac-item"><span>${f.i}</span><span style="color:var(--text-dim)">${f.t}<span class="frisk f${f.r}">${f.r.toUpperCase()}</span></span></div>`).join('')}
+      </div>
+      <div class="rp-sec"><h4>Communication Convergence</h4>
+        <div class="comm-box">${D.comms}</div>
+      </div>
+      <div class="rp-sec"><h4>Pre-Populated Needs Manifest</h4>
+        ${D.needs.map(n=>`<div style="font-size:11px;color:var(--text-dim);padding:3px 0;border-bottom:1px solid var(--border);line-height:1.4">→ ${n}</div>`).join('')}
+      </div>`;
+  }
+
+  detailHTML+=`
+    <div class="rp-sec"><h4>${document.getElementById('org-sel').options[document.getElementById('org-sel').selectedIndex].text} — Recommended Actions</h4>
+      ${recs.map(r=>`<div class="rec-item">${r}</div>`).join('')}
+    </div>`;
+
+  rp.innerHTML=detailHTML;
+}
+
+function focusMuni(name){
+  const m=MUNICIPIOS.find(x=>x.n===name);
+  if(!m) return;
+  map.flyTo([m.lat,m.lng],11,{duration:1.2});
+  setTimeout(()=>showDetail(m),800);
+}
+
+// ═══════════════════════════════════════════════
+// RESILIENCE LEFT PANEL
+// ═══════════════════════════════════════════════
+function buildResPanel(){
+  const container=document.getElementById('res-programs');
+  const top=MUNICIPIOS.filter(m=>m.res>.55).sort((a,b)=>b.res-a.res).slice(0,8);
+  container.innerHTML=top.map(m=>`
+    <div class="res-program">
+      <div class="rp-dot" style="background:${resColor(m.res)}"></div>
+      <div class="rp-body">
+        <div class="rp-name">${m.n} <span style="font-size:9px;font-weight:700;color:${resColor(m.res)};text-transform:uppercase;letter-spacing:.06em;margin-left:4px">${m.rtag}</span></div>
+        <div class="rp-note">${m.rnote}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+enrichAll();
+buildMuniHexes();
+buildFineHexes();
+mariaLayer.addTo(map);
+setMode('phys');
+setRes('muni');
+</script>
+</body>
+</html>

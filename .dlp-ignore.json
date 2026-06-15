@@ -1,0 +1,17 @@
+[
+    {
+        "path": "mex/svi-mex/data/processed/master_municipalities.csv",
+        "policy": "BrazilPIIPolicy",
+        "justification": "CONAPO marginalization index scores from public INEGI dataset — numeric substrings coincidentally pass CPF checksum but are Mexican municipality statistics, not Brazilian PII"
+    },
+    {
+        "path": "mex/svi-mex/data/processed/master_municipalities.csv",
+        "policy": "CreditCardPolicy",
+        "justification": "CONAPO marginalization index scores from public INEGI dataset — decimal values coincidentally pass Luhn check but are social vulnerability index scores, not payment card numbers"
+    },
+    {
+        "path": "mex/svi-mex/data/processed/crime_municipalities.csv",
+        "policy": "CreditCardPolicy",
+        "justification": "Crime incident counts from public SESNSP dataset — values coincidentally pass Luhn check but are not payment card numbers"
+    }
+]
