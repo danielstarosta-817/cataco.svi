@@ -88,6 +88,23 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 #ld-enter{display:inline-flex;align-items:center;gap:10px;padding:11px 24px;background:linear-gradient(135deg,rgba(255,107,53,.18),rgba(255,107,53,.08));border:1px solid rgba(255,107,53,.4);color:#FF8C65;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:all .2s;margin-top:4px}
 #ld-enter:hover{background:linear-gradient(135deg,rgba(255,107,53,.28),rgba(255,107,53,.14));border-color:rgba(255,107,53,.7);color:#fff;transform:translateY(-1px)}
 .ld-note{font-size:11px;color:var(--text-faint);margin-top:14px;line-height:1.6}
+/* ── Landing mode tiles ──────────────────────────────────────────────────── */
+.ld-mode-label{font-size:9.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--text-faint);margin:14px 0 8px}
+#ld-mode-grid{display:flex;flex-direction:column;gap:7px}
+.ld-mode-btn{display:flex;align-items:center;gap:12px;padding:10px 12px 10px 11px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-left:3px solid var(--ld-mc,rgba(255,107,53,.35));border-radius:8px;cursor:pointer;text-align:left;transition:background .16s,border-color .16s,transform .16s;width:100%}
+.ld-mode-btn:hover{background:rgba(255,255,255,.065);border-color:rgba(255,255,255,.14);border-left-color:var(--ld-mc);transform:translateX(2px)}
+.ld-mode-btn[data-grp="risk"]{--ld-mc:#FF6B35}
+.ld-mode-btn[data-grp="tenure"]{--ld-mc:#c084fc}
+.ld-mode-btn[data-grp="fail"]{--ld-mc:#f87171}
+.ld-mode-btn[data-grp="res"]{--ld-mc:#4ade80}
+.ld-mode-ico{font-size:17px;flex-shrink:0;width:26px;text-align:center;line-height:1}
+.ld-mode-body{flex:1;min-width:0}
+.ld-mode-title{font-size:12.5px;font-weight:700;color:var(--text);line-height:1.2;margin-bottom:2px}
+.ld-mode-desc{font-size:10.5px;color:var(--text-faint);line-height:1.35}
+.ld-mode-arr{color:var(--text-faint);font-size:12px;flex-shrink:0;transition:transform .16s,color .16s}
+.ld-mode-btn:hover .ld-mode-arr{transform:translateX(3px);color:var(--ld-mc)}
+#ld-free{display:block;text-align:center;font-size:10.5px;color:var(--text-faint);margin-top:10px;cursor:pointer;letter-spacing:.05em;transition:color .15s;border:none;background:none;width:100%;padding:2px 0}
+#ld-free:hover{color:var(--text-dim)}
 /* ── App shell ───────────────────────────────────────────────────────────── */
 #app{display:grid;grid-template-columns:52px 0px 0px 1fr;grid-template-rows:100vh;height:100vh;transition:grid-template-columns .28s cubic-bezier(.4,0,.2,1)}
 #app.is-dragging{transition:none}
@@ -309,35 +326,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .cas-stat{flex:1;text-align:center;padding:6px 2px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:6px;margin:0 3px}
 .cas-stat-val{font-size:18px;font-weight:800;color:var(--orange);font-variant-numeric:tabular-nums}
 .cas-stat-lbl{font-size:9px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
-/* Cultural Record */
-#cr-strip{display:none}
-#cr-strip:hover{border-top-color:rgba(80,200,120,.65)}
-#cr-strip-icon{font-size:16px;animation:cr-pulse 3s ease-in-out infinite}
-@keyframes cr-pulse{0%,100%{opacity:.7}50%{opacity:1}}
-#cr-strip-label{font-size:12px;font-weight:700;color:#4ADE80;letter-spacing:.06em;text-transform:uppercase}
-#cr-strip-sub{font-size:11px;color:var(--text-dim);flex:1}
-#cr-strip-chevron{font-size:14px;color:#4ADE80;transition:transform .3s}
-#cr-strip.open #cr-strip-chevron{transform:rotate(180deg)}
-#cr-drawer{display:none}
-#cr-drawer.open{bottom:44px}
-#cr-drawer-hdr{display:flex;align-items:center;padding:14px 18px 10px;border-bottom:1px solid rgba(255,255,255,.06);gap:12px;flex-shrink:0}
-#cr-drawer-title{font-size:14px;font-weight:700;color:#4ADE80}
-#cr-drawer-sub{font-size:11.5px;color:var(--text-dim);flex:1}
-#cr-close{background:none;border:1px solid var(--border2);color:var(--text-dim);width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center}
-#cr-close:hover{background:rgba(255,255,255,.06);color:var(--text)}
-#cr-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 18px;flex-shrink:0}
-.cr-tab{padding:8px 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-faint);cursor:pointer;border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;transition:all .15s}
-.cr-tab.active{color:#4ADE80;border-bottom-color:#4ADE80}
-#cr-body{flex:1;overflow-y:auto;padding:16px 18px 24px}
-#cr-body::-webkit-scrollbar{width:4px}
-#cr-body::-webkit-scrollbar-thumb{background:rgba(74,222,128,.2);border-radius:2px}
-.cr-section{margin-bottom:18px}
-.cr-section-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#4ADE80;margin-bottom:8px;display:flex;align-items:center;gap:8px}
-.cr-section-title::after{content:'';flex:1;height:1px;background:rgba(74,222,128,.2)}
-.cr-block{padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid var(--border2);border-radius:7px;margin-bottom:8px}
-.cr-block-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px}
-.cr-block-body{font-size:11.5px;color:var(--text-dim);line-height:1.65}
-.cr-stage-block{padding:10px 12px;border-left:3px solid;border-radius:0 7px 7px 0;margin-bottom:8px;background:rgba(255,255,255,.02)}
 /* Simulation */
 .sim-alert-level{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:8px;margin:8px 14px;cursor:pointer;transition:all .2s;border:2px solid transparent}
 .sim-alert-level:hover{border-color:rgba(255,255,255,.2)}
@@ -390,6 +378,93 @@ canvas:focus,canvas:focus-visible{outline:none}
   #landing-map-wrap{order:-1}
   #landing-text{padding:24px 20px}
 }
+
+/* ── Mobile layout ────────────────────────────────────────────────────────── */
+@media(max-width:700px){
+  /* App shell: map fills full screen, panels overlay */
+  #app{display:block!important;position:relative;width:100vw;height:100vh;transition:none!important}
+  #map-wrap{position:absolute!important;inset:0;width:100%!important;height:100%!important;grid-column:unset;grid-row:unset}
+
+  /* Left panel: slides in as overlay from left */
+  #leftpanel{
+    position:fixed!important;top:0;left:0;height:100vh;
+    width:88vw!important;max-width:320px;
+    grid-column:unset;grid-row:unset;
+    transform:translateX(-100%);
+    transition:transform .28s cubic-bezier(.4,0,.2,1)!important;
+    z-index:2100;
+    box-shadow:4px 0 24px rgba(0,0,0,.55);
+  }
+  #app.lp-open #leftpanel{transform:translateX(0)}
+  #lp-drag-handle{display:none}
+
+  /* Right panel: bottom sheet */
+  #rightpanel{
+    position:fixed!important;bottom:0;left:0;right:0;
+    width:100%!important;max-width:100%!important;
+    height:72vh;
+    grid-column:unset;grid-row:unset;
+    border-radius:16px 16px 0 0;
+    border-left:none!important;border-right:none!important;
+    border-top:1px solid rgba(255,255,255,.12)!important;
+    box-shadow:0 -6px 32px rgba(0,0,0,.6);
+    overflow-y:auto;
+    z-index:2000;
+    display:none;
+  }
+  #app.has-detail #rightpanel{display:block}
+  /* Drag handle indicator for bottom sheet */
+  #rightpanel::before{
+    content:'';display:block;width:36px;height:4px;
+    background:rgba(255,255,255,.18);border-radius:2px;
+    margin:10px auto 4px;flex-shrink:0;
+  }
+  #rp-drag-handle{display:none}
+
+  /* Mobile backdrop — closes panels when tapping map */
+  #mob-backdrop{
+    display:none;position:fixed;inset:0;z-index:1950;
+    background:rgba(0,0,0,.38);backdrop-filter:blur(1px);
+  }
+  #app.lp-open #mob-backdrop,
+  #app.has-detail #mob-backdrop{display:block}
+
+  /* Floating menu button — visible when left panel is closed */
+  #mob-menu-btn{
+    display:flex!important;position:fixed;top:12px;left:12px;z-index:1900;
+    width:40px;height:40px;border-radius:10px;
+    background:rgba(8,12,24,.92);border:1px solid rgba(255,255,255,.15);
+    align-items:center;justify-content:center;font-size:18px;
+    cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.5);
+    transition:opacity .2s;
+  }
+  #app.lp-open #mob-menu-btn{opacity:0;pointer-events:none}
+
+  /* Source button moves to right side on mobile (menu button occupies top-left) */
+  #map-src-btn{left:auto!important;right:12px!important}
+  /* Map badge stays centered */
+  #map-badge{left:50%!important;transform:translateX(-50%)!important}
+
+  /* Hide desktop-only elements */
+  #lp-open-tab{display:none!important}
+  #lp-toggle{display:flex}
+
+  /* Nav labels visible in panel since panel is overlay */
+  .lp-nav-text{opacity:1!important;pointer-events:auto!important}
+
+  /* Panels take full available width */
+  .lp-tenure-stats{grid-template-columns:1fr 1fr}
+  .lp-doc-wall{grid-template-columns:1fr}
+
+  /* Resize right panel content text slightly */
+  .rp-brgy-name{font-size:15px}
+  .rp-muni-name{font-size:17px}
+
+  /* Float panels on map — re-anchor for small screen */
+  #res-node-list{left:8px!important;bottom:16px!important;width:190px!important}
+  #fail-summary{left:8px!important;bottom:16px!important}
+  #fail-timeline{right:8px!important;bottom:16px!important;max-width:calc(100vw - 16px)!important}
+}
 .lp-tenure-legend{padding:6px 14px 10px;display:flex;flex-direction:column;gap:7px}
 .lp-tl-row{display:flex;align-items:flex-start;gap:9px;font-size:10.5px;color:var(--text-dim);line-height:1.5}
 .lp-tl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px}
@@ -399,11 +474,17 @@ canvas:focus,canvas:focus-visible{outline:none}
 .ltg-icon{font-size:16px;flex-shrink:0;width:22px;text-align:center}
 .ltg-note{font-size:10px;color:var(--text-faint);margin-top:2px;line-height:1.5}
 /* Tenure tab — new visual components */
-.lp-tenure-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;margin:0 0 2px;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02)}
+.lp-tenure-stats{display:grid;grid-template-columns:1fr 1fr;gap:0;margin:0 0 2px;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02)}
 .lp-ts-item{padding:10px 8px;text-align:center;border-right:1px solid rgba(255,255,255,.06)}
 .lp-ts-item:last-child{border-right:none}
 .lp-ts-val{font-size:18px;font-weight:800;line-height:1;margin-bottom:4px}
 .lp-ts-lbl{font-size:9px;color:#94a3b8;line-height:1.4;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.lp-ts-info-row{display:flex;justify-content:flex-end;align-items:center;padding:4px 10px 6px;position:relative}
+.lp-ts-info-btn{width:16px;height:16px;border-radius:50%;border:1.5px solid #475569;background:none;color:#64748b;font-size:9px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:border-color .15s,color .15s;padding:0;flex-shrink:0}
+.lp-ts-info-btn:hover{border-color:#94a3b8;color:#94a3b8}
+.lp-ts-tooltip{display:none;position:absolute;bottom:calc(100% + 4px);right:10px;width:230px;background:#1e293b;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 11px;font-size:10.5px;color:#94a3b8;line-height:1.55;box-shadow:0 4px 20px rgba(0,0,0,.55);z-index:10}
+.lp-ts-tooltip strong{color:#cbd5e1;font-weight:700}
+.lp-ts-tooltip-wrap.open .lp-ts-tooltip{display:block}
 .lp-tenure-bar{display:flex;align-items:center;gap:6px;padding:3px 0;cursor:pointer;border-radius:4px;transition:background .1s}
 .lp-tenure-bar:hover{background:rgba(255,255,255,.04)}
 .lp-tb-name{font-size:10px;color:#94a3b8;width:90px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -438,27 +519,28 @@ canvas:focus,canvas:focus-visible{outline:none}
 .rp-muni-eyebrow{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7a9cc0;margin-bottom:3px}
 .rp-muni-name{font-size:20px;font-weight:800;color:#f8fafc;letter-spacing:-.01em}
 .rp-muni-sub{font-size:11px;color:#7a9cc0;margin-top:2px}
-.rp-mode-btns{display:grid;grid-template-columns:1fr 1fr;border-bottom:2px solid #0a1520}
-.rp-mode-btn{cursor:pointer;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;position:relative;padding:0}
-.rp-mode-btn-inner{padding:13px 10px 12px;width:100%;display:flex;flex-direction:column;align-items:center;gap:3px}
-.rp-mode-btn.analyze .rp-mode-btn-inner{background:#152d52;border-right:1px solid #0a1520}
-.rp-mode-btn.plan .rp-mode-btn-inner{background:#112a18}
-.rp-mode-btn.analyze.active .rp-mode-btn-inner{background:#1d4ed8}
-.rp-mode-btn.plan.active .rp-mode-btn-inner{background:#166534}
-.rp-mode-btn-icon{font-size:17px;line-height:1}
-.rp-mode-btn-label{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
-.rp-mode-btn.analyze .rp-mode-btn-label{color:#7aa7e8}
-.rp-mode-btn.analyze.active .rp-mode-btn-label{color:#bfdbfe}
-.rp-mode-btn.plan .rp-mode-btn-label{color:#6aad82}
-.rp-mode-btn.plan.active .rp-mode-btn-label{color:#bbf7d0}
-.rp-mode-btn-sub{font-size:10px;font-weight:400;color:rgba(255,255,255,.38)}
-.rp-mode-bar{position:absolute;bottom:0;left:0;right:0;height:3px}
-.rp-mode-btn.analyze.active .rp-mode-bar{background:#93c5fd}
-.rp-mode-btn.plan.active .rp-mode-bar{background:#86efac}
-.rp-mode-content{display:none}
-.rp-mode-content.active{display:block}
+/* ── Accordion panels ────────────────────────────────────────────────── */
+.rp-acc{border-bottom:1px solid rgba(255,255,255,.07)}
+.rp-acc:last-child{border-bottom:none}
+.rp-acc-hdr{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;cursor:pointer;gap:10px;transition:background .15s;user-select:none}
+.rp-acc-hdr:hover{background:rgba(255,255,255,.03)}
+.rp-acc-ttls{flex:1;min-width:0}
+.rp-acc-t{font-size:12px;font-weight:700;color:#e2e8f0;letter-spacing:.01em}
+.rp-acc-s{font-size:10px;color:#64748b;margin-top:2px;line-height:1.3}
+.rp-acc-chev{width:16px;height:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#475569;transition:transform .2s,color .15s}
+.rp-acc-chev::before{content:'›';font-size:16px;line-height:1;display:block}
+.rp-acc-open .rp-acc-chev{transform:rotate(90deg);color:#94a3b8}
+.rp-acc-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .22s ease}
+.rp-acc-open .rp-acc-body{grid-template-rows:1fr}
+.rp-acc-inner{overflow:hidden;padding:0 14px 14px}
+/* Gap card visual distinction: phys=muted, comp=elevated */
+.rp-gap-card[data-tip="phys"]{background:#0c1622;border:1px dashed rgba(71,85,109,.45)}
+.rp-gap-card[data-tip="comp"]{background:#152030;border:1px solid rgba(100,140,220,.2)}
+/* BVM card visual distinction: brgy=active, muni=reference */
+.rp-bvm-card[data-tip="bvm-muni"]{background:#0c1622;border:1px dashed rgba(71,85,109,.45)}
 .rp-section{padding:13px 14px;border-bottom:1px solid rgba(255,255,255,.1)}
-.rp-sec-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px}
+.rp-sec-label{font-size:9.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 -14px 12px;padding:9px 14px 8px;background:rgba(255,255,255,.025);border-top:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.05)}
+.rp-section:first-child .rp-sec-label{border-top:none}
 .rp-gap-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:9px}
 .rp-gap-card{background:#1a2535;border-radius:7px;padding:9px 11px;position:relative;cursor:default}
 #rp-score-tip{position:fixed;width:230px;background:#0f1923;border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:10px 12px;font-size:10.5px;color:#94a3b8;line-height:1.6;opacity:0;pointer-events:none;transition:opacity .15s;z-index:9999;white-space:normal}
@@ -504,7 +586,11 @@ canvas:focus,canvas:focus-visible{outline:none}
 .rp-ctx-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#818cf8;margin-bottom:5px}
 .rp-ctx-text{font-size:11.5px;color:#cbd5e1;line-height:1.65}
 .rp-ngo-tag{display:inline-block;font-size:8.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:1px 6px;border-radius:3px;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3);margin-left:6px;vertical-align:middle;white-space:nowrap}
-.rp-dim-card{background:rgba(20,35,60,0.9);border:1px solid rgba(100,140,220,0.15);border-radius:8px;padding:11px 13px;margin-bottom:0}
+.rp-dim-card{background:rgba(20,35,60,0.9);border:1px solid rgba(100,140,220,0.15);border-top:2px solid rgba(100,140,220,0.25);border-radius:8px;padding:11px 13px;margin-bottom:9px}
+.rp-dim-card:last-child{margin-bottom:0}
+.rp-dim-card[data-tip="dim-sensitivity"]{border-top-color:#c084fc}
+.rp-dim-card[data-tip="dim-exposure"]{border-top-color:#FF6B35}
+.rp-dim-card[data-tip="dim-adaptive"]{border-top-color:#4ade80}
 .rp-dim-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
 .rp-dim-name{font-size:13px;font-weight:700;color:#f1f5f9}
 .rp-dim-badge{font-size:9px;font-weight:800;padding:3px 8px;border-radius:3px;letter-spacing:.07em;text-transform:uppercase}
@@ -518,7 +604,8 @@ canvas:focus,canvas:focus-visible{outline:none}
 .rp-phase-tab{font-size:10px;font-weight:700;padding:4px 9px;border-radius:20px;cursor:pointer;letter-spacing:.04em;border:1px solid rgba(255,255,255,.1);color:#94a3b8;background:transparent}
 .rp-phase-tab.active{background:#1e3a5f;border-color:#3b82f6;color:#93c5fd}
 .rp-phase-intro{font-size:11px;color:#94a3b8;font-style:italic;margin-bottom:9px;line-height:1.55;padding-bottom:9px;border-bottom:1px solid rgba(255,255,255,.06)}
-.rp-phase-item{margin-bottom:9px}
+.rp-phase-item{margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.05)}
+.rp-phase-item:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
 .rp-phase-place{font-size:12px;font-weight:700;color:#e2e8f0;margin-bottom:3px}
 .rp-phase-brgy{font-size:10px;font-weight:700;color:#86efac;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
 .rp-phase-text{font-size:11px;color:#94a3b8;line-height:1.6}
@@ -563,16 +650,71 @@ canvas:focus,canvas:focus-visible{outline:none}
 .ent-icon{font-size:17px;flex-shrink:0;width:24px;text-align:center}
 .ent-item strong{font-size:12px;color:var(--text);display:block;margin-bottom:2px}
 .ent-note{font-size:11px;color:var(--text-faint);line-height:1.55}
+
+/* ── TOUR SYSTEM ─────────────────────────────────────────────────────────── */
+#tour-backdrop{position:fixed;inset:0;z-index:29000;pointer-events:none;transition:opacity .3s}
+#tour-backdrop.active{pointer-events:auto}
+#tour-spotlight{position:fixed;z-index:29001;border-radius:10px;box-shadow:0 0 0 9999px rgba(0,0,0,.72);transition:all .35s cubic-bezier(.4,0,.2,1);pointer-events:none}
+#tour-card{position:fixed;z-index:29002;width:280px;background:#0f1e36;border:1px solid rgba(100,140,220,.35);border-radius:12px;padding:18px 18px 14px;box-shadow:0 8px 32px rgba(0,0,0,.6);transition:all .35s cubic-bezier(.4,0,.2,1)}
+#tour-card.hidden{opacity:0;pointer-events:none}
+.tour-step-num{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#64748b;margin-bottom:6px}
+.tour-step-title{font-size:14px;font-weight:700;color:#e2e8f0;margin-bottom:7px;line-height:1.3}
+.tour-step-text{font-size:12px;color:#94a3b8;line-height:1.6;margin-bottom:14px}
+.tour-arrow{position:fixed;z-index:29003;width:0;height:0;pointer-events:none;transition:all .35s cubic-bezier(.4,0,.2,1)}
+.tour-arrow.up{border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:9px solid rgba(100,140,220,.35)}
+.tour-arrow.down{border-left:9px solid transparent;border-right:9px solid transparent;border-top:9px solid rgba(100,140,220,.35)}
+.tour-arrow.left{border-top:9px solid transparent;border-bottom:9px solid transparent;border-right:9px solid rgba(100,140,220,.35)}
+.tour-arrow.right{border-top:9px solid transparent;border-bottom:9px solid transparent;border-left:9px solid rgba(100,140,220,.35)}
+.tour-btns{display:flex;align-items:center;gap:8px}
+.tour-btn-skip{font-size:10.5px;color:#475569;border:none;background:none;cursor:pointer;padding:0;flex:1;text-align:left}
+.tour-btn-skip:hover{color:#64748b}
+.tour-btn-next{font-size:11.5px;font-weight:700;color:#fff;background:linear-gradient(135deg,#FF6B35,#e85520);border:none;border-radius:7px;padding:8px 18px;cursor:pointer;transition:opacity .15s}
+.tour-btn-next:hover{opacity:.88}
+.tour-dots{display:flex;gap:5px;align-items:center;margin-right:8px}
+.tour-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.18);transition:background .2s}
+.tour-dot.active{background:#FF6B35}
+
+/* ── RIGHT PANEL — FIRST-OPEN ACCORDION GUIDE ───────────────────────────── */
+#rp-guide{position:absolute;inset:0;z-index:9500;background:rgba(4,10,22,.93);backdrop-filter:blur(3px);border-radius:0;display:flex;flex-direction:column;padding:22px 18px 18px;overflow:hidden}
+#rp-guide.hidden{display:none}
+.rpg-title{font-size:15px;font-weight:800;color:#e2e8f0;margin-bottom:4px;line-height:1.3}
+.rpg-sub{font-size:11.5px;color:#64748b;margin-bottom:18px;line-height:1.5}
+.rpg-sections{display:flex;flex-direction:column;gap:8px;flex:1;overflow-y:auto}
+.rpg-row{display:flex;align-items:flex-start;gap:11px;padding:10px 12px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);border-radius:8px}
+.rpg-row:first-child{border-color:rgba(255,107,53,.35);background:rgba(255,107,53,.06)}
+.rpg-num{font-size:10px;font-weight:800;color:#FF6B35;width:16px;flex-shrink:0;padding-top:1px}
+.rpg-row:not(:first-child) .rpg-num{color:#475569}
+.rpg-body{}
+.rpg-name{font-size:12px;font-weight:700;color:#e2e8f0;margin-bottom:3px}
+.rpg-desc{font-size:11px;color:#64748b;line-height:1.45}
+.rpg-open-badge{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#FF6B35;margin-left:6px;background:rgba(255,107,53,.15);padding:1px 5px;border-radius:3px}
+.rpg-dismiss{margin-top:14px;width:100%;padding:11px;background:linear-gradient(135deg,rgba(255,107,53,.18),rgba(255,107,53,.1));border:1px solid rgba(255,107,53,.3);border-radius:8px;color:#FF6B35;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s}
+.rpg-dismiss:hover{background:rgba(255,107,53,.25)}
 </style>
 </head>
 <body>
+<!-- ── TOUR OVERLAY ─────────────────────────────────────────────────────── -->
+<div id="tour-backdrop"></div>
+<div id="tour-spotlight"></div>
+<div id="tour-card" class="hidden">
+  <div class="tour-step-num" id="tour-step-num"></div>
+  <div class="tour-step-title" id="tour-step-title"></div>
+  <div class="tour-step-text" id="tour-step-text"></div>
+  <div class="tour-btns">
+    <button class="tour-btn-skip" onclick="endTour()">Skip tour</button>
+    <div class="tour-dots" id="tour-dots"></div>
+    <button class="tour-btn-next" id="tour-btn-next" onclick="tourNext()">Next →</button>
+  </div>
+</div>
+<div id="tour-arrow" class="tour-arrow hidden"></div>
+
 <!-- ═══════════════════════════════════════════════════════════════════════════
   LANDING PAGE
 ════════════════════════════════════════════════════════════════════════════ -->
 <div id="landing">
   <div id="landing-inner">
     <!-- Left: Albay live map -->
-    <div id="landing-map-wrap" onclick="enterApp()">
+    <div id="landing-map-wrap" onclick="enterApp('risk')">
       <div id="landing-tap-hint">Tap to explore →</div>
       <div id="landing-map" style="pointer-events:none"></div>
       <svg id="landing-svg" viewBox="0 0 860 520" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
@@ -688,7 +830,42 @@ canvas:focus,canvas:focus-visible{outline:none}
           <div><div class="ld-stat-val">25</div><div class="ld-stat-lbl">NHA sites</div></div>
           <div><div class="ld-stat-val">1.4M</div><div class="ld-stat-lbl">People</div></div>
         </div>
-        <button id="ld-enter" onclick="enterApp()">Explore the data &nbsp;&#8594;</button>
+        <div class="ld-mode-label">Where do you want to start?</div>
+        <div id="ld-mode-grid">
+          <button class="ld-mode-btn" data-grp="risk" onclick="enterApp('risk')">
+            <span class="ld-mode-ico">🌋</span>
+            <div class="ld-mode-body">
+              <div class="ld-mode-title">Risk &amp; Exposure</div>
+              <div class="ld-mode-desc">Where hazard and vulnerability converge</div>
+            </div>
+            <span class="ld-mode-arr">→</span>
+          </button>
+          <button class="ld-mode-btn" data-grp="tenure" onclick="enterApp('tenure')">
+            <span class="ld-mode-ico">📋</span>
+            <div class="ld-mode-body">
+              <div class="ld-mode-title">Documentation Gap</div>
+              <div class="ld-mode-desc">Who gets left behind after disaster strikes</div>
+            </div>
+            <span class="ld-mode-arr">→</span>
+          </button>
+          <button class="ld-mode-btn" data-grp="fail" onclick="enterApp('fail')">
+            <span class="ld-mode-ico">⚡</span>
+            <div class="ld-mode-body">
+              <div class="ld-mode-title">System Failure</div>
+              <div class="ld-mode-desc">How cascading failures cut off communities</div>
+            </div>
+            <span class="ld-mode-arr">→</span>
+          </button>
+          <button class="ld-mode-btn" data-grp="res" onclick="enterApp('res')">
+            <span class="ld-mode-ico">🌿</span>
+            <div class="ld-mode-body">
+              <div class="ld-mode-title">What's Working</div>
+              <div class="ld-mode-desc">Resilience assets already operating on the ground</div>
+            </div>
+            <span class="ld-mode-arr">→</span>
+          </button>
+        </div>
+        <button id="ld-free" onclick="enterApp()">Explore the full map freely &nbsp;→</button>
       </div>
     </div>
   </div>
@@ -699,6 +876,12 @@ canvas:focus,canvas:focus-visible{outline:none}
 ════════════════════════════════════════════════════════════════════════════ -->
 <!-- Always-visible left panel expand tab (hidden via JS when panel is open) -->
 <div id="lp-open-tab" class="panel-tab" onclick="toggleLpPanel()" title="Open panel" style="display:none">&#9658;</div>
+
+<!-- Mobile: floating menu button (desktop: hidden via CSS) -->
+<div id="mob-menu-btn" style="display:none" onclick="toggleLpPanel()">☰</div>
+
+<!-- Mobile: backdrop to close panels -->
+<div id="mob-backdrop" onclick="if(document.getElementById('app').classList.contains('lp-open'))toggleLpPanel();else{document.getElementById('app').classList.remove('has-detail');}"></div>
 
 <div id="app">
   <!-- LEFT PANEL -->
@@ -764,15 +947,20 @@ canvas:focus,canvas:focus-visible{outline:none}
         <div class="lp-tenure-stats">
           <div class="lp-ts-item">
             <div class="lp-ts-val" style="color:#c084fc">~72k</div>
-            <div class="lp-ts-lbl">Informal households<br>province-wide</div>
+            <div class="lp-ts-lbl">Est. informal households<br>province-wide</div>
           </div>
           <div class="lp-ts-item">
-            <div class="lp-ts-val" style="color:#34D399">~9k</div>
-            <div class="lp-ts-lbl">LandLedger enrolled<br>(12–15% of gap)</div>
+            <div class="lp-ts-val" style="color:#fb923c">40–60%</div>
+            <div class="lp-ts-lbl">Informal tenure rate<br>in PDZ municipalities</div>
           </div>
-          <div class="lp-ts-item">
-            <div class="lp-ts-val" style="color:#f87171">~63k</div>
-            <div class="lp-ts-lbl">Households still<br>without record</div>
+        </div>
+        <div class="lp-ts-info-row">
+          <div class="lp-ts-tooltip-wrap" style="position:relative">
+            <button class="lp-ts-info-btn" aria-label="Data source information" onclick="this.parentElement.classList.toggle('open')">i</button>
+            <div class="lp-ts-tooltip">
+              <strong>~72k estimate:</strong> Derived from PSA 2020 CPH household counts per municipality, weighted by tenure insecurity proxies (% rent-free without consent + field-estimated informal rates for PDZ zones). Not a direct census count — the PSA "rent-free without consent" category is a known undercount of actual informal tenure.<br><br>
+              <strong>40–60%:</strong> Estimated range for PDZ-adjacent municipalities based on DILG field assessments and IOM HLP programme intake. Formal PSA 2020 housing tenure tables for Albay are not publicly accessible at time of publication.
+            </div>
           </div>
         </div>
 
@@ -815,6 +1003,49 @@ canvas:focus,canvas:focus-visible{outline:none}
   <!-- RIGHT PANEL — sits immediately right of left panel, left of map -->
   <div id="rightpanel" style="position:relative">
     <div id="rp-drag-handle" class="drag-handle" title="Drag to resize panel"></div>
+    <!-- First-open accordion guide overlay (dismissed via JS) -->
+    <div id="rp-guide" class="hidden">
+      <div class="rpg-title">Here's how to read this panel</div>
+      <div class="rpg-sub">Each section below is expandable. Start at the top — the story builds as you scroll.</div>
+      <div class="rpg-sections">
+        <div class="rpg-row">
+          <div class="rpg-num">1</div>
+          <div class="rpg-body">
+            <div class="rpg-name">The Gap <span class="rpg-open-badge">opens first</span></div>
+            <div class="rpg-desc">Why standard risk models undercount this place — physical hazard score vs. the full picture including social vulnerability.</div>
+          </div>
+        </div>
+        <div class="rpg-row">
+          <div class="rpg-num">2</div>
+          <div class="rpg-body">
+            <div class="rpg-name">Vulnerability Breakdown</div>
+            <div class="rpg-desc">Bar charts showing every physical and social dimension side by side — so you can see exactly what's elevated.</div>
+          </div>
+        </div>
+        <div class="rpg-row">
+          <div class="rpg-num">3</div>
+          <div class="rpg-body">
+            <div class="rpg-name">What's Driving It</div>
+            <div class="rpg-desc">Sensitivity, exposure, and adaptive capacity unpacked — the three root dimensions behind the composite score.</div>
+          </div>
+        </div>
+        <div class="rpg-row">
+          <div class="rpg-num">4</div>
+          <div class="rpg-body">
+            <div class="rpg-name">Actions &amp; Guidance</div>
+            <div class="rpg-desc">What can be done — phase by phase: Preparedness, Response, Recovery, Mitigation, and Adaptation.</div>
+          </div>
+        </div>
+        <div class="rpg-row">
+          <div class="rpg-num">5</div>
+          <div class="rpg-body">
+            <div class="rpg-name">Gaps &amp; Needs</div>
+            <div class="rpg-desc">Current priority gaps to address before the next event — tenure, routes, communications, site audits.</div>
+          </div>
+        </div>
+      </div>
+      <button class="rpg-dismiss" onclick="dismissRpGuide()">Got it — explore this place →</button>
+    </div>
   </div>
 
   <!-- MAP -->
@@ -880,7 +1111,7 @@ canvas:focus,canvas:focus-visible{outline:none}
       <div id="mleg-layers">
         <div id="mleg-layers-title">Map Overlays</div>
         <div class="mleg-layer" id="mll-iomll" onclick="toggleLayer('iomll')">
-          <div class="mleg-cb">✓</div><span>IOM LandLedger sites</span>
+          <div class="mleg-cb">✓</div><span>IOM LandLedger pilot</span>
         </div>
         <div class="mleg-layer" id="mll-volczone" onclick="toggleLayer('volczone')">
           <div class="mleg-cb">✓</div><span>Volcanic hazard zone</span>
@@ -911,28 +1142,6 @@ canvas:focus,canvas:focus-visible{outline:none}
     </div>
   </div>
 </div><!-- end app -->
-
-<!-- Cultural Record strip -->
-<div id="cr-strip" onclick="toggleCrDrawer()">
-  <div id="cr-strip-icon">🏛️</div>
-  <div id="cr-strip-label">Institutional Record</div>
-  <div id="cr-strip-sub">APSEMO · IOM LandLedger · Thesis Framework · Four-Stage Doctrine</div>
-  <div id="cr-strip-chevron">▲</div>
-</div>
-<div id="cr-drawer">
-  <div id="cr-drawer-hdr">
-    <div id="cr-drawer-title">Albay Institutional Record</div>
-    <div id="cr-drawer-sub">APSEMO zero-casualty doctrine · Thesis four-stage framework · LandLedger deployment</div>
-    <button id="cr-close" onclick="toggleCrDrawer()">✕</button>
-  </div>
-  <div id="cr-tabs">
-    <button class="cr-tab active" onclick="switchCrTab('apsemo')">APSEMO</button>
-    <button class="cr-tab" onclick="switchCrTab('framework')">Four-Stage Framework</button>
-    <button class="cr-tab" onclick="switchCrTab('landledger')">LandLedger</button>
-    <button class="cr-tab" onclick="switchCrTab('gaps')">Open Gaps</button>
-  </div>
-  <div id="cr-body"></div>
-</div>
 
 <!-- Source modal -->
 <div id="src-backdrop" onclick="closeSrcModal()"></div>
@@ -1015,11 +1224,7 @@ var NHA_SITES=[
 // Storm surge approximation zones (polygon arrays for coastal municipalities)
 // ── IOM LandLedger pilot sites ───────────────────────────────────────────────
 var IOM_LL_SITES=[
-  {lat:13.1391,lng:123.7438,name:'Legazpi City',status:'Active — city-scale pilot',detail:'First urban deployment in Albay. Hundreds of households documented 2023–2024. LandLedger QR accepted at DSWD in June 2023 Level 3 event.',scale:'City'},
-  {lat:13.1742,lng:123.6541,name:'Camalig',status:'Active — PDZ pilot',detail:'PDZ core municipality. Households inside the 6-8km danger zone documented. Focus on families displaced repeatedly without establishing aid eligibility.',scale:'Municipality'},
-  {lat:13.1783,lng:123.5941,name:'Guinobatan',status:'Active — PDZ pilot',detail:'SW flank exposure. Buyuan River corridor communities included in PDZ documentation program.',scale:'Municipality'},
-  {lat:13.0992,lng:123.6868,name:'Daraga',status:'Active — PDZ pilot',detail:'Miisi Gully corridor and informal settlements. NHA compound sites (Cullat, Miisi) included in enrollment drive.',scale:'Municipality'},
-  {lat:13.2528,lng:123.7622,name:'Santo Domingo',status:'Partial — outreach ongoing',detail:'Highest informal tenure in province. LandLedger outreach active but enrollment below PDZ core levels due to access constraints.',scale:'Municipality'}
+  {lat:13.1391,lng:123.7438,name:'Legazpi City',status:'Active — city-scale pilot',detail:'First urban deployment in Albay. Hundreds of households documented 2023–2024. LandLedger QR accepted at DSWD in June 2023 Level 3 event.',scale:'City'}
 ];
 
 // ── Resilience community assets ──────────────────────────────────────────────
@@ -1099,39 +1304,6 @@ var RES_NODES=[
     'Urban informal tenure involves overlapping occupancy claims, subdivision of inherited plots, and commercial lease arrangements documented only through informal receipts. LandLedger\'s community validation model — where neighbors and barangay officials co-sign claims — navigates this better than top-down cadastral approaches, but requires significant trust-building time.',
    ],
    tags:['IOM','LandLedger','Tenure Documentation','Urban','DSWD']},
-
-  {name:'IOM LandLedger — Camalig',
-   type:'ngo',lat:13.1742,lng:123.6541,
-   short:'PDZ core municipality. Addressing 40-year documentation backlog for repeatedly displaced families.',
-   lede:'Camalig sits in the PDZ heartland — highest informal tenure rates and most frequent evacuation cycles of any core municipality. LandLedger here addresses a documentation backlog spanning multiple generations.',
-   body:[
-    'Camalig has an estimated informal tenure rate of 58%. Many families have farmed inside the danger zone for three or more generations, with land passed through informal inheritance and cultivated under undocumented arrangements with landowners who themselves lack full titles.',
-    'IOM\'s Camalig enrollment drive ran 2023–2024 across 6 barangays, using community facilitators (trained local residents, not external NGO staff) who conduct household interviews, document testimonial evidence of occupation, and create digitally-linked QR certificates capturing photographic evidence, occupancy history, and community witness signatures.',
-    'The PDZ dynamic creates an unusual enrollment challenge: families who expect to be evacuated again are asked to invest time in documentation they\'re uncertain will change their aid experience. IOM\'s Camalig coordinators report this credibility gap — not logistical access, but residents\' rational skepticism — as the primary enrollment barrier.',
-   ],
-   tags:['IOM','LandLedger','PDZ','Camalig','Tenure']},
-
-  {name:'IOM LandLedger — Guinobatan',
-   type:'ngo',lat:13.1783,lng:123.5941,
-   short:'SW flank PDZ. Buyuan River corridor — dual risk from eruptions and lahar flooding.',
-   lede:'Guinobatan\'s enrollment covers the Buyuan River corridor — one of the most active lahar channels — where families face dual displacement risk from both volcanic activity and lahar flooding.',
-   body:[
-    'Guinobatan lies on Mayon\'s southwest flank along the Buyuan River, one of the two primary lahar channels in Level 3+ events. Corridor barangays have been evacuated 6+ times since 2000, with each cycle triggering aid distribution that excludes households without documentation.',
-    'LandLedger enrollment focused on the corridor barangays with the highest displacement frequency. Approximately 180 households enrolled 2023–2024. Many families hold informal agreements with absentee landowners who have never formalized their own title, creating chains of undocumented tenure extending back decades.',
-    'Guinobatan also shows the agriculture-tenure link: many unenrolled households are farmhands on PDZ agricultural land who don\'t claim residence but cultivate inside the danger zone. These workers are frequently displaced during eruptions but never captured in residential tenure surveys — a gap LandLedger\'s agricultural occupancy documentation is designed to address.',
-   ],
-   tags:['IOM','LandLedger','Buyuan Corridor','Guinobatan','Agricultural Tenure']},
-
-  {name:'IOM LandLedger — Santo Domingo',
-   type:'ngo',lat:13.2528,lng:123.7500,
-   short:'Highest informal tenure in Albay (est. 67%). Outreach active; contested land slowing enrollment.',
-   lede:'Santo Domingo is the hardest place to reach for enrollment — not because of distance, but because it has the most contested land ownership landscape in the province.',
-   body:[
-    'Santo Domingo combines the province\'s highest informal tenure rate (est. 67%) with the most complex land claim landscape: absentee hacienda ownership, informal subletting, government land allocated but never titled, and ancestral domain claims across overlapping parcels.',
-    'IOM launched outreach in 2024 but enrollment has been slower than in other municipalities — not due to lack of community interest, but because the community validation model requires barangay consensus on occupancy boundaries that are actively disputed in several areas. Enrollment has proceeded where occupancy is uncontested; it has stalled where multiple parties claim overlapping parcels.',
-    'Despite enrollment challenges, Santo Domingo\'s BDRRMCs (Barangay Disaster Risk Reduction and Management Committees) run the most active drills in the province, with 87% quarterly completion rates in 2022. Institutional preparedness is strong; documentation equity is the remaining gap.',
-   ],
-   tags:['IOM','LandLedger','Informal Tenure','Santo Domingo','BDRRMC']},
 
   // ── Health & Medical ──────────────────────────────────────────────────────
   {name:'Bicol Medical Center',
@@ -1547,9 +1719,9 @@ var STORIES={
       {time:'T + 1 month',label:'Return to the Farm',tr:'recovering',
        narrative:'The alert steps down to Level 1. APSEMO clears re-entry. Maricel returns to assess damage. Ashfall has coated the rice crop — partial loss but not total. The house is standing. The farm will recover. She has received no DSWD aid. She will try again next time, as she has tried every time.',
        factors:[{t:'Volcanic soil: fertile and regenerating',c:'asset'},{t:'House survived Level 3 event',c:'asset'},{t:'Zero government aid received for 8th time',c:'risk'}]},
-      {time:'IOM LandLedger',label:'A New System',tr:'recovering',
-       narrative:'An IOM community officer arrives with a tablet. They are documenting tenure in the PDZ using LandLedger — a digital system that records community evidence of occupation, oral testimony, and geo-referenced parcel boundaries. Maricel\'s plot is documented for the first time. The record exists. Whether DSWD will accept it next time remains an open question.',
-       factors:[{t:'LandLedger documentation: formal digital record created',c:'asset'},{t:'IOM community outreach: trust-based engagement',c:'asset'},{t:'DSWD recognition of LandLedger: not yet confirmed',c:'mixed'}]}
+      {time:'IOM Tenure Program',label:'A New System',tr:'recovering',
+       narrative:'An IOM community officer arrives with a tablet. They are documenting tenure in the PDZ — recording community evidence of occupation, oral testimony, and geo-referenced parcel boundaries. Maricel\'s plot is documented for the first time. The record exists. Whether DSWD will accept it next time remains an open question.',
+       factors:[{t:'Community tenure documentation: formal digital record created',c:'asset'},{t:'IOM community outreach: trust-based engagement',c:'asset'},{t:'DSWD recognition of community tenure record: not yet confirmed',c:'mixed'}]}
     ]
   },
   eduardo:{
@@ -1577,36 +1749,6 @@ var STORIES={
       {time:'2024',label:'Still Waiting for the Title',tr:'struggling',
        narrative:'Eduardo\'s lot title still has not transferred. NHA payment requirements, administrative backlog, and unclear lot boundary documentation have left him in a tenure limbo for 16 years. He cannot use the property as collateral. He cannot pass it formally to his children. Without the title, DSWD housing repair programs still see him as non-owner.',
        factors:[{t:'16 years: title not transferred',c:'risk'},{t:'Cannot access repair funds: no formal title',c:'risk'},{t:'DSWD displacement aid received: partial program access',c:'mixed'}]}
-    ]
-  },
-  rosa:{
-    id:'rosa',icon:'🏙️',name:'Rosa',age:39,loc:'Legazpi City (IOM Pilot Site)',
-    role:'Informal Urban Resident, Legazpi City',
-    quote:'My grandmother built this house. My mother raised me here. But until IOM came with a tablet, none of that was real to the government.',
-    coords:[13.1391,123.7438],
-    tagline:'She lives three kilometers from Mayon in one of the densest urban barangays in Albay. IOM chose her community for its LandLedger pilot. Her tenancy record has never existed on paper — until now.',
-    tags:[
-      {t:'Urban PDZ-adjacent',c:'risk'},{t:'Informal urban tenure',c:'risk'},{t:'IOM LandLedger pilot',c:'asset'},
-      {t:'High population density',c:'risk'},{t:'Strong community networks',c:'asset'},{t:'Community-documented',c:'asset'}
-    ],
-    outcome:{type:'recovering',label:'Legazpi City — IOM LandLedger active pilot site',
-      text:'Legazpi City is the most populous urban center in Albay Province and sits within ashfall range of Mayon. Its informal communities have deep roots — multi-generational occupancy, strong barangay networks, and high local trust — but almost no formal land documentation. IOM selected these barangays for its LandLedger pilot precisely because community buy-in was already there; the gap was the paper trail. <strong>Rosa\'s household is one of hundreds now formally recorded in a system the city government has agreed to recognize.</strong>'},
-    events:[
-      {time:'Background',label:'Urban Density, Informal Tenure',tr:'neutral',
-       narrative:'Legazpi City\'s central barangays developed rapidly after WWII, with informal settlers building on land they occupied but never titled. Three generations later, the city\'s vulnerable communities are dense, established, and functionally permanent — but legally invisible. Rosa\'s grandmother built the house. Rosa\'s mother expanded it. Rosa pays the utility bills. No one in the family has ever held a title.',
-       factors:[{t:'Three-generation occupancy: de facto tenure is real',c:'asset'},{t:'No formal land documentation: entire household invisible to aid systems',c:'risk'},{t:'Urban density: evacuation routes are already congested in normal conditions',c:'risk'}]},
-      {time:'January 2024',label:'The IOM Assessment',tr:'neutral',
-       narrative:'An IOM field team arrives in Rosa\'s barangay with tablets and a community mapping protocol. They are piloting LandLedger — a system designed to capture community-verified tenure evidence: occupancy history, neighbor attestations, geo-referenced parcel boundaries, utility records. Rosa is skeptical. Government workers have come before. Nothing changed.',
-       factors:[{t:'IOM community engagement approach: trust-based, not top-down',c:'asset'},{t:'LandLedger protocol: designed for informal-tenure contexts',c:'asset'},{t:'Community skepticism: prior government engagement produced nothing',c:'mixed'}]},
-      {time:'March 2024',label:'Documentation Complete',tr:'recovering',
-       narrative:'Rosa\'s household is documented. Geo-referenced parcel boundary, occupancy history going back to her grandmother, signed attestations from four neighboring households. The record is timestamped and stored in IOM\'s system, with a copy filed with the city DRRMO. For the first time, Rosa has a document she can show that proves where she lives and for how long.',
-       factors:[{t:'LandLedger record created: first formal documentation in household history',c:'asset'},{t:'City DRRMO copy: local government engaged with the system',c:'asset'},{t:'DSWD recognition of record: still being negotiated at national level',c:'mixed'}]},
-      {time:'April 2024 — Mayon Alert Level 3',label:'The First Real Test',tr:'neutral',
-       narrative:'PHIVOLCS raises Mayon to Alert Level 3. APSEMO activates. Rosa\'s barangay is within the extended ashfall corridor. Evacuation centers open. Rosa goes — and for the first time, she presents her LandLedger document at DSWD registration. The worker has not seen it before. A supervisor is called. After a delay, her household is registered for emergency food assistance. The system is not seamless. But it worked.',
-       factors:[{t:'LandLedger accepted by DSWD on-site supervisor',c:'asset'},{t:'DSWD frontline worker: unfamiliar with new documentation type',c:'mixed'},{t:'Emergency food assistance received: first time in any displacement event',c:'asset'}]},
-      {time:'Ongoing',label:'What the Pilot Proves',tr:'recovering',
-       narrative:'The IOM Legazpi pilot is the largest urban informal-tenure documentation effort in Albay\'s history. Hundreds of households like Rosa\'s now have a record. The question is whether the national DSWD system, the city housing office, and the land registration authority will build LandLedger into their standard processes — or whether the pilot remains an island of good practice in a sea of bureaucratic inertia.',
-       factors:[{t:'Scale: hundreds of households documented in pilot phase',c:'asset'},{t:'City DRRMO buy-in: institutional partnership established',c:'asset'},{t:'National policy pathway: still unclear',c:'mixed'},{t:'Replicability: model being assessed for Camalig, Guinobatan PDZ communities',c:'asset'}]}
     ]
   },
   pilita:{
@@ -1655,9 +1797,9 @@ var STORIES={
       {time:'2023 Level 3',label:'Keeping Her Own List',tr:'neutral',
        narrative:'After the 2023 activation, Glenda counted 47 households that came to her station and were turned away. She wrote down their names and barangays. She brought the list to the municipal DRRMO. The DRRMO thanked her. The list was filed. Nothing changed before the next event.',
        factors:[{t:'47 households turned away: single event, single station',c:'risk'},{t:'Municipal DRRMO: receptive but without power to change DSWD protocol',c:'mixed'},{t:'Informal documentation: real but not institutionalized',c:'mixed'}]},
-      {time:'LandLedger pilot',label:'A New Document Type Arrives',tr:'recovering',
-       narrative:'In late 2023, an IOM officer asked Glenda to help identify households enrolled in LandLedger who hadn\'t yet been through an activation test. She knew exactly who to call. In the next event, three households presented LandLedger QR codes at her desk. Two were approved after a supervisor was called. One was not — the intake worker was unfamiliar with the document type and defaulted to denial.',
-       factors:[{t:'LandLedger accepted: 2 of 3 households',c:'mixed'},{t:'Frontline worker training: insufficient rollout',c:'risk'},{t:'Glenda as bridge: community trust enables IOM rollout',c:'asset'}]}
+      {time:'IOM Tenure Pilot',label:'A New Document Type Arrives',tr:'recovering',
+       narrative:'In late 2023, an IOM officer asked Glenda to help identify households with informal tenure documentation who hadn\'t yet been through an activation test. She knew exactly who to call. In the next event, three households presented their community tenure records at her desk. Two were approved after a supervisor was called. One was not — the intake worker was unfamiliar with the document type and defaulted to denial.',
+       factors:[{t:'Community tenure record accepted: 2 of 3 households',c:'mixed'},{t:'Frontline worker training: insufficient rollout',c:'risk'},{t:'Glenda as bridge: community trust enables IOM outreach',c:'asset'}]}
     ]
   },
   benjie:{
@@ -1780,45 +1922,6 @@ var STORIES={
        factors:[{t:'38% without title: 15 years post-resettlement',c:'risk'},{t:'Cannot access housing repair grants: no formal title',c:'risk'},{t:'Association continues organizing despite stalled titling',c:'mixed'}]}
     ]
   }
-};
-
-// Cultural Record content
-var CR_CONTENT={
-  apsemo:`<div class="cr-section"><div class="cr-section-title">APSEMO: Origin &amp; Mandate</div>
-<div class="cr-block"><div class="cr-block-title">Founding: SP Resolution No. 155-94 (June 16, 1994)</div><div class="cr-block-body">The Albay Public Safety and Emergency Management Office was established by SP Resolution 155-94, signed by the Albay Sangguniang Panlalawigan on June 16, 1994. Operational from 1995. Chaired by the Provincial Governor. The founding impetus was the catastrophic 1993 Mayon eruption and the inadequacy of the existing NDCC structure for a province in Mayon's permanent shadow. APSEMO was designed as a standing, permanent provincial body — not an activation-only emergency response unit.</div></div>
-<div class="cr-block"><div class="cr-block-title">Institutional Position</div><div class="cr-block-body">Provincial governor-chaired; standing body with permanent staff. This is unusual in Philippine local governance, where most DRRM offices are staffed intermittently. APSEMO maintains institutional continuity between events, which research (Naz et al., Bicol University) identifies as the key variable in its effectiveness. Relationships with PHIVOLCS, PAGASA, OCD, and municipal LGUs are maintained year-round rather than activated only during emergencies.</div></div>
-</div>
-<div class="cr-section"><div class="cr-section-title">Six Strategies (Zero-Casualty Doctrine)</div>
-<div class="cr-stage-block" style="border-color:#38BDF8"><div class="cr-block-title">1. Pre-emptive Evacuation</div><div class="cr-block-body">APSEMO expands the standard PHIVOLCS 7km EDZ to 8km in pre-emptive evacuation orders — acting before formal eruption declaration. This single-kilometer difference puts thousands of additional residents in evacuation coverage who would otherwise remain. Pre-emption is the most controversial and most important strategy: it requires political will to evacuate people who have not yet seen obvious danger.</div></div>
-<div class="cr-stage-block" style="border-color:#FFD93D"><div class="cr-block-title">2. Multi-Agency Early Warning System</div><div class="cr-block-body">Real-time monitoring integration with PHIVOLCS (volcanic), PAGASA (typhoon), MGB (geohazard). Radio network to barangay captains as last-mile communication. Cell broadcast SMS alerts as secondary system. Local observation posts staffed by trained community volunteers.</div></div>
-<div class="cr-stage-block" style="border-color:#00E096"><div class="cr-block-title">3. Standardized Evacuation Routes</div><div class="cr-block-body">Pre-identified, signed evacuation routes from all PDZ barangays. Routes account for lahar deposit probability — alternate routes are identified when primary roads are blocked. Annual route drills with actual vehicle convoys. APSEMO physically maintains route signage rather than relying on barangay resources.</div></div>
-<div class="cr-stage-block" style="border-color:#A855F7"><div class="cr-block-title">4. Evacuation Center Management</div><div class="cr-block-body">25+ pre-positioned evacuation centers outside the 8km APSEMO EDZ. Centers are maintained with pre-positioned water, food, and medical supplies. Each has an assigned LGU coordinator who practices the activation. Centers outside the danger zone but within Albay province — not requiring inter-provincial displacement for most events.</div></div>
-<div class="cr-stage-block" style="border-color:#FF6B35"><div class="cr-block-title">5. Barangay-Level Response Teams</div><div class="cr-block-body">Every PDZ barangay has a trained barangay disaster risk reduction and management coordinator. APSEMO provides training, equipment, and maintains relationship. The coordinator is the human link between provincial system and household reality. Drill frequency: twice per year minimum for PDZ barangays.</div></div>
-<div class="cr-stage-block" style="border-color:#34D399"><div class="cr-block-title">6. Post-Event Assessment &amp; Learning</div><div class="cr-block-body">Systematic after-action reviews after every activation. Documentation of what worked, what failed, and what changed in the hazard landscape. APSEMO's institutional continuity (same staff over years) means organizational learning accumulates rather than resets with personnel turnover — a structural advantage over municipalities with high staff turnover.</div></div>
-</div>
-<div class="cr-section"><div class="cr-section-title">What APSEMO Does Not Resolve</div>
-<div class="cr-block"><div class="cr-block-title">The Tenure Gap</div><div class="cr-block-body">APSEMO's mandate is life safety: get people out, keep them safe, return them when safe. It does not control DSWD aid eligibility, NHA resettlement land titling, or LRA registration. The documentation wall that blocks informal settlers from post-event recovery aid is outside APSEMO's jurisdiction. Zero casualty is achievable through pre-emptive evacuation. Zero recovery barrier is a different problem requiring a different institutional architecture.</div></div>
-</div>`,
-  framework:`<div class="cr-section"><div class="cr-section-title">Thesis Framework: Four Stages of Institutional Evolution</div>
-<div class="cr-block-body" style="padding:0 0 10px;font-size:11.5px;color:var(--text-dim);line-height:1.7">This framework, drawn from analysis of Albay's DRRM governance evolution, identifies four stages through which disaster risk institutions typically pass. APSEMO is an example of a system that reached Stage 3 — Operationalizing — and faces the Stage 4 challenge: whether institutional capacity translates into community-level resilience, or degrades into bureaucratic routinization.</div>
-</div>
-<div class="cr-section">
-<div class="cr-stage-block" style="border-color:#38BDF8"><div class="cr-block-title">Stage 1: Formulation (1994–1999)</div><div class="cr-block-body">SP Resolution 155-94 establishes APSEMO. Initial mandate is narrow: coordinate evacuation during Mayon events. Key challenge is bureaucratic legitimacy — as a novel provincial institution, APSEMO must establish relationships with national agencies (NDCC, PHIVOLCS, OCD) that were not designed to interface with provincial bodies. First test evacuations demonstrate institutional utility and build political support.</div></div>
-<div class="cr-stage-block" style="border-color:#FFD93D"><div class="cr-block-title">Stage 2: Strengthening (2000–2006)</div><div class="cr-block-body">Multi-hazard mandate expanded beyond volcanic events. Typhoon, flood, and geohazard protocols added. The 2006 Reming-Durian catastrophe is the critical stress test: APSEMO's pre-emptive evacuation saves thousands, but the lahar event (triggered by Reming's rainfall on volcanic deposits) reveals a gap — the volcanic preparedness system was not fully integrated with typhoon-volcanic compound hazard scenarios. Post-Reming, the EDZ expansion to 8km becomes standing policy.</div></div>
-<div class="cr-stage-block" style="border-color:#00E096"><div class="cr-block-title">Stage 3: Operationalizing (2007–present)</div><div class="cr-block-body">APSEMO achieves institutional maturity. Six-strategy framework is codified. Zero-casualty record (with exceptions) is established as the institutional benchmark. APSEMO is studied internationally as a model for provincial-level disaster governance. Relationship with IOM and international humanitarian organizations develops LandLedger pilot integration. The challenge of Stage 3: success creates complacency, and the hardest problems (tenure, aid eligibility, resettlement site risk) are outside the institution's mandate.</div></div>
-<div class="cr-stage-block" style="border-color:#FF6B35"><div class="cr-block-title">Stage 4: Degradation (Risk)</div><div class="cr-block-body">Not yet realized, but the structural risk is identifiable. APSEMO's zero-casualty doctrine becomes a political goal rather than a safety architecture. Pre-emptive evacuation decisions are delayed for political reasons (economic disruption, community resistance). Staff continuity — the key institutional variable — is threatened by electoral cycles and personnel change. The documentation problem for informal settlers remains unresolved, meaning the community most exposed to volcanic hazard is also the community least able to convert APSEMO's evacuation capacity into post-event recovery. Degradation does not require a failure — it can happen quietly through routinization.</div></div>
-</div>`,
-  landledger:`<div class="cr-section"><div class="cr-section-title">IOM LandLedger: Albay Deployment</div>
-<div class="cr-block"><div class="cr-block-title">What LandLedger Is</div><div class="cr-block-body">LandLedger is IOM's digital tenure documentation platform. It records evidence of occupation, community recognition, oral testimony, and geo-referenced parcel boundaries — creating a formal digital record of tenure rights that do not appear in LRA (Land Registration Authority) databases because the land was never formally titled. In Albay, LandLedger is deployed for PDZ communities and NHA resettlement sites where lot titles have not transferred.</div></div>
-<div class="cr-block"><div class="cr-block-title">Why It Matters for Albay</div><div class="cr-block-body">The documentation wall is the most persistent post-disaster equity failure in Albay. APSEMO keeps people alive. LandLedger is designed to keep them recoverable. An estimated 40–60% of PDZ households hold land informally. After every eruption, these households evacuate (APSEMO works) but then cannot access DSWD shelter repair assistance, NHA permanent housing grants, or agricultural livelihood grants — all of which require proof of land ownership. LandLedger creates the proof.</div></div>
-<div class="cr-block"><div class="cr-block-title">Current Status</div><div class="cr-block-body">Active pilot in Albay. Scope: PDZ municipalities (Camalig, Daraga, Guinobatan, Santo Domingo, Malilipot) plus selected NHA resettlement sites. Government recognition: DSWD and NHA have not yet formally agreed to accept LandLedger records as proof of tenure for aid eligibility. This is the critical institutional gap. The data exists. The system works. The recognition has not yet followed.</div></div>
-<div class="cr-block"><div class="cr-block-title">Integration Potential</div><div class="cr-block-body">Three integration pathways: (1) DSWD Memorandum of Understanding — accept LandLedger records as valid proof of occupancy for shelter repair grants; (2) NHA lot title acceleration — use LandLedger parcel data to accelerate the LRA titling process for resettlement sites; (3) APSEMO integration — add LandLedger enrollment status to evacuation center registration so aid eligibility gaps are visible at the moment of displacement, not weeks later when the registration window closes.</div></div>
-</div>`,
-  gaps:`<div class="cr-section"><div class="cr-section-title">Open Data &amp; Institutional Gaps</div>
-<div class="cr-block"><div class="cr-block-title">Data Gaps</div><div class="cr-block-body">The following datasets are publicly cited but not openly available or require FOI requests not yet completed: PHIVOLCS official PDZ/EDZ boundary shapefiles (used in approximation); MGB 2019 Geohazard Assessment shapefiles for Albay; PSA 2020 Census barangay-level poverty data for PDZ municipalities; NHA complete resettlement site lot inventory with title transfer status; IBTrACS historical typhoon track data (available but requires processing for local use); PAGASA storm surge assessment areas (SSA) for Albay.</div></div>
-<div class="cr-block"><div class="cr-block-title">Institutional Gaps</div><div class="cr-block-body">DSWD recognition of LandLedger as valid tenure documentation — not yet formalized. NHA lot title transfer completion for post-2006 resettlement sites — still pending for significant proportion of resettlees. Integration of informal tenure data into APSEMO evacuation center registration — not yet implemented. Rapu-Rapu Island: no dedicated APSEMO presence; response remains dependent on coast guard and LGU resources.</div></div>
-<div class="cr-block"><div class="cr-block-title">Replication Potential</div><div class="cr-block-body">This tool is built to demonstrate the value of integrating social vulnerability, multi-hazard, tenure, and institutional data for IOM's Housing, Land and Property team. Companion tools exist for Puerto Rico (Hurricane Maria) and are in development for additional contexts. The data architecture (municipality-level SVHI, story profiles, institutional record, cascade analysis) is designed to be portable. Priority future layers: PHIVOLCS official GeoJSON when available, barangay-level PSA poverty, PAGASA SSA polygons.</div></div>
-</div>`
 };
 </script>
 
@@ -2712,6 +2815,7 @@ function generateHexes(){
       fillColor:cf(norm[i]),fillOpacity:0.50
     });
     poly.on('mouseover',function(e){
+      if(curModeGroup==='str'||curModeGroup==='res') return;
       map.closePopup();
       poly.setStyle({weight:2,color:'rgba(255,255,255,0.75)'});
       // Build risk breakdown tooltip for this specific hex location
@@ -3030,7 +3134,7 @@ function _buildBrgyBoundaryLayer(features, builtBarangays){
       poly._samplePts=_pts;
       poly.on('click',function(){if(typeof openPanel==='function'&&curModeGroup!=='tenure') openPanel(brgy);});
       poly.on('mouseover',function(e){
-        if(curMode==='res') return;
+        if(curModeGroup==='str'||curModeGroup==='res') return;
         // Reset previous hovered poly to avoid sticky orange borders
         if(_hoveredBrgyPoly&&_hoveredBrgyPoly!==poly){
           var _hbn=_hoveredBrgyPoly._brgyName;
@@ -3425,17 +3529,37 @@ var _storyMarkersBuilt = false;
 var _activeStoryId = null;
 var _storyMarkerRefs = {};
 
+function _storyDefaultIcon(id){
+  var s = STORIES[id];
+  return L.divIcon({
+    className:'',
+    html:'<div id="smarker-'+id+'" style="width:34px;height:34px;background:rgba(8,12,24,.90);border:2.5px solid #FF6B35;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.55);cursor:pointer;transition:transform .12s,border-color .12s">'+s.icon+'</div>',
+    iconSize:[34,34], iconAnchor:[17,17]
+  });
+}
+
+function _storyActiveIcon(id){
+  var s = STORIES[id];
+  var label = '<div style="position:absolute;bottom:42px;left:50%;transform:translateX(-50%);white-space:nowrap;background:rgba(8,12,24,.96);border:1.5px solid #FFD93D;border-radius:7px;padding:4px 9px;pointer-events:none;box-shadow:0 2px 10px rgba(0,0,0,.6)">'
+    +'<div style="font-size:11.5px;font-weight:700;color:#f1f5f9;line-height:1.2">'+s.name+'</div>'
+    +'<div style="font-size:9.5px;color:#FFD93D;margin-top:1px">'+s.role+'</div>'
+    +'</div>';
+  return L.divIcon({
+    className:'',
+    html:'<div style="position:relative;width:34px;height:34px">'
+      + label
+      +'<div id="smarker-'+id+'" style="width:34px;height:34px;background:rgba(8,12,24,1);border:2.5px solid #FFD93D;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 0 3px rgba(255,211,61,.35),0 0 16px rgba(255,211,61,.5);cursor:pointer;transform:scale(1.3)">'+s.icon+'</div>'
+      +'</div>',
+    iconSize:[34,34], iconAnchor:[17,17]
+  });
+}
+
 function buildStoryMarkers(){
   if(_storyMarkersBuilt) return;
   _storyMarkersBuilt = true;
   Object.keys(STORIES).forEach(function(id){
-    var s = STORIES[id];
-    var icon = L.divIcon({
-      className:'',
-      html:'<div id="smarker-'+id+'" style="width:34px;height:34px;background:rgba(8,12,24,.90);border:2.5px solid #FF6B35;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.55);cursor:pointer;transition:transform .12s,border-color .12s">'+s.icon+'</div>',
-      iconSize:[34,34], iconAnchor:[17,17]
-    });
-    var m = L.marker(s.coords, {icon:icon}).on('click', function(){ openStory(id); });
+    var icon = _storyDefaultIcon(id);
+    var m = L.marker(STORIES[id].coords, {icon:icon}).on('click', function(){ openStory(id); });
     _storyMarkerRefs[id] = m;
     storyMarkerLayer.addLayer(m);
   });
@@ -3443,11 +3567,9 @@ function buildStoryMarkers(){
 
 function _highlightStoryMarker(id){
   Object.keys(_storyMarkerRefs).forEach(function(k){
-    var el = document.getElementById('smarker-'+k);
-    if(!el) return;
-    el.style.borderColor = k===id ? '#FFD93D' : '#FF6B35';
-    el.style.transform = k===id ? 'scale(1.25)' : 'scale(1)';
-    el.style.boxShadow = k===id ? '0 0 12px rgba(255,211,61,.5)' : '0 2px 8px rgba(0,0,0,.55)';
+    var m = _storyMarkerRefs[k];
+    if(!m) return;
+    m.setIcon(k===id ? _storyActiveIcon(k) : _storyDefaultIcon(k));
   });
 }
 
@@ -3616,6 +3738,10 @@ function buildMarkersWithAlert(){
 // ================================================================
 // RIGHT PANEL
 // ================================================================
+function _acc(title,sub,content,open){
+  return '<div class="rp-acc'+(open?' rp-acc-open':'')+'"><div class="rp-acc-hdr" onclick="this.parentElement.classList.toggle(\'rp-acc-open\')"><div class="rp-acc-ttls"><div class="rp-acc-t">'+title+'</div><div class="rp-acc-s">'+sub+'</div></div><span class="rp-acc-chev"></span></div><div class="rp-acc-body"><div class="rp-acc-inner">'+content+'</div></div></div>';
+}
+
 function openPanel(m){
   // In tenure/resilience mode the right panel belongs to that view — don't overwrite it
   if(curModeGroup==='tenure'){showTenurePanel();return;}
@@ -3696,27 +3822,12 @@ function openPanel(m){
     h+='</div>';
   }
 
-  // ── MODE BUTTONS ─────────────────────────────────────────────────────
-  h+='<div class="rp-mode-btns">';
-  h+='<button class="rp-mode-btn analyze active" id="rp-btn-analyze" onclick="rpSwitchMode(\'analyze\')">';
-  h+='<div class="rp-mode-btn-inner">';
-  h+='<div class="rp-mode-btn-label">Analyze this place</div>';
-  h+='<div class="rp-mode-btn-sub">Hazards, vulnerability &amp; risk gaps</div>';
-  h+='</div><div class="rp-mode-bar"></div></button>';
-  h+='<button class="rp-mode-btn plan" id="rp-btn-plan" onclick="rpSwitchMode(\'plan\')">';
-  h+='<div class="rp-mode-btn-inner">';
-  h+='<div class="rp-mode-btn-label">Plan your response</div>';
-  h+='<div class="rp-mode-btn-sub">Context, guidance &amp; action steps</div>';
-  h+='</div><div class="rp-mode-bar"></div></button>';
-  h+='</div>';
-
   // ════════════════════════════════════════════════════
-  // MODE 1: ANALYZE THIS PLACE
+  // ACCORDION PANELS
   // ════════════════════════════════════════════════════
-  h+='<div class="rp-mode-content active" id="rp-mode-analyze">';
 
   if(curMode==='res'){
-    // Resilience mode view
+    // Resilience mode: single clean section
     h+='<div class="rp-section">';
     h+='<div class="rp-sec-label">Resilience Score</div>';
     h+='<div class="sc-row"><div class="sc-lbl"><span>Community Resilience</span><span style="color:'+resColor(muni.res)+'">'+Math.round(muni.res*100)+'</span></div><div class="sc-track"><div class="sc-fill" style="width:'+Math.round(muni.res*100)+'%;background:'+resColor(muni.res)+'"></div></div></div>';
@@ -3724,106 +3835,61 @@ function openPanel(m){
     h+='<div style="font-size:10px;font-weight:700;color:'+resColor(muni.res)+';text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">'+(muni.rtag||'')+'</div>';
     h+='<div style="font-size:11px;color:var(--text-dim);line-height:1.5">'+(muni.rnote||'')+'</div></div></div>';
   } else {
-    // ── GAP: WHAT STANDARD MODELS MISS ──────────────
-    h+='<div class="rp-section">';
-    h+='<div class="rp-sec-label">The Gap — What Standard Models Miss</div>';
+
+    // ── ACCORDION 1: THE GAP (open by default) ───────
     var bPhysScore=enr?enr[BE.phys]:physS;
     var bSocScore=enr?enr[BE.soc]:socS;
     var bCompScore=enr?enr[BE.composite]:fullSVI;
     if(bPhysScore==null) bPhysScore=physS;
     if(bCompScore==null) bCompScore=fullSVI;
     var bGap=bCompScore-bPhysScore;
+    var hGap='';
 
-    h+='<div class="rp-gap-grid">';
-    h+='<div class="rp-gap-card" data-tip="phys" onmouseenter="_showScoreTip(this)" onmouseleave="_hideScoreTip()" style="cursor:help">';
-    h+='<div class="rp-gap-card-lbl">Physical hazard only ⓘ</div>';
-    h+='<div class="rp-gap-card-val" style="color:var(--text-dim)">'+Math.round(bPhysScore*100)+'</div>';
-    h+='<div class="rp-gap-bar"><div class="rp-gap-bar-fill" style="width:'+Math.round(bPhysScore*100)+'%;background:rgba(148,163,184,.55)"></div></div>';
-    h+='</div>';
-    h+='<div class="rp-gap-card" data-tip="comp" onmouseenter="_showScoreTip(this)" onmouseleave="_hideScoreTip()" style="cursor:help">';
-    h+='<div class="rp-gap-card-lbl">Full SVI composite ⓘ</div>';
-    h+='<div class="rp-gap-card-val" style="color:'+riskColor(bCompScore)+'">'+Math.round(bCompScore*100)+'</div>';
-    h+='<div class="rp-gap-bar"><div class="rp-gap-bar-fill" style="width:'+Math.round(bCompScore*100)+'%;background:'+riskColor(bCompScore)+'"></div></div>';
-    h+='</div></div>';
+    hGap+='<div class="rp-gap-grid">';
+    hGap+='<div class="rp-gap-card" data-tip="phys" onmouseenter="_showScoreTip(this)" onmouseleave="_hideScoreTip()" style="cursor:help">';
+    hGap+='<div class="rp-gap-card-lbl">Physical hazard only ⓘ</div>';
+    hGap+='<div class="rp-gap-card-val" style="color:#64748b">'+Math.round(bPhysScore*100)+'</div>';
+    hGap+='<div class="rp-gap-bar"><div class="rp-gap-bar-fill" style="width:'+Math.round(bPhysScore*100)+'%;background:rgba(100,116,139,.5)"></div></div>';
+    hGap+='</div>';
+    hGap+='<div class="rp-gap-card" data-tip="comp" onmouseenter="_showScoreTip(this)" onmouseleave="_hideScoreTip()" style="cursor:help;border-left:3px solid '+riskColor(bCompScore)+'">';
+    hGap+='<div class="rp-gap-card-lbl">Full SVI composite ⓘ</div>';
+    hGap+='<div class="rp-gap-card-val" style="color:'+riskColor(bCompScore)+'">'+Math.round(bCompScore*100)+'</div>';
+    hGap+='<div class="rp-gap-bar"><div class="rp-gap-bar-fill" style="width:'+Math.round(bCompScore*100)+'%;background:'+riskColor(bCompScore)+'"></div></div>';
+    hGap+='</div></div>';
 
     if(bGap>0.12){
-      h+='<div class="rp-gap-alert">⚠ Social vulnerability significantly exceeds physical hazard score. Standard risk maps alone will undercount this community\'s need.</div>';
+      hGap+='<div class="rp-gap-alert">⚠ Social vulnerability significantly exceeds physical hazard score. Standard risk maps alone will undercount this community\'s need.</div>';
     } else if(bGap>0.06){
-      h+='<div class="rp-gap-alert" style="border-color:rgba(251,191,36,.4);color:#fbbf24">↑ Social dimensions elevate risk meaningfully above physical exposure alone.</div>';
+      hGap+='<div class="rp-gap-alert" style="border-color:rgba(251,191,36,.4);color:#fbbf24">↑ Social dimensions elevate risk meaningfully above physical exposure alone.</div>';
     }
 
-    // ── BARANGAY vs MUNICIPALITY ─────────────────────
+    // Barangay vs. Municipality — merged into gap accordion
     if(isBrgy&&enr){
-      h+='</div><div class="rp-section">';
-      h+='<div class="rp-sec-label">This Barangay vs. '+muni.n+' Average</div>';
-      var brvMuni=fullSVI; // municipality composite approx
+      var brvMuni=fullSVI;
       var brvBrgy=bCompScore;
       var brvMax=Math.max(brvMuni,brvBrgy,0.01);
-      h+='<div class="rp-bvm-grid">';
-      h+='<div class="rp-bvm-card" data-tip="bvm-brgy" onmouseenter="_showScoreTip(this)" onmouseleave="_hideScoreTip()" style="cursor:help">';
-      h+='<div class="rp-bvm-val" style="color:'+riskColor(brvBrgy)+'">'+Math.round(brvBrgy*100)+'</div>';
-      h+='<div class="rp-bvm-lbl">This barangay ⓘ</div>';
-      h+='<div class="rp-bvm-bar"><div class="rp-bvm-bar-fill" style="width:'+Math.round((brvBrgy/brvMax)*100)+'%;background:'+riskColor(brvBrgy)+'"></div></div>';
-      h+='</div>';
-      h+='<div class="rp-bvm-card" data-tip="bvm-muni" onmouseenter="_showScoreTip(this)" onmouseleave="_hideScoreTip()" style="cursor:help">';
-      h+='<div class="rp-bvm-val" style="color:'+riskColor(brvMuni)+'">'+Math.round(brvMuni*100)+'</div>';
-      h+='<div class="rp-bvm-lbl">Municipality avg ⓘ</div>';
-      h+='<div class="rp-bvm-bar"><div class="rp-bvm-bar-fill" style="width:'+Math.round((brvMuni/brvMax)*100)+'%;background:'+riskColor(brvMuni)+'"></div></div>';
-      h+='</div></div>';
+      hGap+='<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07)">';
+      hGap+='<div style="font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#64748b;margin-bottom:8px">vs. '+muni.n+' average</div>';
+      hGap+='<div class="rp-bvm-grid">';
+      hGap+='<div class="rp-bvm-card" data-tip="bvm-brgy" onmouseenter="_showScoreTip(this)" onmouseleave="_hideScoreTip()" style="cursor:help">';
+      hGap+='<div class="rp-bvm-val" style="color:'+riskColor(brvBrgy)+'">'+Math.round(brvBrgy*100)+'</div>';
+      hGap+='<div class="rp-bvm-lbl">This barangay ⓘ</div>';
+      hGap+='<div class="rp-bvm-bar"><div class="rp-bvm-bar-fill" style="width:'+Math.round((brvBrgy/brvMax)*100)+'%;background:'+riskColor(brvBrgy)+'"></div></div>';
+      hGap+='</div>';
+      hGap+='<div class="rp-bvm-card" data-tip="bvm-muni" onmouseenter="_showScoreTip(this)" onmouseleave="_hideScoreTip()" style="cursor:help">';
+      hGap+='<div class="rp-bvm-val" style="color:'+riskColor(brvMuni)+'">'+Math.round(brvMuni*100)+'</div>';
+      hGap+='<div class="rp-bvm-lbl">Municipality avg ⓘ</div>';
+      hGap+='<div class="rp-bvm-bar"><div class="rp-bvm-bar-fill" style="width:'+Math.round((brvMuni/brvMax)*100)+'%;background:'+riskColor(brvMuni)+'"></div></div>';
+      hGap+='</div></div>';
       if(brvBrgy>brvMuni+0.10){
-        h+='<div class="rp-bvm-note">This barangay is significantly more vulnerable than the municipal average — it may be invisible in municipal-level targeting.</div>';
+        hGap+='<div class="rp-bvm-note">Significantly more vulnerable than the municipal average — may be invisible in municipal-level targeting.</div>';
       } else if(brvBrgy<brvMuni-0.10){
-        h+='<div class="rp-bvm-note">This barangay is notably less vulnerable than the municipal average.</div>';
+        hGap+='<div class="rp-bvm-note">Notably less vulnerable than the municipal average.</div>';
       }
+      hGap+='</div>';
     }
 
-    // ── VULNERABILITY FINGERPRINT ────────────────────
-    h+='</div><div class="rp-section">';
-    h+='<div class="rp-sec-label">Vulnerability Fingerprint</div>';
-
-    // Physical hazards subsection
-    h+='<div class="rp-fp-sublabel">Physical Hazards</div>';
-    var physDims=isBrgy&&enr ? [
-      {l:'Mayon volcanic risk',v:efN('pvol')},
-      {l:'Lahar exposure',v:efN('plahar')},
-      {l:'Ashfall loading',v:efN('ash_score')},
-      {l:'Storm surge / cyclone',v:efN('storm')}
-    ] : [
-      {l:'Physical hazard composite',v:physS}
-    ];
-    physDims.forEach(function(d){
-      if(d.v==null) return;
-      h+='<div class="rp-fp-row"><div class="rp-fp-name">'+d.l+'</div>';
-      h+='<div class="rp-fp-track"><div class="rp-fp-fill" style="width:'+Math.round(d.v*100)+'%;background:'+riskColor(d.v)+'"></div></div>';
-      h+='<div class="rp-fp-val">'+Math.round(d.v*100)+'</div></div>';
-    });
-
-    // Social dimensions subsection
-    h+='<div class="rp-fp-sublabel">Social Dimensions</div>';
-    var socDims=isBrgy&&enr ? [
-      {l:'Livelihood fragility',v:efN('livelihood')},
-      {l:'Tenure insecurity',v:efN('tenure')},
-      {l:'Housing quality',v:efN('housing')},
-      {l:'Agricultural dependence',v:efN('agri')},
-      {l:'Isolation',v:efN('isolation')},
-      {l:'Elderly / care-dependent',v:efN('elderly')}
-    ] : [
-      {l:'Housing fragility',v:muni.svi_housing},
-      {l:'Economic fragility',v:muni.svi_poverty},
-      {l:'Elderly / care-dependent',v:muni.svi_elderly},
-      {l:'Road isolation',v:muni.svi_road},
-      {l:'Communication gaps',v:muni.svi_cell},
-      {l:'Documentation barrier',v:muni.svi_doc}
-    ];
-    socDims.forEach(function(d){
-      if(d.v==null) return;
-      h+='<div class="rp-fp-row"><div class="rp-fp-name">'+d.l+'</div>';
-      h+='<div class="rp-fp-track"><div class="rp-fp-fill" style="width:'+Math.round(d.v*100)+'%;background:'+riskColor(d.v)+'"></div></div>';
-      h+='<div class="rp-fp-val">'+Math.round(d.v*100)+'</div></div>';
-    });
-    h+='</div>';
-
-    // ── COMPOUNDING CONDITIONS ───────────────────────
+    // Compounding conditions — merged into gap accordion
     var flags=[];
     if(isBrgy&&enr){
       if(enr[BE.pdz])  flags.push({sev:'danger',badge:'Inside PDZ',text:'Within APSEMO 8km pre-emptive evacuation zone. Aid eligibility frequently blocked by tenure status.'});
@@ -3841,75 +3907,85 @@ function openPanel(m){
       if(localNha.length>0) flags.push({sev:'warn',badge:localNha.length+' NHA site(s)',text:'Resettlement sites present. Verify title transfers and drainage — compound hazard risk is common.'});
       if(gap>0.12) flags.push({sev:'warn',badge:'High gap',text:'Standard physical risk maps significantly undercount this municipality. SVI-inclusive targeting is essential.'});
     }
-
     if(flags.length>0){
-      h+='<div class="rp-section">';
-      h+='<div class="rp-sec-label">Compounding Conditions</div>';
+      hGap+='<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07)">';
+      hGap+='<div style="font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#64748b;margin-bottom:8px">Compounding conditions</div>';
       flags.forEach(function(f){
-        h+='<div class="rp-flag '+f.sev+'"><span class="rp-flag-badge '+f.sev+'">'+f.badge+'</span><span class="rp-flag-text">'+f.text+'</span></div>';
+        hGap+='<div class="rp-flag '+f.sev+'"><span class="rp-flag-badge '+f.sev+'">'+f.badge+'</span><span class="rp-flag-text">'+f.text+'</span></div>';
       });
-      h+='</div>';
+      hGap+='</div>';
     }
+    h+=_acc('The Gap','Where standard models undercount this place',hGap,true);
+
+    // ── ACCORDION 2: VULNERABILITY BREAKDOWN ──────────
+    var hBreak='';
+    hBreak+='<div class="rp-fp-sublabel">Physical Hazards</div>';
+    var physDims=isBrgy&&enr ? [
+      {l:'Mayon volcanic risk',v:efN('pvol')},
+      {l:'Lahar exposure',v:efN('plahar')},
+      {l:'Ashfall loading',v:efN('ash_score')},
+      {l:'Storm surge / cyclone',v:efN('storm')}
+    ] : [{l:'Physical hazard composite',v:physS}];
+    physDims.forEach(function(d){
+      if(d.v==null) return;
+      hBreak+='<div class="rp-fp-row"><div class="rp-fp-name">'+d.l+'</div><div class="rp-fp-track"><div class="rp-fp-fill" style="width:'+Math.round(d.v*100)+'%;background:'+riskColor(d.v)+'"></div></div><div class="rp-fp-val">'+Math.round(d.v*100)+'</div></div>';
+    });
+    hBreak+='<div class="rp-fp-sublabel" style="margin-top:8px">Social Dimensions</div>';
+    var socDims=isBrgy&&enr ? [
+      {l:'Livelihood fragility',v:efN('livelihood')},
+      {l:'Tenure insecurity',v:efN('tenure')},
+      {l:'Housing quality',v:efN('housing')},
+      {l:'Agricultural dependence',v:efN('agri')},
+      {l:'Isolation',v:efN('isolation')},
+      {l:'Elderly / care-dependent',v:efN('elderly')}
+    ] : [
+      {l:'Housing fragility',v:muni.svi_housing},
+      {l:'Economic fragility',v:muni.svi_poverty},
+      {l:'Elderly / care-dependent',v:muni.svi_elderly},
+      {l:'Road isolation',v:muni.svi_road},
+      {l:'Communication gaps',v:muni.svi_cell},
+      {l:'Documentation barrier',v:muni.svi_doc}
+    ];
+    socDims.forEach(function(d){
+      if(d.v==null) return;
+      hBreak+='<div class="rp-fp-row"><div class="rp-fp-name">'+d.l+'</div><div class="rp-fp-track"><div class="rp-fp-fill" style="width:'+Math.round(d.v*100)+'%;background:'+riskColor(d.v)+'"></div></div><div class="rp-fp-val">'+Math.round(d.v*100)+'</div></div>';
+    });
+    h+=_acc('Vulnerability Breakdown','Physical hazards and social dimensions side by side',hBreak);
+
+    // ── ACCORDION 3: WHAT'S DRIVING IT ────────────────
+    var hDims='';
+    var ctxText=isBrgy ? (m.detail||'') : (muni.detail||'');
+    if(ctxText) hDims+='<div class="rp-ctx-card"><div class="rp-ctx-label">Community Context</div><div class="rp-ctx-text">'+ctxText+'</div></div>';
+    hDims+='<div id="rp-dims-block">'+_buildDims(muni,isBrgy,enr,'all')+'</div>';
+    h+=_acc('What\'s Driving It','Sensitivity, exposure, and adaptive capacity unpacked',hDims);
+
+    // ── ACCORDION 4: ACTIONS & GUIDANCE ───────────────
+    var hPlan='<div class="rp-phase-tabs" id="rp-phase-tabs">';
+    ['Preparedness','Response','Recovery','Mitigation','Adaptation'].forEach(function(p,i){
+      hPlan+='<button class="rp-phase-tab'+(i===0?' active':'')+'" data-phase="'+p+'" onclick="rpPhaseSwitch(this)">'+p+'</button>';
+    });
+    hPlan+='</div><div id="rp-phase-content">'+_buildPhase('Preparedness',muni,isBrgy,enr)+'</div>';
+    h+=_acc('Actions &amp; Guidance','What can be done before, during, and after',hPlan);
+
+    // ── ACCORDION 5: GAPS & NEEDS ──────────────────────
+    var hNeeds='';
+    var needs=[];
+    if(muni.ptenure>0.35) needs.push('Tenure documentation: ~'+Math.round(muni.ptenure*100)+'% of households lack formal title — pre-register with DSWD alternates (barangay cert / affidavit).');
+    if(isBrgy&&enr&&enr[BE.pdz]) needs.push('PDZ pre-positioning: evacuation pack checklist and rapid registration for APSEMO coordinated evacuation.');
+    if(muni.svi_road>0.5) needs.push('Route planning: identify secondary evacuation routes — road isolation score is elevated for this area.');
+    if(isBrgy&&enr&&enr[BE.stacked]) needs.push('Prioritization flag: stacked vulnerability — this barangay should appear on first-response priority list.');
+    if(muni.svi_cell>0.45) needs.push('Communication: community radio or barangay warning node — cell coverage gaps documented here.');
+    if(localNha.length>0) needs.push('NHA site audit: verify lot transfers and drainage before next storm season ('+localNha.length+' site(s) in '+muni.n+').');
+    if(needs.length===0) needs.push('No critical pre-event gaps flagged. Standard DRR protocols apply. Revisit after next field assessment.');
+    needs.forEach(function(n){ hNeeds+='<div class="rp-needs-item"><span class="rp-needs-arrow">→</span>'+n+'</div>'; });
+    h+=_acc('Gaps &amp; Needs','Current priority gaps to address before the next event',hNeeds);
+
   }
-
-  h+='</div>'; // end mode-analyze
-
-  // ════════════════════════════════════════════════════
-  // MODE 2: PLAN YOUR RESPONSE
-  // ════════════════════════════════════════════════════
-  h+='<div class="rp-mode-content" id="rp-mode-plan">';
-
-  // Community context — only show if real content exists (not barangay placeholder)
-  var ctxText=isBrgy ? (m.detail||'') : (muni.detail||'');
-  if(ctxText){
-    h+='<div class="rp-ctx-card">';
-    h+='<div class="rp-ctx-label">Community Context</div>';
-    h+='<div class="rp-ctx-text">'+ctxText+'</div>';
-    h+='</div>';
-  }
-
-  // Three dimensions
-  h+='<div class="rp-section" style="margin-bottom:0;padding-bottom:0">';
-  h+='<div class="rp-sec-label">Three Dimensions of Vulnerability</div>';
-  h+='</div>';
-  h+='<div id="rp-dims-block">';
-  h+=_buildDims(muni,isBrgy,enr,'all');
-  h+='</div>';
-
-  // Phase tabs
-  h+='<div class="rp-section" style="margin-top:0">';
-  h+='<div class="rp-sec-label">Phased Guidance</div>';
-  h+='<div class="rp-phase-tabs" id="rp-phase-tabs">';
-  ['Preparedness','Response','Recovery','Mitigation','Adaptation'].forEach(function(p,i){
-    h+='<button class="rp-phase-tab'+(i===0?' active':'')+'" data-phase="'+p+'" onclick="rpPhaseSwitch(this)">'+p+'</button>';
-  });
-  h+='</div>';
-  h+='<div id="rp-phase-content">';
-  h+=_buildPhase('Preparedness',muni,isBrgy,enr);
-  h+='</div></div>';
-
-  // Pre-populated needs
-  h+='<div class="rp-section">';
-  h+='<div class="rp-sec-label">Pre-Event Gaps &amp; Needs</div>';
-  var needs=[];
-  if(muni.ptenure>0.35) needs.push('Tenure documentation: ~'+Math.round(muni.ptenure*100)+'% of households lack formal title — pre-register with DSWD alternates (barangay cert / affidavit).');
-  if(isBrgy&&enr&&enr[BE.pdz]) needs.push('PDZ pre-positioning: evacuation pack checklist and rapid registration for APSEMO coordinated evacuation.');
-  if(muni.svi_road>0.5) needs.push('Route planning: identify secondary evacuation routes — road isolation score is elevated for this area.');
-  if(isBrgy&&enr&&enr[BE.stacked]) needs.push('Prioritization flag: stacked vulnerability — this barangay should appear on first-response priority list.');
-  if(muni.svi_cell>0.45) needs.push('Communication: community radio or barangay warning node — cell coverage gaps documented here.');
-  if(localNha.length>0) needs.push('NHA site audit: verify lot transfers and drainage before next storm season ('+localNha.length+' site(s) in '+muni.n+').');
-  if(needs.length===0) needs.push('No critical pre-event gaps flagged. Standard DRR protocols apply. Revisit after next field assessment.');
-  needs.forEach(function(n){
-    h+='<div class="rp-needs-item"><span class="rp-needs-arrow">→</span>'+n+'</div>';
-  });
-  h+='</div>';
-
-  h+='</div>'; // end mode-plan
 
   rp.innerHTML = h;
 
-  // Wire mode buttons
-  document.getElementById('rp-btn-analyze').classList.add('active');
+  // Show right panel accordion guide on first open
+  if(typeof showRpGuide==='function') setTimeout(showRpGuide, 80);
 
   // Wire org selector
   var orgSel=document.getElementById('rp-org-select');
@@ -3922,22 +3998,6 @@ function openPanel(m){
   }
 }
 
-function rpSwitchMode(mode){
-  document.querySelectorAll('.rp-mode-btn').forEach(function(b){b.classList.remove('active');});
-  document.querySelectorAll('.rp-mode-content').forEach(function(c){c.classList.remove('active');});
-  document.getElementById('rp-btn-'+mode).classList.add('active');
-  document.getElementById('rp-mode-'+mode).classList.add('active');
-  // Auto-expand panel width for plan mode which needs more room
-  var root=document.documentElement;
-  var curW=parseInt(getComputedStyle(root).getPropertyValue('--rp-w'))||380;
-  if(mode==='plan' && curW<500){
-    root.style.setProperty('--rp-w','540px');
-    if(typeof map!=='undefined') map.invalidateSize({pan:false});
-  } else if(mode==='analyze' && curW===500){
-    root.style.setProperty('--rp-w','380px');
-    if(typeof map!=='undefined') map.invalidateSize({pan:false});
-  }
-}
 
 function rpPhaseSwitch(btn){
   document.querySelectorAll('.rp-phase-tab').forEach(function(b){b.classList.remove('active');});
@@ -4021,7 +4081,7 @@ function _buildPhase(phase,muni,isBrgy,enr){
         {place:'PDZ barangays ★',text:'Mandatory evacuation at Alert Level 3. APSEMO provides transportation; DSWD distributes family food packs at evacuation centers.'},
         {place:'Lahar gully communities ★',text:'Bantay Mayon seismic network triggers real-time community alerts. OCD protocols require immediate evacuation of Mi-isi, Bonga, Basud channels.'},
         {place:'Island barangays ★',text:'PCG coordinates marine evacuation. LGU prepares motorized bancas for household transport to mainland centers.',ngo:true},
-        {place:'All municipalities',text:'DSWD Emergency Shelter Assistance: ₱10,000–₱30,000 per damaged household. Informal settlers must present barangay certification or LandLedger record.',ngo:true}
+        {place:'All municipalities',text:'DSWD Emergency Shelter Assistance: ₱10,000–₱30,000 per damaged household. Informal settlers must present barangay certification or digital/physical tenure record.',ngo:true}
       ]
     },
     Recovery:{
@@ -4173,23 +4233,23 @@ function showTenurePanel(){
   // Alternative column
   h+='<div style="display:flex;flex-direction:column;gap:5px">';
   h+='<div style="font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:4px 8px;border-radius:4px;background:rgba(168,85,247,.1);color:#a78bfa;margin-bottom:2px">🔑 Alternative</div>';
-  [['LandLedger QR','DSWD ESA — pilot accepted','#a78bfa'],['Barangay cert','Usually rejected','#f87171'],['Notarized affidavit','Inconsistently accepted','#f87171']].forEach(function(r){
+  [['Digital tenure record','DSWD ESA — pilot accepted','#a78bfa'],['Barangay cert','Usually rejected','#f87171'],['Notarized affidavit','Inconsistently accepted','#f87171']].forEach(function(r){
     h+='<div style="padding:6px 8px;border-radius:5px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);opacity:'+(r[2]==='#f87171'?'0.65':'1')+'">';
     h+='<div style="font-size:10px;font-weight:700;color:#e2e8f0;margin-bottom:2px">'+r[0]+'</div>';
     h+='<div style="font-size:9.5px;color:'+r[2]+';line-height:1.4">'+r[1]+'</div></div>';
   });
   h+='</div></div>';
-  h+='<div style="padding:8px 10px;background:rgba(251,146,60,.06);border-left:3px solid rgba(251,146,60,.4);border-radius:0 5px 5px 0;font-size:10.5px;color:#94a3b8;line-height:1.55">~72,000 households fall in the gap between what\'s available and what\'s accepted. Closing it requires formal DSWD policy change or LandLedger becoming the standard.</div>';
+  h+='<div style="padding:8px 10px;background:rgba(251,146,60,.06);border-left:3px solid rgba(251,146,60,.4);border-radius:0 5px 5px 0;font-size:10.5px;color:#94a3b8;line-height:1.55">~72,000 households fall in the gap between what\'s available and what\'s accepted. Closing it requires formal DSWD policy change or digital tenure documentation becoming the standard.</div>';
   h+='</div>';
 
   // ── LandLedger coverage ──────────────────────────────────────────
-  h+=_tSecHdr('ll','LandLedger: coverage & gap',false);
+  h+=_tSecHdr('ll','Tenure documentation: coverage & gap',false);
   h+='<div id="ts-ll" style="display:none;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.06)">';
   h+='<div style="display:flex;justify-content:space-between;font-size:10px;color:#94a3b8;margin-bottom:5px;font-weight:600"><span>PDZ coverage</span><span style="color:#34D399;font-weight:700">~13%</span></div>';
   h+='<div style="height:10px;background:rgba(255,255,255,.07);border-radius:5px;overflow:hidden;margin-bottom:5px"><div style="height:100%;width:13%;background:linear-gradient(to right,#34D399,#059669);border-radius:5px"></div></div>';
   h+='<div style="font-size:10px;color:#94a3b8;margin-bottom:12px">~9,000 enrolled of ~72,000 total informal households</div>';
   [['📍','Legazpi City pilot: first city-scale deployment. Hundreds of urban households documented 2023–2024.'],
-   ['⚡','June 2023 Level 3 eruption: LandLedger QR accepted by DSWD field supervisors — first emergency use.'],
+   ['⚡','June 2023 Level 3 eruption: digital tenure record accepted by DSWD field supervisors — first emergency use.'],
    ['🎯','Full PDZ coverage requires ~45,000 more enrollments. At current rate: 8–10 years without scale-up.'],
    ['🔓','DSWD national policy recognition is the missing piece. Acceptance still depends on individual supervisors.']].forEach(function(f){
     h+='<div style="display:flex;gap:8px;font-size:10.5px;color:#7a9cc0;line-height:1.55;align-items:flex-start;margin-bottom:6px">';
@@ -4203,7 +4263,7 @@ function showTenurePanel(){
   [
     {n:'Santo Domingo',s:'~52% informal tenure. Highest undocumented rate in province. Northern PDZ flank.',tag:'Highest Exposure',tc:'td'},
     {n:'Rapu-Rapu',s:'~62% informal. Island isolation: no LGU records office accessible in emergency. Mining compounds the problem.',tag:'Island Records Gap',tc:'tis'},
-    {n:'Camalig',s:'~48% informal. PDZ core. Families displaced 4–5× still can\'t access DSWD aid without LandLedger.',tag:'PDZ Core',tc:'td'},
+    {n:'Camalig',s:'~48% informal. PDZ core. Families displaced 4–5× still can\'t access DSWD aid without formal tenure documentation.',tag:'PDZ Core',tc:'td'},
     {n:'Legazpi City',s:'~25% informal but largest absolute count — 196k population. Active IOM pilot site.',tag:'IOM Pilot',tc:'ti'}
   ].forEach(function(m){
     h+='<button class="story-btn" onclick="focusMuni(\''+m.n+'\')" style="width:100%;margin-bottom:6px">';
@@ -4567,10 +4627,10 @@ function showAlertPanel(level){
       4:{status:'FAILING',items:['Daraga Water District pumping station at lahar risk: pre-emptive shutdown','8 PDZ municipalities on emergency water trucking','Hygiene conditions at evacuation centers under stress','Diarrheal disease risk rising — standard post-eruption pattern']},
       5:{status:'FAILED',items:['Full PDZ water system offline','Emergency water trucking from Legazpi and Tabaco','WHO WASH standards: 15L/person/day minimum — current trucking capacity covers ~60%','Sanitation at large evacuation centers becoming critical']}}  ,
     tenure:{
-      2:{status:'WATCH',items:['Pre-disaster tenure documentation: LandLedger enrollment ongoing','~'+infPop+'k households in advisory zone with informal tenure']},
-      3:{status:'ACTIVATING',items:['DSWD emergency registration opens at evacuation centers','Documentation requirement: land title or tax declaration (Amilyar)','~'+infPop+'k displaced people with informal tenure entering the aid system','LandLedger QR codes: accepted in some DSWD field operations, not standardized','Community certification letters: rejected at most registration desks']},
-      4:{status:'WALL ACTIVE',items:['Aid backlog building at evacuation centers: informal households screened out','DSWD ESA (₱10k–₱30k) inaccessible to ~'+infPop+'k people','NHA Core Shelter program: title required for priority listing','LandLedger pilot coverage: ~12–15% of informal households enrolled — gap remains','Community leaders formally requesting DSWD to accept alternative documentation']},
-      5:{status:'SYSTEMIC FAILURE',items:['NDRRMC emergency protocols activated — some informal access via community validation','Field offices applying inconsistent documentation standards under surge pressure','Informal households: ~'+infPop+'k people at risk of receiving zero formal aid','LandLedger: IOM requesting DSWD emergency directive to accept digital records','Recovery phase will entrench tenure insecurity if documentation wall not resolved']}}
+      2:{status:'WATCH',items:['Pre-disaster tenure documentation: community enrollment ongoing','~'+infPop+'k households in advisory zone with informal tenure']},
+      3:{status:'ACTIVATING',items:['DSWD emergency registration opens at evacuation centers','Documentation requirement: land title or tax declaration (Amilyar)','~'+infPop+'k displaced people with informal tenure entering the aid system','Digital or physical tenure records: accepted in some DSWD field operations, not standardized','Community certification letters: rejected at most registration desks']},
+      4:{status:'WALL ACTIVE',items:['Aid backlog building at evacuation centers: informal households screened out','DSWD ESA (₱10k–₱30k) inaccessible to ~'+infPop+'k people','NHA Core Shelter program: title required for priority listing','Tenure documentation coverage: significant gap remains among informal households','Community leaders formally requesting DSWD to accept alternative documentation']},
+      5:{status:'SYSTEMIC FAILURE',items:['NDRRMC emergency protocols activated — some informal access via community validation','Field offices applying inconsistent documentation standards under surge pressure','Informal households: ~'+infPop+'k people at risk of receiving zero formal aid','Humanitarian partners requesting DSWD emergency directive to accept digital or physical tenure records','Recovery phase will entrench tenure insecurity if documentation wall not resolved']}}
   };
 
   // Compute "who gets left behind"
@@ -4791,7 +4851,7 @@ function showAlertPanel(level){
     tenure:{
       title:'Activate alternative documentation protocol',
       audience:'IOM HLP / DSWD field officers / NGO shelter leads',
-      actions:['LandLedger QR codes can be accepted as proof of occupancy. Brief DSWD field registration officers at each evacuation center before registration opens — inconsistent acceptance is the documented failure point.','Community validation protocol: barangay captain attestation + two neighbor signatures has been used in prior events. Prepare blank validation forms before displacement.','~'+infPop+'k informal households will be screened out of DSWD ESA under standard documentation requirements. Identify which NGOs can provide parallel emergency shelter assistance for this gap population.']
+      actions:['Digital or physical tenure records can be accepted as proof of occupancy. Brief DSWD field registration officers at each evacuation center before registration opens — inconsistent acceptance is the documented failure point.','Community validation protocol: barangay captain attestation + two neighbor signatures has been used in prior events. Prepare blank validation forms before displacement.','~'+infPop+'k informal households will be screened out of DSWD ESA under standard documentation requirements. Identify which NGOs can provide parallel emergency shelter assistance for this gap population.']
     }
   };
   if(activeCas.size>0){
@@ -4876,21 +4936,23 @@ function buildStrCardList(){
     var s=STORIES[id];
     var oc=outcomeColor[s.outcome.type]||'#94a3b8';
     var ol=outcomeLabel[s.outcome.type]||s.outcome.type;
-    h+='<div class="res-card" onclick="openStory(\''+id+'\')" style="margin-bottom:8px;cursor:pointer;position:relative;padding-bottom:10px">';
-    h+='<div style="display:flex;align-items:flex-start;gap:10px;padding:12px 12px 6px">';
-    h+='<div style="width:38px;height:38px;border-radius:50%;background:rgba(255,107,53,.12);border:2px solid rgba(255,107,53,.35);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">'+s.icon+'</div>';
+    h+='<div onclick="openStory(\''+id+'\')" style="cursor:pointer;margin-bottom:10px;border-radius:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-left:3px solid '+oc+';padding:12px 13px;transition:background .15s" onmouseover="this.style.background=\'rgba(255,255,255,.11)\'" onmouseout="this.style.background=\'rgba(255,255,255,.07)\'">';
+    // Header row
+    h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">';
+    h+='<div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">'+s.icon+'</div>';
     h+='<div style="flex:1;min-width:0">';
-    h+='<div style="font-size:13px;font-weight:700;color:var(--text-main)">'+s.name+'<span style="font-size:11px;font-weight:400;color:var(--text-faint);margin-left:4px">'+s.age+'</span></div>';
-    h+='<div style="font-size:10px;color:var(--accent);font-weight:600;margin-bottom:2px">'+s.role+'</div>';
-    h+='<div style="font-size:10px;color:var(--text-faint)">'+s.loc+'</div>';
+    h+='<div style="font-size:13.5px;font-weight:700;color:#f1f5f9;line-height:1.2">'+s.name+' <span style="font-size:11px;font-weight:400;color:#94a3b8">'+s.age+'</span></div>';
+    h+='<div style="font-size:10.5px;font-weight:600;color:'+oc+';margin-top:1px">'+s.role+'</div>';
+    h+='<div style="font-size:10px;color:#94a3b8;margin-top:1px">'+s.loc+'</div>';
     h+='</div></div>';
-    h+='<div style="padding:0 12px 0 60px">';
-    h+='<div style="font-size:11px;color:var(--text-dim);line-height:1.5;margin-bottom:6px;font-style:italic">"'+s.quote.substring(0,90)+(s.quote.length>90?'…':'')+'"</div>';
+    // Quote
+    h+='<div style="font-size:11.5px;color:#cbd5e1;line-height:1.55;font-style:italic;margin-bottom:9px">"'+s.quote.substring(0,100)+(s.quote.length>100?'…':'')+'"</div>';
+    // Outcome badge
     h+='<div style="display:flex;align-items:center;gap:5px">';
     h+='<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:'+oc+'"></span>';
-    h+='<span style="font-size:9.5px;font-weight:600;color:'+oc+'">'+ol+'</span>';
-    h+='<span style="font-size:9.5px;color:var(--text-faint);margin-left:2px">· Composite profile</span>';
-    h+='</div></div>';
+    h+='<span style="font-size:10px;font-weight:700;color:'+oc+'">'+ol+'</span>';
+    h+='<span style="font-size:10px;color:#64748b;margin-left:3px">· Composite profile</span>';
+    h+='</div>';
     h+='</div>';
   });
   list.innerHTML=h;
@@ -4966,37 +5028,6 @@ function openStory(id){
   h+='</div></div>';
   h+='<div style="height:24px"></div>';
   rp.innerHTML=h;
-}
-
-// ================================================================
-// CULTURAL RECORD
-// ================================================================
-var crOpen=false, crTab='apsemo';
-function toggleCrDrawer(){
-  crOpen=!crOpen;
-  document.getElementById('cr-drawer').classList.toggle('open',crOpen);
-  document.getElementById('cr-strip').classList.toggle('open',crOpen);
-  if(crOpen) renderCrTab(crTab);
-}
-function openCulturalRecord(tab){
-  crTab=tab||'apsemo';
-  crOpen=true;
-  document.getElementById('cr-drawer').classList.add('open');
-  document.getElementById('cr-strip').classList.add('open');
-  document.querySelectorAll('.cr-tab').forEach(function(t){t.classList.toggle('active',t.textContent.toLowerCase().replace(/[^a-z]/g,'')===crTab.replace(/[^a-z]/g,''));});
-  renderCrTab(crTab);
-}
-function switchCrTab(tab){
-  crTab=tab;
-  document.querySelectorAll('.cr-tab').forEach(function(t,i){
-    var tabs=['apsemo','framework','landledger','gaps'];
-    t.classList.toggle('active',tabs[i]===tab);
-  });
-  renderCrTab(tab);
-}
-function renderCrTab(tab){
-  var body=document.getElementById('cr-body');
-  body.innerHTML=CR_CONTENT[tab]||'<p style="color:var(--text-faint);padding:20px">Content not found.</p>';
 }
 
 // ================================================================
@@ -5116,17 +5147,17 @@ function initLandingMap(){
   setTimeout(stepTrack,700);
 }
 
-function enterApp(){
+function enterApp(grp){
   var ld=document.getElementById('landing');
   if(!ld) return;
   if(_remingAnimTimer) clearTimeout(_remingAnimTimer);
   ld.style.transition='opacity .55s';
   ld.style.opacity='0';
+  if(grp) setModeGroup(grp);
   setTimeout(function(){
     ld.style.display='none';
     map.invalidateSize();
-    updateMapLegend(); // init map legend state
-    // Boundaries are baked in — no API fetch needed
+    updateMapLegend();
   },580);
   toggleLpPanel();
 }
@@ -5225,6 +5256,220 @@ window.addEventListener('load',function(){
     tip.style.left=left+'px';
     tip.style.top=top2+'px';
   };
+})();
+</script>
+
+<!-- ── TOUR + PANEL GUIDE SYSTEM ─────────────────────────────────────────── -->
+<script>
+(function(){
+
+// ── STORAGE KEYS ────────────────────────────────────────────────────────────
+var TOUR_KEY='svi-tour-seen-v2';
+var GUIDE_KEY='svi-rp-guide-seen-v2';
+
+// ── TOUR STEPS ───────────────────────────────────────────────────────────────
+// Each step: {targetId, title, text, pos:'top'|'bottom'|'left'|'right'|'center'}
+var TOUR_STEPS=[
+  {
+    targetId:'lp-nav',
+    title:'Switch focus dimensions',
+    text:'These four tabs let you focus on different risk dimensions: overall multi-hazard risk, tenure & housing security, infrastructure failure risk, or community resilience. The map updates live as you switch.',
+    pos:'right'
+  },
+  {
+    targetId:'map-legend',
+    title:'Read the color scale',
+    text:'Darker hexes = higher combined vulnerability. Use the toggles in the legend to switch individual hazard or social layers on and off — each layer shows what\'s driving the score.',
+    pos:'right'
+  },
+  {
+    targetId:'map',
+    title:'Click to explore a place',
+    text:'Click any municipality or barangay to open its full vulnerability profile in the right panel. The panel walks through what the scores mean, what\'s driving them, and what can be done.',
+    pos:'center'
+  }
+];
+
+var _tourIdx=0;
+var _tourActive=false;
+
+// ── TOUR ENGINE ──────────────────────────────────────────────────────────────
+window.startTour=function(){
+  if(_tourActive) return;
+  _tourActive=true;
+  _tourIdx=0;
+  var bd=document.getElementById('tour-backdrop');
+  bd.classList.add('active');
+  _showTourStep(_tourIdx);
+};
+
+window.tourNext=function(){
+  _tourIdx++;
+  if(_tourIdx>=TOUR_STEPS.length){
+    endTour();
+    return;
+  }
+  _showTourStep(_tourIdx);
+};
+
+window.endTour=function(){
+  _tourActive=false;
+  localStorage.setItem(TOUR_KEY,'1');
+  var bd=document.getElementById('tour-backdrop');
+  var sp=document.getElementById('tour-spotlight');
+  var card=document.getElementById('tour-card');
+  var arrow=document.getElementById('tour-arrow');
+  bd.classList.remove('active');
+  sp.style.opacity='0';
+  card.classList.add('hidden');
+  arrow.className='tour-arrow hidden';
+  setTimeout(function(){
+    sp.style.cssText='';
+    card.style.cssText='';
+    card.classList.add('hidden');
+  },350);
+};
+
+function _showTourStep(idx){
+  var step=TOUR_STEPS[idx];
+  var el=document.getElementById(step.targetId);
+  var card=document.getElementById('tour-card');
+  var sp=document.getElementById('tour-spotlight');
+  var arrow=document.getElementById('tour-arrow');
+
+  // Update text
+  document.getElementById('tour-step-num').textContent='Step '+(idx+1)+' of '+TOUR_STEPS.length;
+  document.getElementById('tour-step-title').textContent=step.title;
+  document.getElementById('tour-step-text').textContent=step.text;
+
+  var nextBtn=document.getElementById('tour-btn-next');
+  nextBtn.textContent=idx===TOUR_STEPS.length-1 ? 'Done ✓' : 'Next →';
+
+  // Dots
+  var dotsEl=document.getElementById('tour-dots');
+  dotsEl.innerHTML='';
+  for(var i=0;i<TOUR_STEPS.length;i++){
+    var d=document.createElement('div');
+    d.className='tour-dot'+(i===idx?' active':'');
+    dotsEl.appendChild(d);
+  }
+
+  // Position spotlight + card
+  if(step.pos==='center' || !el){
+    // Center card, no spotlight
+    sp.style.opacity='0';
+    sp.style.width='0';
+    sp.style.height='0';
+    arrow.className='tour-arrow hidden';
+    card.classList.remove('hidden');
+    var cw=280,ch=200;
+    card.style.left=Math.round((window.innerWidth-cw)/2)+'px';
+    card.style.top=Math.round((window.innerHeight-ch)/2)+'px';
+    card.style.opacity='1';
+  } else {
+    var r=el.getBoundingClientRect();
+    var pad=8;
+    sp.style.left=(r.left-pad)+'px';
+    sp.style.top=(r.top-pad)+'px';
+    sp.style.width=(r.width+pad*2)+'px';
+    sp.style.height=(r.height+pad*2)+'px';
+    sp.style.opacity='1';
+
+    // Position card relative to target
+    var cw=280;
+    var margin=16;
+    var cx,cy;
+    if(step.pos==='right'){
+      cx=r.right+margin;
+      cy=Math.max(10,r.top+r.height/2-80);
+      // Arrow pointing left (card is to the right of target)
+      arrow.className='tour-arrow left';
+      arrow.style.left=(r.right+margin-9)+'px';
+      arrow.style.top=(r.top+r.height/2-9)+'px';
+    } else if(step.pos==='left'){
+      cx=r.left-cw-margin;
+      cy=Math.max(10,r.top+r.height/2-80);
+      arrow.className='tour-arrow right';
+      arrow.style.left=(r.left-margin)+'px';
+      arrow.style.top=(r.top+r.height/2-9)+'px';
+    } else if(step.pos==='bottom'){
+      cx=Math.max(10,r.left+r.width/2-cw/2);
+      cy=r.bottom+margin;
+      arrow.className='tour-arrow up';
+      arrow.style.left=(r.left+r.width/2-9)+'px';
+      arrow.style.top=(r.bottom+margin-9)+'px';
+    } else { // top
+      cx=Math.max(10,r.left+r.width/2-cw/2);
+      cy=r.top-180-margin;
+      arrow.className='tour-arrow down';
+      arrow.style.left=(r.left+r.width/2-9)+'px';
+      arrow.style.top=(r.top-margin)+'px';
+    }
+    // Clamp to viewport
+    if(cx+cw>window.innerWidth-10) cx=window.innerWidth-cw-10;
+    if(cx<10) cx=10;
+    card.classList.remove('hidden');
+    card.style.left=cx+'px';
+    card.style.top=cy+'px';
+    card.style.opacity='1';
+  }
+}
+
+// ── RIGHT PANEL GUIDE ────────────────────────────────────────────────────────
+var _rpGuideSeen=false;
+
+window.showRpGuide=function(){
+  if(_rpGuideSeen) return;
+  if(localStorage.getItem(GUIDE_KEY)) { _rpGuideSeen=true; return; }
+  var guide=document.getElementById('rp-guide');
+  if(!guide) return;
+  guide.classList.remove('hidden');
+};
+
+window.dismissRpGuide=function(){
+  _rpGuideSeen=true;
+  localStorage.setItem(GUIDE_KEY,'1');
+  var guide=document.getElementById('rp-guide');
+  if(guide){
+    guide.style.transition='opacity .3s';
+    guide.style.opacity='0';
+    setTimeout(function(){ guide.classList.add('hidden'); guide.style.opacity=''; guide.style.transition=''; },300);
+  }
+};
+
+// ── WIRING: fire tour after landing dismissed ────────────────────────────────
+// Hook into enterApp — patch it after it's defined
+var _origEnterApp=null;
+function _patchEnterApp(){
+  if(typeof enterApp==='function' && !_origEnterApp){
+    _origEnterApp=enterApp;
+    window.enterApp=function(grp){
+      _origEnterApp(grp);
+      if(!localStorage.getItem(TOUR_KEY)){
+        setTimeout(startTour, 700);
+      }
+    };
+  }
+}
+// Try immediately and on load (enterApp may not be defined yet)
+_patchEnterApp();
+window.addEventListener('load', _patchEnterApp);
+
+// ── REPLAY BUTTON: add "?" button to map controls ────────────────────────────
+window.addEventListener('load',function(){
+  var mapWrap=document.getElementById('map-wrap');
+  if(!mapWrap) return;
+  var btn=document.createElement('button');
+  btn.id='tour-replay-btn';
+  btn.title='Replay tour';
+  btn.textContent='?';
+  btn.style.cssText='position:absolute;bottom:60px;right:10px;z-index:800;width:28px;height:28px;background:rgba(8,12,24,.82);backdrop-filter:blur(8px);border:1px solid rgba(100,140,220,.25);border-radius:50%;color:#64748b;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s';
+  btn.onmouseenter=function(){ btn.style.color='#e2e8f0'; btn.style.borderColor='rgba(255,255,255,.3)'; };
+  btn.onmouseleave=function(){ btn.style.color='#64748b'; btn.style.borderColor='rgba(100,140,220,.25)'; };
+  btn.onclick=function(){ localStorage.removeItem(TOUR_KEY); startTour(); };
+  mapWrap.appendChild(btn);
+});
+
 })();
 </script>
 </body>
