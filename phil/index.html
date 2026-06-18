@@ -654,7 +654,8 @@ canvas:focus,canvas:focus-visible{outline:none}
 /* ── TOUR SYSTEM ─────────────────────────────────────────────────────────── */
 #tour-backdrop{position:fixed;inset:0;z-index:29000;pointer-events:none;transition:opacity .3s}
 #tour-backdrop.active{pointer-events:auto}
-#tour-spotlight{position:fixed;z-index:29001;border-radius:10px;box-shadow:0 0 0 9999px rgba(0,0,0,.72);transition:all .35s cubic-bezier(.4,0,.2,1);pointer-events:none}
+#tour-spotlight{display:none;position:fixed;z-index:29001;border-radius:10px;box-shadow:0 0 0 9999px rgba(0,0,0,.72);transition:all .35s cubic-bezier(.4,0,.2,1);pointer-events:none}
+#tour-spotlight.visible{display:block}
 #tour-card{position:fixed;z-index:29002;width:280px;background:#0f1e36;border:1px solid rgba(100,140,220,.35);border-radius:12px;padding:18px 18px 14px 18px;box-shadow:0 8px 32px rgba(0,0,0,.6);transition:all .35s cubic-bezier(.4,0,.2,1);position:fixed}
 #tour-card.hidden{opacity:0;pointer-events:none}
 .tour-step-num{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#64748b;margin-bottom:6px}
@@ -5320,10 +5321,10 @@ window.endTour=function(){
   var arrow=document.getElementById('tour-arrow');
   bd.classList.remove('active');
   bd.onclick=null;
-  sp.style.opacity='0';
+  sp.classList.remove('visible');
+  sp.style.cssText='';
   card.classList.add('hidden');
   arrow.className='tour-arrow hidden';
-  setTimeout(function(){ sp.style.cssText=''; card.style.cssText=''; card.classList.add('hidden'); },350);
 };
 
 // Escape key always exits tour
@@ -5356,7 +5357,8 @@ function _showTourStep(idx){
 
   // Helper: center fallback
   function _centerCard(){
-    sp.style.cssText='opacity:0;width:0;height:0';
+    sp.classList.remove('visible');
+    sp.style.cssText='';
     arrow.className='tour-arrow hidden';
     card.classList.remove('hidden');
     card.style.left=Math.round((vw-cw)/2)+'px';
@@ -5372,11 +5374,11 @@ function _showTourStep(idx){
   if(r.width<10 || r.height<10 || r.right<0 || r.bottom<0 || r.left>vw || r.top>vh){ _centerCard(); return; }
 
   var pad=8;
+  sp.classList.add('visible');
   sp.style.left=(r.left-pad)+'px';
   sp.style.top=(r.top-pad)+'px';
   sp.style.width=(r.width+pad*2)+'px';
   sp.style.height=(r.height+pad*2)+'px';
-  sp.style.opacity='1';
 
   var cx,cy;
   if(step.pos==='right'){
