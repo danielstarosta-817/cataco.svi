@@ -150,6 +150,26 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .lp-nav-label{font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--text-dim)}
 .lp-nav-btn.active .lp-nav-label{color:inherit}
 .lp-nav-q{font-size:10.5px;color:var(--text-faint);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lp-nav-section{font-size:8.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#1e3050;padding:8px 10px 3px;pointer-events:none;user-select:none}
+#app.lp-open .lp-nav-section{color:#334155}
+.lp-nav-divider{height:1px;background:rgba(255,255,255,.06);margin:4px 10px}
+.lp-nav-btn[data-grp="act"]{border-left-color:rgba(99,179,237,.35)}
+.lp-nav-btn[data-grp="act"]:hover,.lp-nav-btn[data-grp="act"].active{border-left-color:#63b3ed;background:rgba(99,179,237,.10);color:#90cdf4}
+/* Actions tab content */
+.lpg-act-default{padding:14px 14px 8px;display:flex;flex-direction:column;gap:10px}
+.lpg-act-prompt{padding:12px 14px;background:rgba(99,179,237,.06);border:1px solid rgba(99,179,237,.2);border-radius:8px;font-size:11px;color:#64748b;line-height:1.6;text-align:center}
+.lpg-act-prompt strong{display:block;color:#90cdf4;font-size:12px;margin-bottom:4px}
+.lpg-act-place-hdr{padding:12px 14px 4px;border-bottom:1px solid rgba(255,255,255,.07)}
+.lpg-act-place-name{font-size:15px;font-weight:800;color:#fff;margin-bottom:2px}
+.lpg-act-place-sub{font-size:10.5px;color:#64748b}
+.lpg-act-phases{padding:0 10px}
+.lpg-act-gaps{padding:10px 14px 14px}
+.lpg-act-gaps-label{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin-bottom:8px}
+.rp-act-cta{display:flex;align-items:center;justify-content:space-between;margin:0 10px 14px;padding:12px 14px;background:rgba(99,179,237,.07);border:1px solid rgba(99,179,237,.25);border-radius:9px;cursor:pointer;transition:all .15s}
+.rp-act-cta:hover{background:rgba(99,179,237,.13);border-color:rgba(99,179,237,.4)}
+.rp-act-cta-txt{font-size:12px;font-weight:700;color:#90cdf4}
+.rp-act-cta-sub{font-size:10.5px;color:#475569;margin-top:2px}
+.rp-act-cta-arr{font-size:18px;color:#63b3ed}
 /* Groups */
 #lp-groups{flex:1;overflow-y:auto;overflow-x:clip}
 #app:not(.lp-open) #lp-groups{display:none}
@@ -258,7 +278,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 #mleg-info-tooltip strong{color:var(--text)}
 #mleg-info-wrap:hover #mleg-info-tooltip,#mleg-info-btn:focus + #mleg-info-tooltip{display:block}
 /* Right panel */
-#rightpanel{grid-column:3;grid-row:1;background:var(--surface);border-left:1px solid var(--border);border-right:1px solid var(--border);overflow-y:auto;overflow-x:clip;z-index:1000;display:none;min-width:0}
+#rightpanel{grid-column:3;grid-row:1;background:#060d1c;border-left:1px solid var(--border);border-right:1px solid var(--border);overflow-y:auto;overflow-x:clip;z-index:1000;display:none;min-width:0}
 #app.has-detail #rightpanel{display:block}
 #rightpanel::-webkit-scrollbar{width:3px}
 #rightpanel::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
@@ -520,19 +540,27 @@ canvas:focus,canvas:focus-visible{outline:none}
 .rp-muni-name{font-size:20px;font-weight:800;color:#f8fafc;letter-spacing:-.01em}
 .rp-muni-sub{font-size:11px;color:#7a9cc0;margin-top:2px}
 /* ── Accordion panels ────────────────────────────────────────────────── */
-.rp-acc{border-bottom:1px solid rgba(255,255,255,.07)}
-.rp-acc:last-child{border-bottom:none}
-.rp-acc-hdr{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;cursor:pointer;gap:10px;transition:background .15s;user-select:none}
-.rp-acc-hdr:hover{background:rgba(255,255,255,.03)}
+/* Accordion cards — each section is a distinct elevated card */
+.rp-acc{background:#101e38;border:1px solid rgba(255,255,255,0.12);border-radius:10px;margin:0 10px 7px;overflow:hidden;transition:background .2s,border-color .2s,box-shadow .2s}
+.rp-acc:first-child{margin-top:10px}
+.rp-acc:last-child{margin-bottom:14px}
+.rp-acc-open{background:#162444;border-color:rgba(100,150,255,0.4);box-shadow:0 3px 16px rgba(0,0,0,.45)}
+.rp-acc:first-child.rp-acc-open{border-color:rgba(255,107,53,0.55);box-shadow:0 3px 16px rgba(255,107,53,.15)}
+.rp-acc-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;cursor:pointer;gap:10px;transition:background .15s;user-select:none}
+.rp-acc-hdr:hover{background:rgba(255,255,255,.04)}
+.rp-acc-open .rp-acc-hdr{padding-bottom:11px;border-bottom:1px solid rgba(255,255,255,.07)}
 .rp-acc-ttls{flex:1;min-width:0}
-.rp-acc-t{font-size:12px;font-weight:700;color:#e2e8f0;letter-spacing:.01em}
-.rp-acc-s{font-size:10px;color:#64748b;margin-top:2px;line-height:1.3}
-.rp-acc-chev{width:16px;height:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#475569;transition:transform .2s,color .15s}
-.rp-acc-chev::before{content:'›';font-size:16px;line-height:1;display:block}
-.rp-acc-open .rp-acc-chev{transform:rotate(90deg);color:#94a3b8}
-.rp-acc-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .22s ease}
+.rp-acc-t{font-size:12.5px;font-weight:700;color:#e2e8f0;letter-spacing:.01em}
+.rp-acc-open .rp-acc-t{color:#fff}
+.rp-acc-s{font-size:10.5px;color:#475569;margin-top:2px;line-height:1.3}
+.rp-acc-open .rp-acc-s{color:#64748b}
+.rp-acc-chev{width:20px;height:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#334155;transition:transform .2s,color .15s,background .15s;background:rgba(255,255,255,.05);border-radius:50%}
+.rp-acc-chev::before{content:'›';font-size:14px;line-height:1;display:block;margin-left:1px}
+.rp-acc-open .rp-acc-chev{transform:rotate(90deg);color:#94a3b8;background:rgba(255,255,255,.1)}
+.rp-acc-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .25s ease}
 .rp-acc-open .rp-acc-body{grid-template-rows:1fr}
-.rp-acc-inner{overflow:hidden;padding:0 14px 14px}
+.rp-acc-inner{overflow:hidden;min-height:0;padding:0}
+.rp-acc-content{padding:4px 14px 16px}
 /* Gap card visual distinction: phys=muted, comp=elevated */
 .rp-gap-card[data-tip="phys"]{background:#0c1622;border:1px dashed rgba(71,85,109,.45)}
 .rp-gap-card[data-tip="comp"]{background:#152030;border:1px solid rgba(100,140,220,.2)}
@@ -652,8 +680,8 @@ canvas:focus,canvas:focus-visible{outline:none}
 .ent-note{font-size:11px;color:var(--text-faint);line-height:1.55}
 
 /* ── TOUR SYSTEM ─────────────────────────────────────────────────────────── */
-#tour-backdrop{position:fixed;inset:0;z-index:29000;pointer-events:none;transition:opacity .3s}
-#tour-backdrop.active{pointer-events:auto}
+#tour-backdrop{display:none;position:fixed;inset:0;z-index:29000;pointer-events:none;transition:opacity .3s}
+#tour-backdrop.active{display:block;pointer-events:auto}
 #tour-spotlight{display:none;position:fixed;z-index:29001;border-radius:10px;box-shadow:0 0 0 9999px rgba(0,0,0,.72);transition:all .35s cubic-bezier(.4,0,.2,1);pointer-events:none}
 #tour-spotlight.visible{display:block}
 #tour-card{position:fixed;z-index:29002;width:280px;background:#0f1e36;border:1px solid rgba(100,140,220,.35);border-radius:12px;padding:18px 18px 14px 18px;box-shadow:0 8px 32px rgba(0,0,0,.6);transition:all .35s cubic-bezier(.4,0,.2,1);position:fixed}
@@ -895,17 +923,18 @@ canvas:focus,canvas:focus-visible{outline:none}
       <button id="lp-toggle" onclick="toggleLpPanel()" title="Collapse panel">&#8249;</button>
     </div>
     <div id="lp-nav">
+      <div class="lp-nav-section">Explore</div>
       <button class="lp-nav-btn active" data-grp="risk" onclick="setModeGroup('risk')">
         <span class="lp-nav-icon">🌋</span>
         <span class="lp-nav-text"><span class="lp-nav-label">Risk</span><span class="lp-nav-q">Hazard &amp; vulnerability layers</span></span>
       </button>
-      <button class="lp-nav-btn" data-grp="tenure" onclick="setModeGroup('tenure')">
-        <span class="lp-nav-icon">📋</span>
-        <span class="lp-nav-text"><span class="lp-nav-label">Land Tenure</span><span class="lp-nav-q">Formality, title &amp; aid access</span></span>
-      </button>
       <button class="lp-nav-btn" data-grp="fail" onclick="setModeGroup('fail')">
         <span class="lp-nav-icon">⚡</span>
         <span class="lp-nav-text"><span class="lp-nav-label">Failure Modes</span><span class="lp-nav-q">What breaks when Mayon erupts?</span></span>
+      </button>
+      <button class="lp-nav-btn" data-grp="tenure" onclick="setModeGroup('tenure')">
+        <span class="lp-nav-icon">📋</span>
+        <span class="lp-nav-text"><span class="lp-nav-label">Land Tenure</span><span class="lp-nav-q">Formality, title &amp; aid access</span></span>
       </button>
       <button class="lp-nav-btn" data-grp="res" onclick="setModeGroup('res')">
         <span class="lp-nav-icon">🌿</span>
@@ -914,6 +943,12 @@ canvas:focus,canvas:focus-visible{outline:none}
       <button class="lp-nav-btn" data-grp="str" onclick="setModeGroup('str')">
         <span class="lp-nav-icon">🧑</span>
         <span class="lp-nav-text"><span class="lp-nav-label">Human Stories</span><span class="lp-nav-q">What did it feel like to live it?</span></span>
+      </button>
+      <div class="lp-nav-divider"></div>
+      <div class="lp-nav-section">Decide</div>
+      <button class="lp-nav-btn" data-grp="act" onclick="setModeGroup('act')">
+        <span class="lp-nav-icon">🎯</span>
+        <span class="lp-nav-text"><span class="lp-nav-label">Actions</span><span class="lp-nav-q">Guidance, phases &amp; priority gaps</span></span>
       </button>
     </div>
 
@@ -999,6 +1034,13 @@ canvas:focus,canvas:focus-visible{outline:none}
         </div>
         <div style="padding:8px 10px 16px" id="str-card-list"></div>
       </div>
+      <!-- ── GROUP: act (actions) ── -->
+      <div id="lpg-act" class="lp-group" style="display:none">
+        <div id="lpg-act-content">
+          <!-- Rendered by _buildActionsPanel() -->
+        </div>
+      </div>
+
     </div><!-- end lp-groups -->
   </div><!-- end leftpanel -->
 
@@ -3741,7 +3783,7 @@ function buildMarkersWithAlert(){
 // RIGHT PANEL
 // ================================================================
 function _acc(title,sub,content,open){
-  return '<div class="rp-acc'+(open?' rp-acc-open':'')+'"><div class="rp-acc-hdr" onclick="this.parentElement.classList.toggle(\'rp-acc-open\')"><div class="rp-acc-ttls"><div class="rp-acc-t">'+title+'</div><div class="rp-acc-s">'+sub+'</div></div><span class="rp-acc-chev"></span></div><div class="rp-acc-body"><div class="rp-acc-inner">'+content+'</div></div></div>';
+  return '<div class="rp-acc'+(open?' rp-acc-open':'')+'"><div class="rp-acc-hdr" onclick="this.parentElement.classList.toggle(\'rp-acc-open\')"><div class="rp-acc-ttls"><div class="rp-acc-t">'+title+'</div><div class="rp-acc-s">'+sub+'</div></div><span class="rp-acc-chev"></span></div><div class="rp-acc-body"><div class="rp-acc-inner"><div class="rp-acc-content">'+content+'</div></div></div></div>';
 }
 
 function openPanel(m){
@@ -3961,30 +4003,19 @@ function openPanel(m){
     hDims+='<div id="rp-dims-block">'+_buildDims(muni,isBrgy,enr,'all')+'</div>';
     h+=_acc('What\'s Driving It','Sensitivity, exposure, and adaptive capacity unpacked',hDims);
 
-    // ── ACCORDION 4: ACTIONS & GUIDANCE ───────────────
-    var hPlan='<div class="rp-phase-tabs" id="rp-phase-tabs">';
-    ['Preparedness','Response','Recovery','Mitigation','Adaptation'].forEach(function(p,i){
-      hPlan+='<button class="rp-phase-tab'+(i===0?' active':'')+'" data-phase="'+p+'" onclick="rpPhaseSwitch(this)">'+p+'</button>';
-    });
-    hPlan+='</div><div id="rp-phase-content">'+_buildPhase('Preparedness',muni,isBrgy,enr)+'</div>';
-    h+=_acc('Actions &amp; Guidance','What can be done before, during, and after',hPlan);
-
-    // ── ACCORDION 5: GAPS & NEEDS ──────────────────────
-    var hNeeds='';
-    var needs=[];
-    if(muni.ptenure>0.35) needs.push('Tenure documentation: ~'+Math.round(muni.ptenure*100)+'% of households lack formal title — pre-register with DSWD alternates (barangay cert / affidavit).');
-    if(isBrgy&&enr&&enr[BE.pdz]) needs.push('PDZ pre-positioning: evacuation pack checklist and rapid registration for APSEMO coordinated evacuation.');
-    if(muni.svi_road>0.5) needs.push('Route planning: identify secondary evacuation routes — road isolation score is elevated for this area.');
-    if(isBrgy&&enr&&enr[BE.stacked]) needs.push('Prioritization flag: stacked vulnerability — this barangay should appear on first-response priority list.');
-    if(muni.svi_cell>0.45) needs.push('Communication: community radio or barangay warning node — cell coverage gaps documented here.');
-    if(localNha.length>0) needs.push('NHA site audit: verify lot transfers and drainage before next storm season ('+localNha.length+' site(s) in '+muni.n+').');
-    if(needs.length===0) needs.push('No critical pre-event gaps flagged. Standard DRR protocols apply. Revisit after next field assessment.');
-    needs.forEach(function(n){ hNeeds+='<div class="rp-needs-item"><span class="rp-needs-arrow">→</span>'+n+'</div>'; });
-    h+=_acc('Gaps &amp; Needs','Current priority gaps to address before the next event',hNeeds);
+    // ── CTA: ACTIONS TAB ─────────────────────────────────
+    h+='<div class="rp-act-cta" onclick="setModeGroup(\'act\')">';
+    h+='<div><div class="rp-act-cta-txt">🎯 See what to do in '+(isBrgy?m.n:muni.n)+'</div>';
+    h+='<div class="rp-act-cta-sub">Phase-by-phase guidance &amp; priority gaps →</div></div>';
+    h+='<span class="rp-act-cta-arr">›</span>';
+    h+='</div>';
 
   }
 
   rp.innerHTML = h;
+
+  // If Actions tab is active, refresh it with the newly selected place
+  if(curModeGroup==='act') _buildActionsPanel(muni, isBrgy, isBrgy&&m._enr||null);
 
   // Show right panel accordion guide on first open
   if(typeof showRpGuide==='function') setTimeout(showRpGuide, 80);
@@ -4411,6 +4442,67 @@ function _buildTenureBars(){
   el.innerHTML=h;
 }
 
+function _buildActionsPanel(muni,isBrgy,enr){
+  var el=document.getElementById('lpg-act-content');
+  if(!el) return;
+  var h='';
+  if(!muni){
+    // Default — no place selected
+    h+='<div class="lpg-act-default">';
+    h+='<div class="lpg-act-prompt"><strong>🎯 Actions &amp; Guidance</strong>Click any municipality or barangay on the map to see localized phase-by-phase guidance and priority gaps for that place.</div>';
+    // Generic province-wide intro
+    h+='<div style="padding:4px 0 0">';
+    h+='<div style="font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#64748b;margin-bottom:10px;padding:0 4px">Province-wide baseline</div>';
+    h+='<div class="rp-phase-tabs" id="rp-phase-tabs-act">';
+    ['Preparedness','Response','Recovery','Mitigation','Adaptation'].forEach(function(p,i){
+      h+='<button class="rp-phase-tab'+(i===0?' active':'')+'" data-phase="'+p+'" onclick="rpPhaseSwitchAct(this)">'+p+'</button>';
+    });
+    h+='</div>';
+    h+='<div id="rp-phase-content-act" style="padding:0 4px">'+_buildPhase('Preparedness',null,false,null)+'</div>';
+    h+='</div></div>';
+  } else {
+    // Place selected
+    var placeName=isBrgy?((_selectedBrgy?_selectedBrgy.n:muni.n)+', '+muni.n):(muni.n);
+    h+='<div class="lpg-act-place-hdr">';
+    h+='<div class="lpg-act-place-name">'+placeName+'</div>';
+    h+='<div class="lpg-act-place-sub">Phase-by-phase guidance + priority gaps</div>';
+    h+='</div>';
+    h+='<div class="lpg-act-phases">';
+    h+='<div class="rp-phase-tabs" id="rp-phase-tabs-act">';
+    ['Preparedness','Response','Recovery','Mitigation','Adaptation'].forEach(function(p,i){
+      h+='<button class="rp-phase-tab'+(i===0?' active':'')+'" data-phase="'+p+'" onclick="rpPhaseSwitchAct(this)">'+p+'</button>';
+    });
+    h+='</div>';
+    h+='<div id="rp-phase-content-act">'+_buildPhase('Preparedness',muni,isBrgy,enr)+'</div>';
+    h+='</div>';
+    // Gaps & Needs
+    var needs=[];
+    if(muni.ptenure>0.35) needs.push('Tenure documentation: ~'+Math.round(muni.ptenure*100)+'% of households lack formal title — pre-register with DSWD alternates.');
+    if(isBrgy&&enr&&enr[BE.pdz]) needs.push('PDZ pre-positioning: evacuation pack checklist and rapid registration for APSEMO coordinated evacuation.');
+    if(muni.svi_road>0.5) needs.push('Route planning: identify secondary evacuation routes — road isolation score is elevated.');
+    if(isBrgy&&enr&&enr[BE.stacked]) needs.push('Prioritization flag: stacked vulnerability — should appear on first-response priority list.');
+    if(muni.svi_cell>0.45) needs.push('Communication: community radio or barangay warning node — cell coverage gaps documented here.');
+    if(typeof localNha!=='undefined'&&localNha.length>0) needs.push('NHA site audit: verify lot transfers and drainage before next storm season.');
+    if(needs.length>0){
+      h+='<div class="lpg-act-gaps">';
+      h+='<div class="lpg-act-gaps-label">Priority gaps</div>';
+      needs.forEach(function(n){ h+='<div class="rp-needs-item"><span class="rp-needs-arrow">→</span>'+n+'</div>'; });
+      h+='</div>';
+    }
+  }
+  el.innerHTML=h;
+}
+
+function rpPhaseSwitchAct(btn){
+  document.querySelectorAll('#rp-phase-tabs-act .rp-phase-tab').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  var pc=document.getElementById('rp-phase-content-act');
+  var muni=_selectedMuni||null;
+  var isBrgy=!!_selectedBrgy;
+  var enr=_selectedBrgy&&_selectedBrgy._enr||null;
+  if(pc) pc.innerHTML=_buildPhase(btn.dataset.phase,muni,isBrgy,enr);
+}
+
 function setModeGroup(grp){
   curModeGroup=grp;
   document.querySelectorAll('.lp-nav-btn').forEach(function(b){
@@ -4421,6 +4513,8 @@ function setModeGroup(grp){
     g.style.display=id===grp?'flex':'none';
     if(id===grp) g.classList.add('active'); else g.classList.remove('active');
   });
+  // Build actions panel when tab opened
+  if(grp==='act') _buildActionsPanel(_selectedMuni,!!_selectedBrgy,_selectedBrgy&&_selectedBrgy._enr||null);
   // Set map mode
   if(grp==='risk') curMode='phys';
   else if(grp==='tenure'){
@@ -4435,7 +4529,7 @@ function setModeGroup(grp){
   else if(grp==='str') curMode='str';
   else curMode='phys';
   document.getElementById('map-badge').textContent=
-    grp==='risk'?'Compound Risk':grp==='tenure'?'Land Tenure':grp==='res'?'Resilience':grp==='fail'?'Failure Modes':grp==='str'?'Human Stories':'Stories';
+    grp==='risk'?'Compound Risk':grp==='tenure'?'Land Tenure':grp==='res'?'Resilience':grp==='fail'?'Failure Modes':grp==='str'?'Human Stories':grp==='act'?'Actions':'Stories';
 
   var root=document.documentElement;
   var legend=document.getElementById('map-legend');
