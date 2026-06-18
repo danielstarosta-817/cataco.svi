@@ -5448,9 +5448,7 @@ function _patchEnterApp(){
     _origEnterApp=enterApp;
     window.enterApp=function(grp){
       _origEnterApp(grp);
-      if(!localStorage.getItem(TOUR_KEY)){
-        setTimeout(startTour, 1200);
-      }
+      // Tour is opt-in only via the ? button — never auto-fires
     };
   }
 }
