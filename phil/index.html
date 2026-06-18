@@ -5349,7 +5349,9 @@ function _showTourStep(idx){
     dotsEl.appendChild(d);
   }
 
-  var vw=window.innerWidth, vh=window.innerHeight;
+  // Use clientWidth/Height as robust fallback (innerWidth=0 in background tabs)
+  var vw=Math.max(window.innerWidth||0, document.documentElement.clientWidth||0, 800);
+  var vh=Math.max(window.innerHeight||0, document.documentElement.clientHeight||0, 600);
   var cw=280, ch=220, margin=16;
 
   // Helper: center fallback
@@ -5366,8 +5368,8 @@ function _showTourStep(idx){
   if(step.pos==='center' || !el){ _centerCard(); return; }
 
   var r=el.getBoundingClientRect();
-  // If target is off-screen or too small, fall back to center
-  if(r.width<2 || r.height<2 || r.right<0 || r.bottom<0 || r.left>vw || r.top>vh){ _centerCard(); return; }
+  // If target is off-screen, zero-sized, or landing page still covering it, fall back to center
+  if(r.width<10 || r.height<10 || r.right<0 || r.bottom<0 || r.left>vw || r.top>vh){ _centerCard(); return; }
 
   var pad=8;
   sp.style.left=(r.left-pad)+'px';
@@ -5447,7 +5449,7 @@ function _patchEnterApp(){
     window.enterApp=function(grp){
       _origEnterApp(grp);
       if(!localStorage.getItem(TOUR_KEY)){
-        setTimeout(startTour, 700);
+        setTimeout(startTour, 1200);
       }
     };
   }
