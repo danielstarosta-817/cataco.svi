@@ -1488,21 +1488,6 @@ input[type=range].sim-range::-webkit-slider-thumb:hover{transform:scale(1.2)}
 #ld-enter:active{transform:none}
 #ld-enter .arrow{transition:transform .2s}
 #ld-enter:hover .arrow{transform:translateX(4px)}
-/* ── Mode selection grid on landing ── */
-#ld-mode-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:4px;}
-.ld-mode-btn{
-  display:flex;align-items:flex-start;gap:12px;
-  width:100%;padding:11px 14px;
-  background:rgba(255,255,255,.03);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:9px;cursor:pointer;text-align:left;
-  transition:all .18s;
-}
-.ld-mode-btn:hover{background:rgba(0,212,255,.08);border-color:rgba(0,212,255,.3);}
-.ld-mode-icon{font-size:18px;line-height:1;margin-top:2px;flex-shrink:0;}
-.ld-mode-body{display:flex;flex-direction:column;gap:2px;}
-.ld-mode-label{font-size:13px;font-weight:600;color:var(--text,#e8edf2);}
-.ld-mode-desc{font-size:11.5px;color:var(--text-dim,#8a9bb0);line-height:1.4;}
 
 .ld-note{
   margin-top:18px;
@@ -1759,40 +1744,11 @@ input[type=range].sim-range::-webkit-slider-thumb:hover{transform:scale(1.2)}
         </div>
       </div>
 
-      <p style="font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(0,212,255,.6);margin:20px 0 8px">Where do you want to start?</p>
-      <div id="ld-mode-grid">
-        <button class="ld-mode-btn" onclick="dismissLanding('vuln')">
-          <span class="ld-mode-icon">👥</span>
-          <span class="ld-mode-body">
-            <span class="ld-mode-label">Risk &amp; Vulnerability</span>
-            <span class="ld-mode-desc">Where is risk highest, and who bears it?</span>
-          </span>
+      <div style="display:flex;align-items:center;gap:14px;margin-top:4px">
+        <button id="ld-enter" data-i18n="ld.btn" onclick="dismissLanding()">
+          Start Exploring <span class="arrow">&#8594;</span>
         </button>
-        <button class="ld-mode-btn" onclick="dismissLanding('fail')">
-          <span class="ld-mode-icon">⚡</span>
-          <span class="ld-mode-body">
-            <span class="ld-mode-label">Failure Modes</span>
-            <span class="ld-mode-desc">What happens when systems break?</span>
-          </span>
-        </button>
-        <button class="ld-mode-btn" onclick="dismissLanding('res')">
-          <span class="ld-mode-icon">🌿</span>
-          <span class="ld-mode-body">
-            <span class="ld-mode-label">Resilience Assets</span>
-            <span class="ld-mode-desc">What is already working?</span>
-          </span>
-        </button>
-        <button class="ld-mode-btn" onclick="dismissLanding('str')">
-          <span class="ld-mode-icon">🧑</span>
-          <span class="ld-mode-body">
-            <span class="ld-mode-label">Human Stories</span>
-            <span class="ld-mode-desc">The experience behind the data.</span>
-          </span>
-        </button>
-      </div>
-      <div style="display:flex;align-items:center;gap:14px;margin-top:12px">
-        <button id="ld-enter" onclick="dismissLanding(null)" style="background:none;border:none;color:rgba(255,255,255,.35);font-size:12px;cursor:pointer;padding:0;transition:color .15s" onmouseover="this.style.color='rgba(255,255,255,.6)'" onmouseout="this.style.color='rgba(255,255,255,.35)'">Explore freely →</button>
-        <div class="lang-toggle" style="background:rgba(255,255,255,.04);margin-left:auto">
+        <div class="lang-toggle" style="background:rgba(255,255,255,.04)">
           <button class="lang-btn active" data-lang="en" onclick="setLang('en')">🇺🇸 EN</button>
           <button class="lang-btn" data-lang="es" onclick="setLang('es')">🇪🇸 ES</button>
         </div>
@@ -9274,7 +9230,7 @@ function initLandingMap(){
 // Apply saved language on load
 try{if(LANG!=='en') applyLang();}catch(e){}
 
-function dismissLanding(group){
+function dismissLanding(){
   var el=document.getElementById('landing');
   if(!el) return;
   if(_mariaAnimTimer) clearTimeout(_mariaAnimTimer);
@@ -9299,9 +9255,6 @@ function dismissLanding(group){
       setTimeout(function(){ _setLpOpen(true); }, 50);
     }
   }
-  // Open the chosen mode group (or default to vuln for "explore freely")
-  var g=group||'vuln';
-  setTimeout(function(){ if(typeof setModeGroup==='function') setModeGroup(g); }, 100);
 }
 
 // Init landing map when DOM is ready
@@ -10314,7 +10267,6 @@ function toggleCR() {
   </div>
 </div>
 <!-- ── end Cultural Record ───────────────────────────────────────── -->
-
 
 </body>
 </html>
