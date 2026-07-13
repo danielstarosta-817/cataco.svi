@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brackish Projects — Social Vulnerability Intelligence Suite</title>
+<meta name="description" content="A suite of interactive maps showing where physical hazard and social vulnerability converge — built for local governments, public officials, and community organizations.">
+<link rel="icon" type="image/png" href="assets/brackish-favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#080C18;
+    --bg-panel:#0E1526;
+    --bg-panel-hover:#121b31;
+    --border:rgba(255,255,255,.08);
+    --border-strong:rgba(255,255,255,.14);
+    --accent:#FF8C65;
+    --accent-dim:rgba(255,140,101,.14);
+    --secondary:#7f8fa6;
+    --secondary-dim:rgba(127,143,166,.14);
+    --text:#EDF1F7;
+    --text-dim:#A9B3C4;
+    --text-faint:#6b7688;
+    --red:#FF6B6B;
+    --green:#34D399;
+    --yellow:#FFD93D;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none}
+  img,svg{display:block}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 32px}
+  @media(max-width:640px){.wrap{padding:0 20px}}
+
+  /* ── background hex texture ─────────────────────────────────────── */
+  .hexfield{
+    position:absolute;inset:0;
+    background-image:
+      radial-gradient(circle at 15% 8%, rgba(255,140,101,.10), transparent 42%),
+      radial-gradient(circle at 85% 0%, rgba(127,143,166,.14), transparent 40%);
+    pointer-events:none;
+  }
+  .hex-pattern{
+    position:absolute;inset:0;opacity:.35;pointer-events:none;
+    background-repeat:repeat;
+    background-size:64px 74px;
+  }
+
+  /* ── nav ─────────────────────────────────────────────────────────── */
+  header.nav{
+    position:sticky;top:0;z-index:50;
+    background:var(--bg);
+    border-bottom:1px solid var(--border);
+  }
+  header.nav .wrap{
+    position:relative;
+    display:flex;align-items:center;justify-content:space-between;
+    height:64px;
+  }
+  .nav-cream-cut{
+    position:absolute;top:0;left:0;height:100%;
+    width:300px;
+    background:#F8F1E7;
+    clip-path:polygon(0 0, 100% 0, calc(100% - 30px) 100%, 0 100%);
+    z-index:0;
+    transition:background-color .35s ease;
+  }
+  @media(max-width:640px){.nav-cream-cut{width:100%;clip-path:none}}
+  header.nav.scrolled .nav-cream-cut{background:var(--bg)}
+  .brand{
+    position:relative;z-index:1;
+    display:flex;align-items:center;gap:11px;
+    font-weight:800;font-size:15px;letter-spacing:-.01em;
+    color:#1C3646;
+    transition:color .35s ease;
+  }
+  header.nav.scrolled .brand{color:var(--text)}
+  .brand-mark{height:36px;width:auto;flex-shrink:0;display:block}
+  nav.nav-links{display:flex;gap:28px;font-size:13px;font-weight:600;color:var(--text-dim)}
+  nav.nav-links a{transition:color .15s}
+  nav.nav-links a:hover{color:var(--text)}
+  @media(max-width:640px){nav.nav-links{display:none}}
+
+  /* ── hero ────────────────────────────────────────────────────────── */
+  .hero{position:relative;padding:100px 0 90px;overflow:hidden;border-bottom:1px solid var(--border)}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:9px;
+    font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--accent);margin-bottom:22px;
+  }
+  .eyebrow::before{content:'';width:26px;height:2px;background:var(--accent);border-radius:1px}
+  .hero h1{
+    position:relative;z-index:1;
+    font-size:clamp(32px,5vw,54px);font-weight:900;letter-spacing:-.03em;line-height:1.08;
+    max-width:760px;margin-bottom:26px;
+  }
+  .hero h1 em{font-style:normal;color:var(--accent)}
+  .hero p.lede{
+    position:relative;z-index:1;
+    font-size:16.5px;line-height:1.7;color:var(--text-dim);max-width:600px;margin-bottom:40px;
+  }
+  .hero p.lede strong{color:var(--text);font-weight:700}
+
+  .hero-stats{position:relative;z-index:1;display:flex;gap:40px;flex-wrap:wrap;margin-bottom:44px}
+  .hs-val{font-size:30px;font-weight:900;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+  .hs-lbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-faint);margin-top:2px}
+
+  .btn-primary{
+    position:relative;z-index:1;
+    display:inline-flex;align-items:center;gap:10px;
+    background:var(--accent);color:#080C18;
+    font-size:14.5px;font-weight:800;
+    padding:15px 30px;border-radius:9px;
+    transition:transform .15s ease, box-shadow .15s ease;
+    box-shadow:0 8px 24px -8px rgba(255,140,101,.5);
+  }
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 28px -8px rgba(255,140,101,.6)}
+  .btn-primary svg{width:16px;height:16px}
+
+  /* ── approach ────────────────────────────────────────────────────── */
+  .approach{padding:88px 0;border-bottom:1px solid var(--border)}
+  .section-head{max-width:640px;margin-bottom:52px}
+  .section-eyebrow{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--secondary);margin-bottom:14px}
+  .section-head h2{font-size:clamp(24px,3vw,32px);font-weight:800;letter-spacing:-.02em;margin-bottom:14px;line-height:1.22}
+  .section-head p{font-size:14.5px;color:var(--text-dim);line-height:1.7}
+
+  .approach-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+  .approach-step{background:var(--bg-panel);padding:32px 28px;position:relative}
+  .as-num{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:30px;height:30px;border-radius:8px;
+    font-size:12px;font-weight:800;margin-bottom:20px;
+  }
+  .as-num.exposure{background:rgba(255,109,109,.14);color:var(--red)}
+  .as-num.sensitivity{background:var(--secondary-dim);color:var(--secondary)}
+  .as-num.adaptive{background:var(--accent-dim);color:var(--accent)}
+  .approach-step h3, .feature-card h3{font-size:15.5px;font-weight:800;margin-bottom:10px;letter-spacing:-.01em}
+  .approach-step p, .feature-card p{font-size:13.5px;color:var(--text-dim);line-height:1.65}
+  .approach-note{margin-top:26px;font-size:13px;color:var(--text-faint);line-height:1.65;max-width:720px}
+
+  @media(max-width:820px){
+    .approach-grid{grid-template-columns:1fr;}
+  }
+
+  /* ── features ────────────────────────────────────────────────────── */
+  .features{padding:88px 0;border-bottom:1px solid var(--border)}
+  .feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+  .feature-card{background:var(--bg-panel);padding:30px 24px;position:relative}
+  .feature-card.feature-favorite{background:var(--bg-panel-hover)}
+  .feature-star{position:absolute;top:16px;right:18px;font-size:13px;color:var(--accent);opacity:.9}
+  @media(max-width:900px){.feature-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.feature-grid{grid-template-columns:1fr}}
+
+  /* ── tools ───────────────────────────────────────────────────────── */
+  .tools{padding:88px 0 100px}
+  .tool-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+  @media(max-width:900px){.tool-grid{grid-template-columns:1fr}}
+
+  .tool-card{
+    background:var(--bg-panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:30px 30px 26px;
+    display:flex;flex-direction:column;
+    transition:border-color .18s ease, transform .18s ease, background .18s ease;
+    position:relative;
+    overflow:hidden;
+    opacity:0;transform:translateY(14px);
+  }
+  .tool-card.in{opacity:1;transform:translateY(0);transition:opacity .5s ease,transform .5s ease,border-color .18s ease,background .18s ease}
+  .tool-card:hover{border-color:var(--border-strong);background:var(--bg-panel-hover)}
+  .tool-card::after{
+    content:'';position:absolute;top:0;left:0;right:0;height:3px;
+    background:var(--card-accent,var(--accent));opacity:.85;
+  }
+  /* background texture + outline watermark inside each card */
+  .tc-topo{position:absolute;inset:0;width:100%;height:100%;opacity:.15;pointer-events:none;z-index:0;color:var(--secondary)}
+  .tool-card:nth-of-type(2) .tc-topo{transform:scaleX(-1)}
+  .tool-card:nth-of-type(3) .tc-topo{transform:rotate(180deg)}
+  .tool-card:nth-of-type(4) .tc-topo{transform:scaleY(-1)}
+  .tool-card:nth-of-type(5) .tc-topo{transform:rotate(90deg) scale(1.3)}
+  .tool-card.placeholder .tc-topo{opacity:.08}
+  .tc-outline{position:absolute;right:-8px;bottom:-8px;width:52%;max-width:210px;opacity:.16;pointer-events:none;z-index:0;filter:drop-shadow(0 0 1px rgba(0,0,0,.4))}
+  .tc-outline path{fill:var(--card-accent,var(--accent));fill-opacity:.14;stroke:var(--card-accent,var(--accent));stroke-width:2.4}
+
+  .tc-content{position:relative;z-index:1;display:flex;flex-direction:column;height:100%}
+
+  .tc-flagrow{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+  .tc-flag-emoji{font-size:22px;line-height:1}
+  .tc-flag-text{display:flex;flex-direction:column;gap:3px}
+  .tc-flag{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--card-accent,var(--accent))}
+  .tc-flag-sub{font-size:9.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)}
+  .tc-title{font-size:19px;font-weight:800;letter-spacing:-.015em;line-height:1.3;margin-bottom:14px}
+  .tc-blurb{font-size:13.5px;color:var(--text-dim);line-height:1.65;margin-bottom:22px;flex-grow:1}
+  .tc-stats{display:flex;gap:22px;flex-wrap:wrap;margin-bottom:24px;padding-top:20px;border-top:1px solid var(--border)}
+  .tc-stat-val{font-size:18px;font-weight:800;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+  .tc-stat-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-faint);margin-top:3px;line-height:1.4}
+
+  .tc-tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px}
+  .tc-tag{
+    font-size:10px;font-weight:600;letter-spacing:.03em;
+    color:var(--text-dim);
+    background:rgba(255,255,255,.04);
+    border:1px solid var(--border);
+    padding:5px 11px;border-radius:20px;
+    white-space:nowrap;
+  }
+
+  .tc-actions{display:flex;gap:10px;flex-wrap:wrap}
+  .tc-launch{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:13.5px;font-weight:700;
+    color:var(--text);
+    border:1px solid var(--border-strong);
+    padding:11px 20px;border-radius:8px;
+    transition:background .15s,border-color .15s,color .15s;
+  }
+  .tc-launch svg{width:14px;height:14px;transition:transform .15s}
+  .tool-card:hover .tc-launch{background:var(--card-accent,var(--accent));border-color:var(--card-accent,var(--accent));color:#080C18}
+  .tool-card:hover .tc-launch svg{transform:translateX(3px)}
+
+  .tc-think-btn{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:13.5px;font-weight:600;
+    color:var(--text-dim);
+    background:none;
+    border:1px solid transparent;
+    padding:11px 16px;border-radius:8px;
+    cursor:pointer;
+    font-family:inherit;
+    transition:background .15s,border-color .15s,color .15s;
+  }
+  .tc-think-btn:hover{color:var(--text);border-color:var(--border-strong);background:rgba(255,255,255,.03)}
+  .tc-think-btn svg{width:13px;height:13px}
+
+  .tool-card.placeholder{
+    border-style:dashed;
+    align-items:flex-start;justify-content:center;
+    min-height:100%;
+  }
+  .tool-card.placeholder::after{display:none}
+  .tool-card.placeholder .tc-flag{color:var(--text-faint)}
+  .tool-card.placeholder .tc-title{color:var(--text-dim)}
+
+  /* ── work-in-progress cards (dimmed, not launchable) ───────────────── */
+  .tool-card.wip{opacity:.55;filter:saturate(.6)}
+  .tool-card.wip.in{opacity:.55}
+  .tool-card.wip:hover{border-color:var(--border);background:var(--bg-panel)}
+  .tool-card.wip::after{opacity:.35}
+  .tc-wip-badge{
+    font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--text-faint);
+    border:1px solid var(--border-strong);
+    padding:3px 9px;border-radius:20px;
+    margin-left:auto;white-space:nowrap;
+  }
+  .tc-launch-disabled{
+    color:var(--text-faint);
+    border-color:var(--border);
+    cursor:default;
+    pointer-events:none;
+  }
+  .tool-card.wip:hover .tc-launch-disabled{background:none;color:var(--text-faint);border-color:var(--border)}
+  .tool-card.wip:hover .tc-launch-disabled svg{transform:none}
+  .ph-icon{width:34px;height:34px;margin-bottom:16px;color:var(--text-faint)}
+
+  /* ── thinking modal ──────────────────────────────────────────────── */
+  .modal-overlay{
+    position:fixed;inset:0;z-index:999;
+    background:rgba(4,6,14,.78);
+    backdrop-filter:blur(8px);
+    display:flex;align-items:center;justify-content:center;
+    padding:32px;
+    opacity:0;visibility:hidden;
+    transition:opacity .22s ease,visibility .22s ease;
+  }
+  .modal-overlay.open{opacity:1;visibility:visible}
+  .modal-panel{
+    position:relative;
+    background:var(--bg-panel);
+    border:1px solid var(--border-strong);
+    border-radius:18px;
+    width:100%;max-width:640px;max-height:82vh;
+    overflow-y:auto;
+    padding:46px 44px 40px;
+    box-shadow:0 30px 70px -20px rgba(0,0,0,.6);
+    transform:translateY(10px);
+    transition:transform .22s ease;
+  }
+  .modal-overlay.open .modal-panel{transform:translateY(0)}
+  .modal-close{
+    position:absolute;top:18px;right:18px;
+    width:32px;height:32px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(255,255,255,.05);border:1px solid var(--border);
+    color:var(--text-dim);cursor:pointer;
+    transition:background .15s,color .15s;
+  }
+  .modal-close:hover{background:rgba(255,255,255,.1);color:var(--text)}
+  .modal-close svg{width:15px;height:15px}
+  .think-eyebrow{display:flex;align-items:center;gap:9px;font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--modal-accent,var(--accent));margin-bottom:16px}
+  .think-eyebrow::before{content:'';width:20px;height:2px;background:var(--modal-accent,var(--accent));border-radius:1px}
+  .think-title{font-size:23px;font-weight:800;letter-spacing:-.02em;line-height:1.28;margin-bottom:22px;padding-right:24px}
+  .think-p{font-size:14px;line-height:1.75;color:var(--text-dim);margin-bottom:16px}
+  .think-p strong{color:var(--text)}
+  .think-quote{
+    margin-top:8px;margin-bottom:6px;
+    font-size:13px;font-style:italic;line-height:1.65;color:var(--text-dim);
+    border-left:2px solid var(--modal-accent,var(--accent));
+    background:rgba(255,255,255,.03);
+    padding:14px 18px;border-radius:0 8px 8px 0;
+  }
+  @media(max-width:640px){
+    .modal-panel{padding:36px 24px 30px;max-height:88vh}
+    .think-title{font-size:20px;padding-right:16px}
+  }
+
+  /* ── footer ──────────────────────────────────────────────────────── */
+  footer{border-top:1px solid var(--border);padding:44px 0}
+  footer .wrap{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap}
+  footer p{font-size:12.5px;color:var(--text-faint);max-width:520px;line-height:1.65}
+  footer .fbrand{
+    display:flex;align-items:center;gap:9px;
+    font-size:12.5px;font-weight:700;
+    color:#1C3646;
+    background:#F8F1E7;
+    padding:6px 14px 6px 8px;
+    border-radius:9px;
+    align-self:flex-start;
+  }
+  footer .fbrand img{height:17px;width:auto;display:block}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- Hand-generated topographic contour artwork: nested elevation rings + a couple of
+         depression pits + long flow lines, reused (and mirrored/rotated) across cards. -->
+    <symbol id="topo-art" viewBox="0 0 400 300">
+      <g fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round">
+        <path d="M 138.4,85.0 C 139.2,87.9 139.4,91.9 138.3,94.6 C 137.2,97.4 134.1,99.8 131.6,101.6 C 129.1,103.4 126.2,104.5 123.4,105.2 C 120.6,106.0 117.7,106.2 115.0,105.9 C 112.3,105.6 109.9,104.4 107.4,103.4 C 104.9,102.4 102.3,101.5 100.1,99.9 C 97.8,98.3 95.2,96.2 94.0,93.7 C 92.8,91.2 92.9,87.9 93.0,85.0 C 93.1,82.1 93.7,79.3 94.5,76.5 C 95.4,73.7 96.2,70.3 98.1,68.1 C 100.1,65.9 103.2,64.1 106.0,63.3 C 108.8,62.5 112.2,62.9 115.0,63.3 C 117.8,63.7 120.6,64.5 122.9,65.8 C 125.3,67.1 127.1,69.2 128.8,71.2 C 130.6,73.1 131.8,75.1 133.4,77.4 C 135.0,79.7 137.6,82.1 138.4,85.0 Z"/>
+        <path d="M 160.3,85.0 C 161.6,90.5 161.4,98.1 159.1,103.3 C 156.7,108.5 150.9,112.9 146.2,116.2 C 141.5,119.5 136.0,121.8 130.8,123.2 C 125.6,124.6 120.1,125.1 115.0,124.6 C 109.9,124.1 105.2,122.1 100.4,120.3 C 95.5,118.5 90.4,117.0 86.1,113.9 C 81.8,110.8 77.0,106.5 74.8,101.6 C 72.6,96.8 72.8,90.5 72.9,85.0 C 73.1,79.5 74.0,74.1 75.7,68.7 C 77.3,63.4 79.2,57.0 82.9,52.9 C 86.6,48.8 92.8,45.7 98.1,44.2 C 103.5,42.7 109.7,43.3 115.0,44.0 C 120.3,44.7 125.7,46.1 130.1,48.5 C 134.5,50.9 138.1,54.8 141.6,58.4 C 145.1,62.0 147.9,65.6 151.0,70.1 C 154.1,74.5 158.9,79.5 160.3,85.0 Z"/>
+        <path d="M 183.7,85.0 C 185.4,93.3 184.2,104.4 180.4,112.1 C 176.7,119.8 168.0,126.1 161.0,131.0 C 154.1,136.0 146.2,139.6 138.5,141.8 C 130.8,144.0 122.6,144.8 115.0,144.2 C 107.4,143.7 100.2,141.1 92.8,138.5 C 85.5,136.0 77.5,133.7 71.1,128.9 C 64.7,124.2 57.8,117.3 54.6,110.0 C 51.4,102.7 51.7,93.3 51.9,85.0 C 52.0,76.7 53.2,68.4 55.7,60.4 C 58.2,52.4 61.3,43.0 67.1,37.1 C 72.8,31.1 82.0,26.8 90.0,24.7 C 98.0,22.5 107.1,23.1 115.0,24.0 C 122.9,25.0 130.9,27.0 137.6,30.4 C 144.3,33.9 149.8,39.4 155.3,44.7 C 160.7,50.0 165.6,55.4 170.3,62.1 C 175.0,68.8 182.0,76.7 183.7,85.0 Z"/>
+        <path d="M 208.3,85.0 C 210.1,96.3 207.5,110.9 202.2,121.1 C 196.8,131.3 185.5,139.5 176.2,146.2 C 166.9,152.8 156.7,157.9 146.5,161.0 C 136.3,164.1 125.3,165.3 115.0,164.8 C 104.7,164.3 94.8,161.3 84.8,158.0 C 74.8,154.6 63.6,151.5 55.1,144.9 C 46.5,138.4 37.7,128.8 33.5,118.8 C 29.3,108.8 29.6,96.2 29.8,85.0 C 30.0,73.8 31.2,62.4 34.7,51.7 C 38.1,41.0 42.9,28.5 50.7,20.7 C 58.5,12.9 71.0,7.5 81.7,4.6 C 92.4,1.7 104.4,2.2 115.0,3.3 C 125.6,4.4 136.3,6.9 145.5,11.3 C 154.7,15.8 162.4,23.0 170.0,30.0 C 177.6,37.0 184.8,44.3 191.2,53.4 C 197.6,62.6 206.5,73.7 208.3,85.0 Z"/>
+        <path d="M 76.9,232.0 C 77.2,234.8 75.7,239.0 73.8,241.1 C 71.9,243.3 68.1,244.2 65.5,244.9 C 62.8,245.7 60.5,245.6 58.0,245.6 C 55.5,245.6 52.8,246.0 50.4,245.1 C 48.0,244.2 45.2,242.5 43.6,240.3 C 42.1,238.1 41.2,234.8 41.0,232.0 C 40.9,229.2 41.6,225.8 43.0,223.3 C 44.4,220.9 47.1,218.4 49.6,217.4 C 52.1,216.4 55.5,216.9 58.0,217.4 C 60.5,217.9 62.4,219.4 64.6,220.5 C 66.9,221.6 69.5,222.3 71.5,224.2 C 73.6,226.1 76.5,229.2 76.9,232.0 Z"/>
+        <path d="M 325.8,235.0 C 325.4,237.7 322.5,240.5 320.7,242.5 C 318.9,244.6 317.0,246.1 315.0,247.5 C 313.0,249.0 311.0,250.4 308.7,251.1 C 306.4,251.9 303.8,252.1 301.1,252.0 C 298.5,251.8 295.1,251.7 292.9,250.2 C 290.7,248.7 288.9,245.8 287.9,243.2 C 286.9,240.7 286.9,237.8 286.9,235.0 C 286.9,232.2 286.6,229.0 287.8,226.7 C 289.0,224.4 291.7,222.4 294.0,221.2 C 296.2,219.9 298.9,219.7 301.4,219.2 C 303.9,218.8 306.3,218.4 308.7,218.7 C 311.1,219.0 313.5,220.0 315.9,221.3 C 318.3,222.5 321.5,224.0 323.2,226.3 C 324.8,228.5 326.2,232.3 325.8,235.0 Z"/>
+        <path d="M 345.4,235.0 C 344.4,240.4 338.9,245.5 335.5,249.7 C 332.2,253.9 329.0,257.2 325.1,260.2 C 321.3,263.2 317.1,266.2 312.5,267.7 C 307.8,269.3 302.4,270.1 297.1,269.7 C 291.8,269.3 285.0,268.6 280.7,265.5 C 276.4,262.4 273.2,256.3 271.3,251.3 C 269.3,246.2 268.9,240.4 268.9,235.0 C 268.8,229.6 268.6,223.1 271.0,218.6 C 273.4,214.1 278.9,210.4 283.3,207.8 C 287.8,205.3 292.9,204.3 297.8,203.3 C 302.6,202.2 307.6,201.2 312.6,201.8 C 317.5,202.4 322.6,204.3 327.4,206.9 C 332.2,209.5 338.5,212.7 341.5,217.4 C 344.5,222.1 346.4,229.6 345.4,235.0 Z"/>
+        <path d="M 364.9,235.0 C 363.3,243.2 355.6,250.5 350.8,257.0 C 346.0,263.5 341.8,269.2 336.1,274.0 C 330.4,278.8 323.8,283.4 316.6,285.9 C 309.4,288.4 300.8,289.7 292.7,289.0 C 284.5,288.3 274.3,286.5 267.9,281.6 C 261.4,276.7 257.1,267.3 254.1,259.5 C 251.1,251.8 250.0,243.2 249.9,235.0 C 249.8,226.8 249.9,217.1 253.6,210.2 C 257.3,203.4 265.6,198.1 272.3,194.0 C 279.0,190.0 286.4,187.7 293.8,185.9 C 301.2,184.2 309.1,182.5 316.8,183.4 C 324.5,184.3 332.5,187.2 339.9,191.3 C 347.2,195.4 356.6,200.8 360.8,208.1 C 365.0,215.4 366.6,226.8 364.9,235.0 Z"/>
+        <path d="M 364.4,60.0 C 364.9,62.2 364.1,66.0 362.6,67.7 C 361.1,69.3 357.5,69.7 355.2,69.9 C 353.0,70.1 351.1,69.5 349.1,68.9 C 347.1,68.3 344.9,67.7 343.4,66.2 C 342.0,64.8 340.6,62.2 340.4,60.0 C 340.2,57.8 340.8,54.7 342.1,52.8 C 343.4,51.0 346.3,49.2 348.4,48.9 C 350.5,48.6 353.0,50.1 354.9,51.1 C 356.8,52.0 357.9,53.1 359.5,54.5 C 361.1,56.0 363.9,57.8 364.4,60.0 Z"/>
+        <path d="M -10.0,190.0 C -1.7,187.5 23.3,174.2 40.0,175.0 C 56.7,175.8 71.7,196.7 90.0,195.0 C 108.3,193.3 130.0,167.5 150.0,165.0 C 170.0,162.5 190.0,182.5 210.0,180.0 C 230.0,177.5 250.0,151.7 270.0,150.0 C 290.0,148.3 306.7,171.7 330.0,170.0 C 353.3,168.3 396.7,145.0 410.0,140.0"/>
+        <path d="M -10.0,260.0 C 1.7,261.7 36.7,271.7 60.0,270.0 C 83.3,268.3 106.7,250.8 130.0,250.0 C 153.3,249.2 178.3,266.7 200.0,265.0 C 221.7,263.3 238.3,241.7 260.0,240.0 C 281.7,238.3 305.0,256.7 330.0,255.0 C 355.0,253.3 396.7,234.2 410.0,230.0"/>
+        <path d="M -10.0,30.0 C 3.3,32.5 45.0,46.7 70.0,45.0 C 95.0,43.3 115.0,20.8 140.0,20.0 C 165.0,19.2 193.3,40.8 220.0,40.0 C 246.7,39.2 268.3,15.8 300.0,15.0 C 331.7,14.2 391.7,31.7 410.0,35.0"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="nav">
+  <div class="wrap">
+    <div class="nav-cream-cut"></div>
+    <div class="brand">
+      <img class="brand-mark" src="assets/brackish-waves.png" alt="Brackish Projects">
+      Brackish Projects
+    </div>
+    <nav class="nav-links">
+      <a href="#framework">Framework</a>
+      <a href="#features">Features</a>
+      <a href="#tools">Regions</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hexfield"></div>
+  <svg class="hex-pattern" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <pattern id="hexes" width="64" height="74" patternUnits="userSpaceOnUse" patternTransform="translate(0,0)">
+        <polygon points="16,2 32,11 32,29 16,38 0,29 0,11" fill="none" stroke="rgba(127,143,166,0.14)" stroke-width="1"/>
+        <polygon points="48,39 64,48 64,66 48,75 32,66 32,48" fill="none" stroke="rgba(127,143,166,0.14)" stroke-width="1"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#hexes)"/>
+  </svg>
+
+  <div class="wrap">
+    <div class="eyebrow">Social Vulnerability Intelligence</div>
+    <h1>Bridging who we think is <em>most vulnerable</em> and who actually is.</h1>
+    <p class="lede">In many disaster-prone areas, risk can change dramatically at a block-to-block level, based on countless factors that go beyond traditional physical vulnerability metrics. This platform is, at its core, meant to bridge that divide by taking a purposefully qual/quant approach: it embraces the nuance and complexity of a place to show how physical and social hazard must be taken together to be genuinely effective, where historical and institutional gaps exist, and how that combination can inform critical decision-making.</p>
+    <p class="lede">It's designed to be dual-use. For humanitarian actors, a deeper and more complete view of the moving parts that create or hide localized vulnerability, so service delivery can be more targeted, effective, and efficient. For communities, governments, and local actors, validation of what they may already know or suspect about their own risk profile, so they can advocate for resource access and improvement on their own behalf.</p>
+
+    <div class="hero-stats">
+      <div><div class="hs-val" style="color:var(--accent)">3</div><div class="hs-lbl">Regions mapped</div></div>
+      <div><div class="hs-val" style="color:var(--secondary)">871</div><div class="hs-lbl">Municipalities covered</div></div>
+      <div><div class="hs-val" style="color:var(--text)">3</div><div class="hs-lbl">Countries</div></div>
+    </div>
+
+    <a href="#tools" class="btn-primary">
+      Explore the tools
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    </a>
+  </div>
+</section>
+
+<section class="approach" id="framework">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-eyebrow">The framework</div>
+      <h2>The model underneath every map</h2>
+      <p>Every tool in this suite explores vulnerability the same underlying way: by holding these three variables in relation to each other, not by treating any one of them as the whole answer.</p>
+    </div>
+
+    <div class="approach-grid">
+      <div class="approach-step">
+        <div class="as-num exposure">01</div>
+        <h3>Exposure</h3>
+        <p>How close is a community, geographically or situationally, to the hazard itself? Living in a coastal flood zone or an urban heat island shapes how directly people are in harm's way, sometimes down to which side of a street.</p>
+      </div>
+      <div class="approach-step">
+        <div class="as-num sensitivity">02</div>
+        <h3>Sensitivity</h3>
+        <p>Given that exposure, how much harm does it actually do? Age (young children, elderly residents), pre-existing health conditions, and dependence on climate-sensitive work like farming or fishing all shape how hard the same hazard hits different people standing in the same place.</p>
+      </div>
+      <div class="approach-step">
+        <div class="as-num adaptive">03</div>
+        <h3>Adaptive Capacity</h3>
+        <p>What can a person, household, or community actually draw on to cope and recover? Wealth, access to healthcare, strong community networks, and functioning institutions all determine whether that exposure and sensitivity turn into lasting harm or a manageable disruption.</p>
+      </div>
+    </div>
+    <p class="approach-note">Vulnerability isn't any one of these three on its own. It's what happens when you hold all of them together, and that's the core data-processing approach behind every tool in this suite.</p>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-eyebrow">Core features</div>
+      <h2>Four ways into the same map</h2>
+      <p>Built to be customized per region, but every tool in this suite is anchored by the same four features.</p>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="as-num exposure">01</div>
+        <h3>Vulnerability Map</h3>
+        <p>A tract-level vulnerability map with in-depth context on localized factors, plus guided instructions for how to use them in humanitarian decision-making.</p>
+      </div>
+      <div class="feature-card">
+        <div class="as-num sensitivity">02</div>
+        <h3>Failure Simulation</h3>
+        <p>An infrastructure failure simulation map. Understanding how systems cascade into each other gives a clear chronology for how communities are affected in the short and long term.</p>
+      </div>
+      <div class="feature-card">
+        <div class="as-num adaptive">03</div>
+        <h3>Resilience Map</h3>
+        <p>Local efforts that have provided support in affected areas, shown across the full spectrum of success and failure.</p>
+      </div>
+      <div class="feature-card feature-favorite">
+        <span class="feature-star" title="favorite" aria-hidden="true">★</span>
+        <div class="as-num adaptive">04</div>
+        <h3>Narrative Layer</h3>
+        <p>Composite, real-story-based lived experience, showing how people actually fared before, during, and after a disaster.</p>
+      </div>
+    </div>
+    <p class="approach-note">Each tool presents these features in locally contextualized ways, so you can see where risk concentrates and who is least equipped to withstand it.</p>
+  </div>
+</section>
+
+<section class="tools" id="tools">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-eyebrow">Explore the regions</div>
+      <h2>Pick a region to launch its tool</h2>
+      <p>Each tool is a self-contained map — built for its region's specific hazards, geography, and communities. Choose one below to open it.</p>
+    </div>
+    <div class="tool-grid" id="tool-grid"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fbrand">
+      <img src="assets/brackish-waves.png" alt="Brackish Projects">
+      Brackish Projects
+    </div>
+    <p>A framework for mapping where physical hazard and social vulnerability converge — built to help local governments, responders, and community organizations target resources where they matter most.</p>
+  </div>
+</footer>
+
+<div class="modal-overlay" id="thinking-modal" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal-panel">
+    <button class="modal-close" id="modal-close-btn" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+  // Data-driven so new regions can be added as single entries.
+  const TOOLS = [
+    {
+      id: 'pr',
+      emoji: '🇵🇷',
+      flagMain: 'Puerto Rico · Hurricanes & Earthquakes',
+      shortName: 'Puerto Rico',
+      title: 'When a storm hits, geography is only part of the story.',
+      blurb: 'Hurricane Maria exposed how hazard exposure and social vulnerability compound each other across Puerto Rico’s 78 municipalities. This tool maps that intersection, and the resilience assets and community stories that formed in its wake.',
+      stats: [
+        { val: '3,057', lbl: 'Deaths attributed to Maria', color: 'var(--red)' },
+        { val: '11 mo', lbl: 'Longest power outage', color: 'var(--yellow)' },
+        { val: '78', lbl: 'Municipalities mapped', color: 'var(--secondary)' }
+      ],
+      tags: ['Infrastructure Decay', 'Historical Context & Memory', 'Federal Response Blindspots', 'Block-Level Variation'],
+      href: 'puerto%20rico/index.html',
+      accent: '#FF8C65',
+      outline: {
+        viewBox: '30 30 670 260',
+        path: 'M 52,47 L 84,55 L 132,48 L 183,50 L 226,60 L 275,40 L 358,42 L 422,50 L 488,63 L 533,60 L 589,62 L 639,66 L 676,83 L 687,122 L 673,167 L 632,219 L 589,270 L 555,281 L 489,281 L 410,278 L 336,272 L 252,269 L 165,263 L 87,256 L 49,251 L 41,230 L 43,190 L 43,131 L 45,80 Z'
+      },
+      thinking: [
+        'We wanted to think about Puerto Rico as a collection of complicated, flawed, and nuanced lived experiences, the kind of thing that turns out to be an incredibly rich and undervalued dataset in its own right. Read that way, vulnerability stops being a single number and becomes a much deeper kind of view, one that tells a story physical risk alone can\'t account for, and one that helps us see the gaps in our existing process. The instinct across this whole tool was to embrace that complexity rather than flatten it.',
+        'A composite score can tell you a tract is "high vulnerability," but vulnerability on the ground doesn\'t stay inside the tract line. It can flip from block to block, sometimes house to house. Construction type is one variable, since concrete holds up to wind very differently than wood frame, but so is whether a family has lived through three hurricanes or none, whether a barrio has an informal leader people trust to organize water runs and check on elders, how much a household actually depends on neighbors versus manages alone, and even what kind of ground a home sits on, since soil that holds water becomes a landslide risk in a way a rockier hillside a quarter mile away doesn\'t. We wanted this tool to hold all of that at once, because none of it shows up if you stop at the census tract.',
+        'One of the clearest lessons for us was how easily a supply problem gets mistaken for a systems problem. After Maria, empty shelves in San Juan supermarkets read, from the outside, like scarcity. In a lot of cases the food was there. What was missing was grid power to run card payment processors, and without power or connectivity, a fully stocked store might as well be empty if most people pay by card. That\'s a different failure mode than "not enough food," and it calls for a different response: restore power and connectivity, don\'t truck in supplies that are already sitting on the shelf.',
+        'Recovery aid runs into its own version of this. It\'s common in Puerto Rico for a multigenerational family to build several homes on one shared plot of land, a mother\'s house, then a house for her son\'s family, then another. FEMA\'s process sees one lot, not three households, so the assistance available to that property doesn\'t reflect how many families actually need to recover from it. That\'s the kind of gap that\'s invisible in an aggregated dataset and completely obvious to anyone standing in the barrio.',
+        'We also wanted to look at compounded, multi-layer vulnerability, especially in areas that were hit first, but tended to last, and had existing economic fragility and low expectations of support going in. Resilience looks different when resources are tight but self-reliance is high by force, and treating that as a single vulnerability score misses what\'s actually happening in those communities.',
+        'Underneath all of this is a century of hurricane history that has shaped Puerto Rico\'s culture in specific, local ways, not a generic "resilience," but distinct lessons in distinct places about what to stockpile, who to check on, when to leave, and when experience says to stay. Two households with identical SVI scores can respond completely differently to the same storm because one carries the memory of an earlier storm and the other doesn\'t. Understanding how people are actually likely to respond, not just how vulnerable they score, is what turns a preparedness plan into something usable instead of generic.'
+      ],
+      thinkingQuote: '"A community\'s music is a map of what it has been through." Songs written about surviving a hurricane and its aftermath aren\'t decoration. They\'re evidence of how a place has already begun to process and prepare for the next one. We treat that as a resilience signal, not a footnote.'
+    },
+    {
+      id: 'phil',
+      emoji: '🇵🇭',
+      flagMain: 'Philippines · Typhoons, Tsunamis, Volcanic Eruptions & Lahars',
+      flagSub: 'Albay Province',
+      shortName: 'Albay',
+      title: 'Living in the shadow of compound risk.',
+      blurb: 'Mayon Volcano’s permanent danger zone overlaps with typhoon exposure and resettlement communities across Albay. This tool maps where those hazards converge with social vulnerability, block by block.',
+      stats: [
+        { val: '18', lbl: 'Municipalities mapped', color: 'var(--secondary)' },
+        { val: '6 km', lbl: 'Mayon danger zone', color: 'var(--red)' },
+        { val: '1.4M', lbl: 'People represented', color: 'var(--accent)' }
+      ],
+      tags: ['Tenure Formality Issues', 'Strong Institutional Development', 'Multi-Hazard Exposure'],
+      href: 'phil/index.html',
+      accent: '#FF8C65',
+      outline: {
+        viewBox: '20 55 460 390',
+        path: 'M 155,78 L 218,70 L 300,78 L 430,165 L 468,218 L 445,295 L 422,368 L 355,408 L 272,432 L 112,432 L 86,385 L 40,295 L 48,168 Z'
+      },
+      thinking: [
+        'We wanted this tool to hold Albay as a place where several very different kinds of exposure sit directly on top of each other: immediate volcanic danger, lahar flow that outlives the eruption itself, typhoon flooding, and underneath all of it, a housing and land system that decides who can actually get help afterward. None of those hazards move in isolation, and treating them as one physical risk score would flatten exactly what makes a household\'s situation specific.',
+        'The hardest number to get right in Albay wasn\'t a hazard number, it was housing tenure. Standard census categories don\'t have a box for "living near a volcano\'s no-build zone without formal title." The Philippine Statistics Authority\'s closest category, "rent-free without consent," is a known undercount of actual informal occupancy, and current PSA housing-tenure tables for Albay weren\'t even publicly accessible when we built this. So the population estimate on this map is a <strong>proxy</strong>, built from 2020 household counts weighted by tenure-insecurity indicators and DILG field assessments, not a clean census figure.',
+        'That mattered because informal tenure isn\'t one problem, it\'s several. In Daraga, it\'s dense peri-urban settlement dating to postwar occupancy that predates modern titling. In Santo Domingo, it\'s the highest informal-tenure rate in the province sitting inside a permanent no-build zone, where the land can\'t be formally titled no matter how long someone has lived there. In Malilipot, it\'s fishing families with ancestral coastal claims that never entered a cadastral record. We treat these as <strong>different failure modes, not one variable</strong>, because the fix for each is different.',
+        'We also wanted to correct for something previous responses seemed to misunderstand about how communities here are actually structured. Formal systems tend to assume a household can rely on family for the things people can\'t do alone, evacuating someone with limited mobility, for instance. But some of the people who show up in this data depend on neighbors, not family, for exactly that. One resident who has been evacuated four times put it simply: her neighbors carry her out, that is her evacuation plan. There is no formal protocol for that, even though it works every time. The same gap shows up for agricultural workers who commute into the danger zone daily but live outside it. They are not counted in evacuation planning and not eligible for aid when the farms close, because the system is built around where someone sleeps, not around what they depend on.',
+        'We wanted to hold onto the push and pull of leaving and returning as a real part of how this place functions, not an irrational habit to correct. Camalig has been evacuated nine times since 1984, and families go back to farm the same slopes every time, because the volcanic soil that makes the mountain dangerous is the same soil that makes it worth staying near. That tension follows people into resettlement too. Households moved permanently to NHA sites often get a sturdier concrete house and get out of the hazard zone, but lose the farm entirely, and we treat that loss as a real cost of the move, not a footnote to an otherwise successful relocation.',
+        'There\'s also a system-level pattern worth naming on its own. Albay\'s evacuation infrastructure is genuinely excellent: drills are practiced, alert timing beats the official national threshold, and casualties are near zero. But that success sits right next to a second system, aid registration, that runs on completely different logic and fails many of the same households evacuation just saved. One barangay captain gets held up as the model for evacuation and still watches most of the households he just evacuated get turned away at the documentation desk an hour later. We wanted the tool to show both halves of that story, because a system can work perfectly at the thing it measures and still fail the people it\'s supposed to serve.',
+        'The most encouraging data point we found wasn\'t a statistic, it was that this problem is already being solved locally. LandLedger, a community land-documentation pilot in Bonot, Pinaric, and Old Albay, has neighbors and barangay officials co-sign residency claims. In June 2023, a DSWD field officer accepted a LandLedger document as proof of residence for cash-transfer enrollment, the first documented case of a community-validated record standing in for a government one during an actual emergency. That\'s resilience infrastructure a hazard map alone would never show you.'
+      ],
+      thinkingQuote: 'A household can be exposed to Mayon\'s danger zone and structurally sound on a survey form, and still be invisible to the response system, because the thing standing between them and aid is a piece of paper no one has, not the volcano.'
+    },
+    {
+      id: 'mex',
+      emoji: '🇲🇽',
+      flagMain: 'Mexico · Hurricanes & Earthquakes',
+      flagSub: 'Guerrero – Oaxaca – Chiapas',
+      shortName: 'the Mexico corridor',
+      title: 'The corridor where hazard, violence, and marginalization converge.',
+      blurb: 'This corridor sits at the intersection of hurricane exposure, structural violence, and historic marginalization. The tool shows the gap between who aid systems identify and who actually faces the risk.',
+      stats: [
+        { val: '775', lbl: 'Municipios mapped', color: 'var(--secondary)' },
+        { val: 'Cat. 5', lbl: 'Hurricane Otis, 2023', color: 'var(--red)' },
+        { val: '#1', lbl: 'Cochoapa el Grande, most vulnerable', color: 'var(--accent)' }
+      ],
+      tags: ['Compounded Cyclical Vulnerability', 'Cartel Obstacles', 'Informal Land Tenure', 'Attention vs. Need Gap'],
+      href: 'mex/index.html',
+      wip: true,
+      accent: '#FF8C65',
+      outline: {
+        viewBox: '0 0 480 380',
+        path: 'M 60,40 L 130,25 L 190,45 L 175,90 L 230,110 L 270,80 L 330,120 L 360,175 L 330,220 L 370,250 L 400,300 L 360,340 L 300,320 L 250,345 L 195,315 L 150,335 L 105,300 L 130,255 L 90,220 L 110,175 L 70,140 L 95,100 L 55,80 Z'
+      },
+      thinking: [
+        'We wanted this tool to hold Guerrero, Oaxaca, and Chiapas as a place where two households in neighboring municipios can live through completely different realities of the same hurricane season, not because the storm treated them differently, but because of what sits underneath: how much a household depends on cartel-controlled territory for its daily movement, whether it has family sending remittances from the US, whether it speaks Spanish as a first or second language, how far it sits from a road that survives a flood. None of that shows up on a hazard-only map, and it\'s exactly what determines how a household actually experiences and recovers from what hits it.',
+        'Formal versus informal housing shows up here too, but with its own local shape. Indigenous communities holding land under ejidal or communal tenure often can\'t produce the individual property documentation FONDEN and reconstruction programs require, even though the land has been theirs for generations. In Tapachula, on the Guatemalan border, that overlaps with one of the highest concentrations of migrants in the corridor and some of the highest seismic exposure, so insecure tenure, displacement, and hazard stack directly on top of each other for the same households.',
+        'We also paid close attention to communities that assumed their buildings, their community ties, or their local institutions were strong enough to carry them through, and found out otherwise. A concrete building that\'s stood for decades can still fail if it was never properly reinforced. A tight-knit community can still come apart if the storm knocks out the one thing holding it together, an unofficial local leader, a single trusted clinic, the one road in and out. We wanted to map not just who was already known to be fragile, but who was quietly overexposed because of a confidence that turned out to be misplaced.',
+        'That\'s part of why we cared about the mismatch between who looks most vulnerable on paper and who actually ends up hit hardest, and it runs in both directions. A household in a well-documented, seemingly resilient neighborhood can lose the specific support mechanism it quietly depended on, like remittances routed through a bank branch that never reopens, or a cooperative that loses its only reliable organizer, and end up worse off than a household that scored higher on every formal vulnerability measure but never expected outside help in the first place and had already built its own workaround.',
+        'Armed conflict doesn\'t just add risk, it actively slows recovery once the immediate danger has passed. In one Acapulco neighborhood hit hardest by Hurricane Otis, armed groups controlling the area charged a fee even to the cleanup crews, and reconstruction there moved at roughly 40% the pace of the rest of the city. That\'s a governance problem sitting directly on top of a hazard problem, and no amount of aid money changes the pace of it on its own.',
+        'The part we wanted to hold onto most is the long-term shape of this, not just one storm. Hurricanes here are cyclical, they will come back, and cartel presence actively works against the kind of formal institutions, humanitarian corridors, and community organizations that would normally mature over years of recurring disaster response elsewhere. Every cycle that passes without that infrastructure developing means people expect less from the next response, not more, even as their actual exposure keeps climbing. Expectations go down while vulnerability goes up, and a flat hazard score would never show you that the two are moving in opposite directions.',
+        'The gap this tool is built to expose is the one between where attention goes and where need is. Hurricane Otis devastated Acapulco in 2023, and it dominated the news and the federal response. Cochoapa el Grande, the most marginalized municipio in the corridor, over 98% Indigenous-language speakers, no paved road to its own municipal seat, sits 200km away and barely appears in either. Both are real. Only one gets seen.'
+      ],
+      thinkingQuote: '"La ayuda post-Otis llegó a Acapulco. Cochoapa el Grande, el municipio más pobre del corredor, a 200 km hacia la Montaña, casi no aparece en los titulares ni en los registros de asistencia." That tension, between where attention goes and where need actually is, is what this entire tool is built around.'
+    },
+    {
+      id: 'kenya',
+      emoji: '🇰🇪',
+      flagMain: 'Kenya · Floods',
+      flagSub: 'ASAL Counties',
+      shortName: 'the Kenya floods tool',
+      title: 'The flood is the same. Whether you recover isn\'t.',
+      blurb: 'The March 2026 floods hit ASAL counties already carrying years of accumulated risk. This tool maps flood exposure against food insecurity, livestock loss, and uneven safety net coverage across 290 sub-counties, so you can see why identical floods produce very different recoveries.',
+      stats: [
+        { val: '290', lbl: 'Sub-counties mapped', color: 'var(--secondary)' },
+        { val: '6+', lbl: 'Repeat floods since 2012, same sub-counties', color: 'var(--red)' },
+        { val: 'Mar 2026', lbl: 'Flood event mapped', color: 'var(--accent)' }
+      ],
+      tags: ['Long-Term Cyclical Exposure', 'Multi-Level Displacement', 'Agricultural System Fragility'],
+      href: 'kenya/index.html',
+      wip: true,
+      accent: '#FF8C65',
+      outline: {
+        viewBox: '10 10 380 390',
+        path: 'M 130,20 L 260,15 L 340,90 L 375,230 L 330,300 L 300,360 L 230,390 L 150,370 L 90,330 L 60,260 L 70,180 L 100,100 Z'
+      },
+      thinking: [
+        'The first thing we wanted to hold onto is something a flood-extent map will never show: the March 2026 floods lasted a full month. That means for four straight weeks, households and communities had no real way to even take stock of their own situation, let alone respond to it, because they were still living inside the disaster. By the time the water receded enough for anyone to look around and ask what they\'d lost, resources had usually already been running down for weeks. The clock most tools use to measure urgency starts at the wrong point. It should start at week one, not the day the water finally goes down.',
+        'None of this was a first flood. Significant flooding in 2024 had already left scars in places\' ability to adapt, and the fourteen-plus years of cyclical flooding behind that had been slowly wearing down whatever structural safeguards communities had put in place, unevenly. Two sub-counties that look similar on a flood-frequency chart can be in very different places in that erosion, one still standing on safeguards it built after the last big event, another with nothing left to fall back on. Generic response plans, built at the county or program level, aren\'t built to see that difference, even though it\'s the difference that actually determines what a community needs right now.',
+        'We also wanted to think about economic fragility as something that unfolds over months, not a single loss you can total up the week the water recedes. Crop loss is the visible number, but the deeper hit is the inability to plant the next cycle, or to have anything left to sell at the next harvest even if planting happens. The real question isn\'t just what was destroyed, it\'s how long the economic disruption actually runs, and for a household already living close to the edge, that duration is the difference between a bad year and losing the ability to recover at all.',
+        'Floodwater doesn\'t leave when the water does. Contaminated wells and waterborne disease follow behind, and we wanted to understand both the expected pattern of that (what typically shows up in the weeks after a flood like this) and the specific history of past outbreaks in these communities, because a place that has already been through a bad disease season after a previous flood is carrying a different kind of risk than one that hasn\'t, even if their flood exposure looks identical on a map.',
+        'One question we kept returning to was about schools. In theory, a school is exactly the kind of structure that becomes a resilience hub after a disaster: a building, a gathering point, a place people already trust. But after this many cycles of flooding, we wanted to know whether that\'s still true, or whether NGO infrastructure has effectively taken over that role in places where it\'s been cycling through for over a decade. If the school isn\'t functioning as the hub anymore, treating it as one in a response plan means building on a foundation that\'s no longer there.',
+        'Related to that: NGOs and community organizations tend to work in corridors, the same counties, the same partner networks, built up over years of prior response. We wanted to know whether those corridors expand to meet new need over time, or whether they stay roughly fixed, because that has a real answer to who gets left without a patron: a place no organization has built relationships with yet, even though the same cyclical flooding has been happening there the whole time.',
+        'Displacement here isn\'t one thing. Some Kenyan families have been displaced once. Some have been displaced multiple times over, on the same land, by the same cycle, over sixteen years. Separately, other families arrived in these ASAL counties fleeing conflict elsewhere entirely, into places that already had higher vulnerability, fewer resources, and thinner social support than wherever they came from, and some of those families are now also being displaced multiple times within a place they never had deep roots in to begin with. That combination, an outsider\'s fragility layered under a local disaster\'s repetition, with the least local understanding and often the least NGO support built around their specific situation, is one of the things we most wanted this tool to see instead of average away.',
+        'Food insecurity, poverty, and subsistence farming aren\'t three separate measurements here, they inform each other in a loop. A bad harvest deepens poverty, which makes the next harvest more precarious, which deepens food insecurity, which erodes the household\'s capacity to absorb the next shock. We wanted the tool to reflect that as a loop, not just three adjacent numbers on a chart.',
+        'One of the questions that mattered most to us in actually thinking about how funds get distributed was much more basic than any hazard variable: what does a household actually mean here? In some areas and cultural enclaves, a household might be five people. In others, intergenerational living means a single household is fifteen. If you assume 1,000 households means 5,000 people everywhere, you can badly misallocate limited resources in exactly the places where a flat multiplier is most wrong. We wanted to understand household composition county by county, sometimes neighborhood by neighborhood, so that when resources are limited, they can be navigated creatively enough that the actual number of people gets accounted for, not just the number of doors.',
+        'We also wanted to know which communities already have active resilience projects of their own, built specifically because this has happened before, and organized around helping each other the next time it does. That\'s not a footnote. It\'s some of the strongest evidence in the entire dataset that people here aren\'t just waiting to be rescued, they\'ve been building their own version of the system this tool is trying to describe.',
+        'Put together, we wanted to understand all of this, sixteen years of migration and local displacement, food insecurity as both symptom and cause, agricultural and economic stability, the actual history of flood infrastructure and support mechanisms, family and household structure by county and neighborhood, and even something as specific as field clinic distribution (more clinics in one area is itself a signal of where health risk was already recognized as higher), before we ever looked at the flood footprint itself. The flood is the easy part to map. Everything above it is what actually determines what happens to a person standing in it.'
+      ],
+      thinkingQuote: 'A flood-extent map tells you where the water went. It says nothing about a family still deciding, a month in, whether there\'s still a next harvest to plant for, or a debt to service instead. That\'s the map we were actually trying to build.'
+    },
+    {
+      id: 'venezuela',
+      emoji: '🇻🇪',
+      flagMain: 'Venezuela · Earthquakes',
+      flagSub: 'Yaracuy – La Guaira – Distrito Capital – Miranda – Carabobo',
+      shortName: 'the Venezuela earthquake tool',
+      title: 'Where seismic risk meets institutional collapse.',
+      blurb: 'Twin M7.2 and M7.5 earthquakes centered in Veroes, Yaracuy sent prolonged shaking through the La Guaira-Caracas corridor. This tool maps how seismic exposure compounds with poverty, corruption-flagged construction, and institutional collapse across five affected states.',
+      stats: [
+        { val: 'M7.2 & M7.5', lbl: 'Twin earthquakes, June 2026', color: 'var(--red)' },
+        { val: '5', lbl: 'States mapped', color: 'var(--secondary)' },
+        { val: '68.5%', lbl: 'Monetary poverty, ENCOVI 2025', color: 'var(--accent)' }
+      ],
+      tags: ['Total Lack of Response Structure', 'Institutional Mismanagement', 'Infrastructural Decay', 'Multi-Dimensional Economic Fragility'],
+      href: 'venezuela/index.html',
+      accent: '#FF8C65',
+      outline: {
+        viewBox: '30 30 400 270',
+        path: 'M 40,80 L 90,50 L 160,55 L 230,40 L 300,60 L 360,50 L 410,90 L 400,160 L 370,230 L 300,280 L 220,290 L 150,260 L 90,220 L 50,150 Z'
+      },
+      thinking: [
+        'We wanted this tool to hold Caracas and its surrounding states as a place where the ground shaking is almost the least interesting part of the story. What actually determines who gets hurt and who recovers is a stack of things layered in over decades: which disaster this exact neighborhood has already lived through before, what era its buildings were actually built in, who built them and under what oversight, and how much economic cushion a household has left after years of crisis. None of that shows up if you just map the shaking itself.',
+        'La Guaira carries this most literally. The same coastal strip devastated by the 1999 Vargas mudslides, one of the deadliest disasters in the country\'s history, is the same strip that took the worst of the June 2026 earthquake. We treat that as disaster memory, not just history: it shapes how much residents trust official warnings, how they read a new crisis, and in La Guaira\'s case, it means the same neighborhoods are being destroyed for a second time.',
+        'Building era does a lot of the same work that individual retrofit records would, if they existed. Venezuela doesn\'t have public building-by-building retrofit data, so we used construction era as a proxy: pre-1967 (no seismic code at all), 1967 to 1982 (a provisional code, adopted after Caracas\'s last major quake), 1982 to 2001 (Venezuela\'s actual mandatory seismic code, COVENIN 1756), and post-2001, dominated by GMVV public housing and informal self-build outside any real code enforcement. National seismic-code compliance is estimated at under 25%, so which era a neighborhood was built in tells you almost as much as an inspection would.',
+        'The piece we think is genuinely unique to this tool is how we handle corruption. When a contractor or public program has a documented failure, we flag its <strong>entire area of operation</strong>, not just the one building. The GMVV housing complex in Catia La Mar built by the Turkish firm Summa actually sank one to two floors in this earthquake, and it sits inside the same GMVV program that a US criminal case and an independent national audit have already flagged for fraud and lack of oversight. We don\'t treat those as equivalent evidence: each flag carries an explicit tier, criminal conviction, NGO audit, contested investigative journalism, or unverified allegation, so a proven conviction and an unproven allegation never collapse into one undifferentiated red flag.',
+        'Income tells a more complicated story than it looks like at first. Chacao, one of Caracas\'s wealthiest municipios, has both low poverty and high genuine remittance dependency, a household there is more likely to have a relative who successfully emigrated and can send money home. Poorer areas like Petare lean more on state transfers instead, precisely because they\'ve had less capacity to get someone out in the first place. That\'s the opposite of the usual assumption that poverty and remittance dependency move together, and it means the same disruption, a bank branch or telecom network going down, hits the two neighborhoods for completely different underlying reasons.',
+        'We also wanted to hold onto what happens when a country\'s own emergency response system has effectively stopped functioning. Without reliable domestic disaster infrastructure, coordination has leaned on neighboring Colombia, which has far less granular knowledge of Venezuela\'s own invisible places. That means a barrio that was already unrecorded and under-resourced before the earthquake doesn\'t just stay invisible, it becomes invisible to whoever is filling the gap too, with no one in the room who would have known to look for it.'
+      ],
+      thinkingQuote: 'This area carries significant layered disaster memory, 1967 and/or 1999, which shapes both community expectations of government response and, in La Guaira\'s case, literal repeated destruction of the same neighborhoods. That repetition isn\'t a coincidence of geography. It\'s the same fault line and the same coastline doing what they\'ve always done, to communities that were never structurally protected from either.'
+    }
+  ];
+
+  const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  const thinkSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 18h.01M9.5 9a2.5 2.5 0 1 1 3.5 2.29c-.74.33-1 .8-1 1.71v.5"/></svg>';
+
+  function topoSvg(){
+    return '<svg class="tc-topo" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><use href="#topo-art" xlink:href="#topo-art"/></svg>';
+  }
+
+  function outlineSvg(o){
+    if(!o) return '';
+    return `<svg class="tc-outline" viewBox="0 0 ${o.viewBox}" xmlns="http://www.w3.org/2000/svg"><path d="${o.path}"/></svg>`;
+  }
+
+  function cardHtml(t){
+    const stats = t.stats.map(s => `
+      <div>
+        <div class="tc-stat-val" style="color:${s.color}">${s.val}</div>
+        <div class="tc-stat-lbl">${s.lbl}</div>
+      </div>`).join('');
+    return `
+      <div class="tool-card${t.wip ? ' wip' : ''}" style="--card-accent:${t.accent}">
+        ${topoSvg()}
+        ${outlineSvg(t.outline)}
+        <div class="tc-content">
+          <div class="tc-flagrow">
+            <span class="tc-flag-emoji">${t.emoji}</span>
+            <span class="tc-flag-text">
+              <span class="tc-flag">${t.flagMain}</span>
+              ${t.flagSub ? `<span class="tc-flag-sub">${t.flagSub}</span>` : ''}
+            </span>
+            ${t.wip ? `<span class="tc-wip-badge">In progress</span>` : ''}
+          </div>
+          <div class="tc-title">${t.title}</div>
+          <div class="tc-blurb">${t.blurb}</div>
+          <div class="tc-stats">${stats}</div>
+          ${t.tags ? `<div class="tc-tags">${t.tags.map(tag => `<span class="tc-tag">${tag}</span>`).join('')}</div>` : ''}
+          <div class="tc-actions">
+            ${t.wip
+              ? `<span class="tc-launch tc-launch-disabled" aria-disabled="true">Coming soon ${arrowSvg}</span>`
+              : `<a class="tc-launch" href="${t.href}">Launch tool ${arrowSvg}</a>`}
+            ${t.thinking ? `<button class="tc-think-btn" type="button" data-think="${t.id}">How we thought about this ${thinkSvg}</button>` : ''}
+          </div>
+        </div>
+      </div>`;
+  }
+
+  const placeholderHtml = `
+    <div class="tool-card placeholder">
+      ${topoSvg()}
+      <div class="tc-content">
+        <svg class="ph-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        <div class="tc-flag">Next region</div>
+        <div class="tc-title">Built to extend to any geography.</div>
+        <div class="tc-blurb">Every tool in this suite runs on the same framework — hazard exposure, social vulnerability, failure modes, and resilience assets layered on one hex-grid map. Adding a region means applying the same lens somewhere new.</div>
+      </div>
+    </div>`;
+
+  const grid = document.getElementById('tool-grid');
+  grid.innerHTML = TOOLS.map(cardHtml).join('') + placeholderHtml;
+
+  // Gentle reveal-on-scroll for the cards.
+  const cards = grid.querySelectorAll('.tool-card');
+  if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting){
+          setTimeout(() => entry.target.classList.add('in'), i * 70);
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    cards.forEach(c => io.observe(c));
+  } else {
+    cards.forEach(c => c.classList.add('in'));
+  }
+
+  // Turn the nav's cream cut dark once the hero headline scrolls out of view.
+  const navEl = document.querySelector('header.nav');
+  const heroH1 = document.querySelector('.hero h1');
+  if (navEl && heroH1 && 'IntersectionObserver' in window){
+    const headerIo = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        navEl.classList.toggle('scrolled', !entry.isIntersecting);
+      });
+    }, { threshold: 0, rootMargin: '-64px 0px 0px 0px' });
+    headerIo.observe(heroH1);
+  }
+
+  // ── Thinking modal ─────────────────────────────────────────────────
+  const modal = document.getElementById('thinking-modal');
+  const modalBody = document.getElementById('modal-body');
+  let lastFocused = null;
+
+  function openThinking(id){
+    const t = TOOLS.find(x => x.id === id);
+    if(!t) return;
+    const paras = t.thinking.map(p => `<p class="think-p">${p}</p>`).join('');
+    const quote = t.thinkingQuote ? `<div class="think-quote">${t.thinkingQuote}</div>` : '';
+    modalBody.style.setProperty('--modal-accent', t.accent);
+    modalBody.innerHTML = `
+      <div class="think-eyebrow" style="--modal-accent:${t.accent}">Our thinking</div>
+      <div class="think-title">How we thought about ${t.shortName}</div>
+      ${paras}
+      ${quote}
+    `;
+    lastFocused = document.activeElement;
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    document.getElementById('modal-close-btn').focus();
+  }
+
+  function closeThinking(){
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if(lastFocused && lastFocused.focus) lastFocused.focus();
+  }
+
+  grid.addEventListener('click', (e) => {
+    const btn = e.target.closest('.tc-think-btn');
+    if(btn) openThinking(btn.dataset.think);
+  });
+  document.getElementById('modal-close-btn').addEventListener('click', closeThinking);
+  modal.addEventListener('click', (e) => { if(e.target === modal) closeThinking(); });
+  document.addEventListener('keydown', (e) => { if(e.key === 'Escape' && modal.classList.contains('open')) closeThinking(); });
+</script>
+
+</body>
+</html>

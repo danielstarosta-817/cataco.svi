@@ -16,3 +16,12 @@ uploads/
 data/raw/
 *.tmp
 data/
+
+# Raw working data / source material — not referenced by the deployed sites,
+# and some individual files exceed GitHub's per-file size limit.
+gd/
+overall website/
+ken_admin_boundaries.geojson/
+GD_Targeting_Reference_Starosta.docx
+venezuela/*
+!venezuela/index.html

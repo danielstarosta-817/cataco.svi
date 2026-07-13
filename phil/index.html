@@ -50,13 +50,13 @@ window.h3={polygonToCells:polygonToCells,cellToLatLng:cellToLatLng,cellToBoundar
   --bg:#080C18;--surface:#0F1628;--surface2:#161F35;--surface3:#1C2840;
   --border:rgba(255,255,255,.11);--border2:rgba(255,255,255,.20);
   --text:#E2E8F4;--text-dim:#C2D2E2;--text-faint:#A4B8CC;
-  --cyan:#00D4FF;--phys:#38BDF8;--svi:#FB923C;--res:#34D399;
+  --cyan:#7f8fa6;--phys:#38BDF8;--svi:#FB923C;--res:#34D399;
   --vol:#FF6B35;--typh:#A855F7;--lahar:#E07820;
   --red:#FF2D55;--yellow:#FFD93D;--orange:#FF6B35;--green:#00E096;
   --lp-w:270px;--rp-w:380px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px}
 /* ── Landing screen ──────────────────────────────────────────────────────── */
 #landing{position:fixed;inset:0;background:var(--bg);z-index:50000;display:flex;align-items:stretch}
 #landing-inner{display:grid;grid-template-columns:clamp(340px,42vw,540px) 1fr;width:100%;height:100%}
@@ -147,9 +147,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .lp-nav-icon{font-size:16px;flex-shrink:0;width:20px;text-align:center}
 .lp-nav-text{display:flex;flex-direction:column;min-width:0;opacity:0;transition:opacity .15s .05s;pointer-events:none}
 #app.lp-open .lp-nav-text{opacity:1;pointer-events:auto}
-.lp-nav-label{font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--text-dim)}
+.lp-nav-label{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--text-dim)}
 .lp-nav-btn.active .lp-nav-label{color:inherit}
-.lp-nav-q{font-size:10.5px;color:var(--text-faint);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lp-nav-q{font-size:12px;color:var(--text-faint);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lp-nav-section{font-size:8.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#1e3050;padding:8px 10px 3px;pointer-events:none;user-select:none}
 #app.lp-open .lp-nav-section{color:#334155}
 .lp-nav-divider{height:1px;background:rgba(255,255,255,.06);margin:4px 10px}
@@ -170,6 +170,20 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .rp-act-cta-txt{font-size:12px;font-weight:700;color:#90cdf4}
 .rp-act-cta-sub{font-size:10.5px;color:#475569;margin-top:2px}
 .rp-act-cta-arr{font-size:18px;color:#63b3ed}
+/* Download report buttons */
+.rp-dl-wrap{padding:4px 10px 18px;display:flex;flex-direction:column;gap:6px}
+.rp-dl-btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:10px 14px;background:rgba(14,36,72,.9);border:1px solid rgba(99,179,237,.28);border-radius:8px;color:#90cdf4;font-size:11.5px;font-weight:700;cursor:pointer;transition:all .15s;letter-spacing:.01em;font-family:inherit}
+.rp-dl-btn:hover:not(:disabled){background:rgba(20,50,105,.95);border-color:rgba(99,179,237,.55);color:#bfdbfe}
+.rp-dl-btn:disabled{opacity:.55;cursor:wait}
+.rp-dl-btn-compare{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:8px 14px;background:transparent;border:1px solid rgba(255,255,255,.09);border-radius:8px;color:#475569;font-size:10.5px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit}
+.rp-dl-btn-compare:hover{border-color:rgba(255,255,255,.18);color:#64748b}
+/* Compare modal */
+#rp-compare-modal{display:none;position:fixed;inset:0;z-index:32000;background:rgba(0,0,8,.72);backdrop-filter:blur(4px);align-items:center;justify-content:center}
+#rp-compare-modal.open{display:flex}
+#rp-compare-inner{background:#0c1a35;border:1px solid rgba(99,179,237,.28);border-radius:12px;padding:22px 24px;width:310px;max-width:90vw}
+#rp-compare-inner h3{font-size:13.5px;font-weight:800;color:#e2e8f0;margin:0 0 3px}
+#rp-compare-inner p{font-size:10.5px;color:#475569;margin:0 0 14px;line-height:1.5}
+#rp-compare-sel{width:100%;padding:9px 10px;background:#060d1c;border:1px solid rgba(99,179,237,.25);border-radius:7px;color:#e2e8f0;font-size:12px;margin-bottom:14px;font-family:inherit;cursor:pointer}
 /* Groups */
 #lp-groups{flex:1;overflow-y:auto;overflow-x:clip}
 #app:not(.lp-open) #lp-groups{display:none}
@@ -178,32 +192,32 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .lp-group{display:none;flex-direction:column}
 .lp-group.active{display:flex}
 .lp-group-intro{padding:14px 14px 10px;border-bottom:1px solid var(--border2)}
-.lp-gi-label{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text-faint);margin-bottom:6px}
-.lp-group-intro p{font-size:12px;color:var(--text-dim);line-height:1.65}
+.lp-gi-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text-faint);margin-bottom:6px}
+.lp-group-intro p{font-size:13px;color:var(--text-dim);line-height:1.65}
 .lp-group-intro strong{color:var(--text)}
 /* Accordions */
 .lp-accord{border-bottom:1px solid var(--border2)}
 .lp-accord-hdr{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;cursor:pointer;transition:background .15s}
 .lp-accord-hdr:hover{background:rgba(255,255,255,.05)}
-.lp-accord-question{font-size:12px;font-weight:600;color:var(--text-dim);line-height:1.4;flex:1;padding-right:8px}
+.lp-accord-question{font-size:13px;font-weight:600;color:var(--text-dim);line-height:1.4;flex:1;padding-right:8px}
 .lp-accord-chev{font-size:10px;color:var(--text-faint);transition:transform .2s;flex-shrink:0}
 .lp-accord.open .lp-accord-chev{transform:rotate(180deg)}
 .lp-accord-body{display:none;padding:0}
 .lp-accord.open .lp-accord-body{display:block}
 /* Panel internals */
 .lp-sec{padding:10px 14px 6px}
-.lp-sec h3{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);margin-bottom:7px}
-.lp-desc{font-size:12px;color:var(--text-dim);line-height:1.65;margin-bottom:8px}
+.lp-sec h3{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);margin-bottom:7px}
+.lp-desc{font-size:13px;color:var(--text-dim);line-height:1.65;margin-bottom:8px}
 /* Hazard toggles */
 .hz-toggle{display:flex;align-items:center;gap:8px;padding:8px 14px;cursor:pointer;transition:background .12s;border-bottom:1px solid var(--border)}
 .hz-toggle:hover{background:rgba(255,255,255,.05)}
 .hz-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;transition:box-shadow .2s}
 .hz-dot.on{box-shadow:0 0 6px currentColor}
-.hz-toggle-lbl{font-size:12px;color:var(--text-dim);flex:1}
-.hz-toggle-lbl strong{color:var(--text);display:block;font-size:12px}
+.hz-toggle-lbl{font-size:13px;color:var(--text-dim);flex:1}
+.hz-toggle-lbl strong{color:var(--text);display:block;font-size:13px}
 .hz-toggle-lbl span{font-size:10.5px;color:var(--text-faint)}
 .hz-sw{width:34px;height:18px;background:rgba(255,255,255,.18);border-radius:9px;position:relative;transition:background .18s;flex-shrink:0}
-.hz-sw.on{background:rgba(0,212,255,.45)}
+.hz-sw.on{background:rgba(127,143,166,.45)}
 .hz-sw::after{content:'';position:absolute;width:14px;height:14px;background:#fff;border-radius:50%;top:2px;left:2px;transition:left .18s;box-shadow:0 1px 3px rgba(0,0,0,.5)}
 .hz-sw.on::after{left:18px}
 /* SVI checkboxes */
@@ -211,13 +225,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .soc-check:hover{background:rgba(255,255,255,.05)}
 .soc-cb{width:15px;height:15px;border-radius:3px;border:1.5px solid var(--border2);background:none;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:9px;color:transparent}
 .soc-check.active .soc-cb{background:var(--svi);border-color:var(--svi);color:#fff}
-.soc-lbl{font-size:12px;color:var(--text-dim);line-height:1.5}
-.soc-lbl strong{color:var(--text);display:block;font-size:12px}
+.soc-lbl{font-size:13px;color:var(--text-dim);line-height:1.5}
+.soc-lbl strong{color:var(--text);display:block;font-size:13px}
 /* Story buttons */
 .story-btn{display:flex;flex-direction:column;gap:3px;padding:9px 12px;background:rgba(255,255,255,.04);border:1px solid var(--border2);border-radius:7px;cursor:pointer;text-align:left;width:100%;transition:all .15s;margin-bottom:6px}
 .story-btn:hover{background:rgba(255,107,53,.08);border-color:rgba(255,107,53,.35)}
-.sbn{font-size:12px;font-weight:600;color:var(--text)}
-.sbs{font-size:10.5px;color:var(--text-dim);line-height:1.45}
+.sbn{font-size:13px;font-weight:600;color:var(--text)}
+.sbs{font-size:12px;color:var(--text-dim);line-height:1.45}
 .sbt{font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:1px 6px;border-radius:3px;align-self:flex-start}
 .sbt.ti{background:rgba(251,146,60,.12);color:#FB923C;border:1px solid rgba(251,146,60,.2)}
 .sbt.td{background:rgba(255,45,85,.12);color:#FF6680;border:1px solid rgba(255,45,85,.2)}
@@ -228,8 +242,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .lp-leg-bands{padding:4px 14px 8px;display:flex;flex-direction:column;gap:6px}
 .lp-leg-band{display:flex;align-items:flex-start;gap:8px}
 .lp-leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:2px}
-.lp-leg-band-label{font-size:10.5px;font-weight:600;color:var(--text-dim);margin-bottom:1px}
-.lp-leg-band-note{font-size:10px;color:var(--text-faint);line-height:1.5}
+.lp-leg-band-label{font-size:12px;font-weight:600;color:var(--text-dim);margin-bottom:1px}
+.lp-leg-band-note{font-size:11px;color:var(--text-faint);line-height:1.5}
 .lp-leg-context{font-size:10px;color:var(--text-faint);padding:6px 14px 12px;font-style:italic;line-height:1.5}
 /* Map area */
 #map-wrap{grid-column:4;grid-row:1;position:relative;overflow:hidden}
@@ -263,7 +277,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .mleg-layer[id="mll-pdz"]{--layer-color:#FF6B35}
 .mleg-layer[id="mll-lahar"]{--layer-color:#E07820}
 .mleg-layer[id="mll-typh"]{--layer-color:#A855F7}
-.mleg-layer[id="mll-surge"]{--layer-color:#00D4FF}
+.mleg-layer[id="mll-surge"]{--layer-color:#7f8fa6}
 .mleg-layer[id="mll-nha"]{--layer-color:#FFD93D}
 .mleg-layer.on{color:var(--layer-color,var(--text-dim))}
 /* SVI dims section */
@@ -283,8 +297,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 #rightpanel::-webkit-scrollbar{width:3px}
 #rightpanel::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
 .rp-hd{padding:14px 14px 10px;border-bottom:1px solid var(--border2);position:sticky;top:0;background:var(--surface);z-index:5}
-#rp-name{font-size:17px;font-weight:800;color:#fff;letter-spacing:-.01em;margin-bottom:4px}
-#rp-meta{font-size:11px;color:var(--text-faint)}
+#rp-name{font-size:19px;font-weight:800;color:#fff;letter-spacing:-.01em;margin-bottom:4px}
+#rp-meta{font-size:12px;color:var(--text-faint)}
 #rp-expand-btn{background:none;border:1px solid var(--border2);color:var(--text-dim);width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
 #rp-expand-btn:hover{background:rgba(255,255,255,.06);color:var(--text)}
 .rp-tabs{display:flex;gap:0;padding:0 14px 0;margin-bottom:0;border-bottom:1px solid var(--border2);background:var(--surface2)}
@@ -294,9 +308,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .rp-tab-content{display:none}
 .rp-tab-content.active{display:block}
 .rp-sec{padding:14px 14px 8px;border-bottom:1px solid var(--border2)}
-.rp-sec h4{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text-dim);margin-bottom:8px}
+.rp-sec h4{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text-dim);margin-bottom:8px}
 .sc-row{margin-bottom:6px}
-.sc-lbl{display:flex;justify-content:space-between;font-size:12px;color:var(--text-dim);margin-bottom:3px}
+.sc-lbl{display:flex;justify-content:space-between;font-size:13px;color:var(--text-dim);margin-bottom:3px}
 .sc-lbl span:first-child{font-weight:600}
 .sc-lbl span:last-child{font-weight:800;font-variant-numeric:tabular-nums}
 .sc-track{height:7px;background:rgba(255,255,255,.18);border-radius:3px;overflow:hidden}
@@ -311,7 +325,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .str-card-hd{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
 .str-icon{font-size:24px;width:40px;height:40px;background:rgba(255,255,255,.05);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .str-name{font-size:14px;font-weight:700;color:#fff}
-.str-meta{font-size:11px;color:var(--text-faint);margin-top:2px}
+.str-meta{font-size:12px;color:var(--text-faint);margin-top:2px}
 .str-tagline{font-size:12px;color:var(--text-dim);font-style:italic;margin-bottom:8px;line-height:1.5}
 .str-tag{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:2px 7px;border-radius:3px;margin:2px 2px 0 0}
 .str-tag.risk{background:rgba(255,45,85,.12);border:1px solid rgba(255,45,85,.2);color:#FF6680}
@@ -336,7 +350,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .cas-chain-block.type-road{border-color:#38BDF8}
 .cas-chain-block.type-power{border-color:#FFD93D}
 .cas-chain-block.type-health{border-color:#00E096}
-.cas-chain-block.type-water{border-color:#00D4FF}
+.cas-chain-block.type-water{border-color:#7f8fa6}
 .cas-chain-block.type-tenure{border-color:#A855F7}
 .cas-chain-hdr{font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .cas-failed-badge{font-size:10px;padding:2px 7px;background:rgba(255,45,85,.15);border:1px solid rgba(255,45,85,.3);color:#FF4466;border-radius:3px;flex-shrink:0}
@@ -529,7 +543,7 @@ canvas:focus,canvas:focus-visible{outline:none}
 .llp-bar-fill{height:100%;background:linear-gradient(to right,#34D399,#059669);border-radius:5px}
 .llp-sublabel{font-size:10px;color:#94a3b8}
 .lp-ll-fact{display:flex;gap:8px;font-size:10.5px;color:#7a9cc0;line-height:1.55;align-items:flex-start}
-.lp-ll-icon{flex-shrink:0;font-size:13px}
+.lp-ll-icon{flex-shrink:0;font-size:14px}
 /* Right panel — new two-mode design */
 .rp-brgy-hd{background:#1a2535;padding:10px 14px 8px;border-bottom:1px solid rgba(255,255,255,.07)}
 .rp-brgy-pill{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#FF6B35;margin-bottom:3px}
@@ -841,7 +855,7 @@ canvas:focus,canvas:focus-visible{outline:none}
         <!-- PDZ label -->
         <text x="302" y="232" font-family="'Inter',sans-serif" font-size="8" fill="rgba(255,107,53,0.55)" text-anchor="start">6km PDZ</text>
         <!-- Legazpi dot -->
-        <circle cx="338" cy="300" r="5" fill="rgba(0,212,255,0.7)" stroke="rgba(0,212,255,0.3)" stroke-width="4"/>
+        <circle cx="338" cy="300" r="5" fill="rgba(127,143,166,0.7)" stroke="rgba(127,143,166,0.3)" stroke-width="4"/>
         <text x="348" y="305" font-family="'Inter',sans-serif" font-size="9" fill="rgba(200,235,255,0.7)">Legazpi City</text>
       </svg>
     </div>
@@ -1209,7 +1223,7 @@ canvas:focus,canvas:focus-visible{outline:none}
     <div class="src-section"><div class="src-section-hdr" style="color:#34D399">📊 Social Vulnerability</div>
       <div class="src-item"><div class="src-item-name">PSA 2020 Census / CBMS</div><div class="src-item-desc">Municipality-level economic fragility indicators, population, housing typology data. Albay Province.</div></div>
     </div>
-    <div class="src-section"><div class="src-section-hdr" style="color:#00D4FF">🔑 IOM / LandLedger</div>
+    <div class="src-section"><div class="src-section-hdr" style="color:#7f8fa6">🔑 IOM / LandLedger</div>
       <div class="src-item"><div class="src-item-name">IOM Philippines HLP Programming</div><div class="src-item-desc">LandLedger deployment in Albay. Tenure documentation for PDZ and resettlement communities. Program data cited from IOM briefing materials.</div></div>
     </div>
   </div>
@@ -2157,7 +2171,7 @@ var typhoonLayer = L.layerGroup([
 
 // ── Storm surge zones ────────────────────────────────────────────────────
 var surgeLayer = L.layerGroup(SURGE_ZONES.map(function(z){
-  return L.polygon(z,{color:'#00D4FF',fillColor:'#00D4FF',fillOpacity:.12,weight:1.5,dashArray:'4,3',interactive:false});
+  return L.polygon(z,{color:'#7f8fa6',fillColor:'#7f8fa6',fillOpacity:.12,weight:1.5,dashArray:'4,3',interactive:false});
 }));
 
 // ── IOM LandLedger sites layer ───────────────────────────────────────────
@@ -2387,7 +2401,7 @@ function _buildFailOverlays(){
     var wAffected=waterAffected[alertLevel]||[];
     _muniPolys.forEach(function(item){
       if(item.m&&wAffected.indexOf(item.m.n)>=0){
-        try{item.poly.setStyle({fillColor:'#00D4FF',fillOpacity:0.16,color:'#00D4FF',weight:2});}catch(e){}
+        try{item.poly.setStyle({fillColor:'#7f8fa6',fillOpacity:0.16,color:'#7f8fa6',weight:2});}catch(e){}
       }
     });
   }
@@ -2480,7 +2494,7 @@ function _renderFailTimeline(level, activeCas, infPop, TIMELINE){
   h+='<div style="position:relative;padding-left:18px">';
   h+='<div style="position:absolute;left:7px;top:8px;bottom:8px;width:2px;background:rgba(255,255,255,.1)"></div>';
   tl.forEach(function(step){
-    var dimColors={road:'#38BDF8',power:'#FFD93D',health:'#00E096',water:'#00D4FF',tenure:'#A855F7'};
+    var dimColors={road:'#38BDF8',power:'#FFD93D',health:'#00E096',water:'#7f8fa6',tenure:'#A855F7'};
     var dotColor=step.dim&&activeCas.has(step.dim)?dimColors[step.dim]:step.dim?'#1e3a4a':'#334155';
     var textColor=step.dim&&activeCas.has(step.dim)?'#e2e8f0':'#64748b';
     var detail=step.detail.replace('~infPop',infPop+'k');
@@ -3200,7 +3214,7 @@ function _buildBrgyBoundaryLayer(features, builtBarangays){
           if(enrLocal[_BElocal.reming]) flags.push('<span style="color:#FB923C;font-size:9px;padding:1px 4px;border:1px solid rgba(251,146,60,.5);border-radius:2px">Reming \'06</span>');
           if(enrLocal[_BElocal.island]) flags.push('<span style="color:#38BDF8;font-size:9px;padding:1px 4px;border:1px solid rgba(56,189,248,.5);border-radius:2px">Island</span>');
           if(enrLocal[_BElocal.road_iso]&&!enrLocal[_BElocal.island]) flags.push('<span style="color:#94A3B8;font-size:9px;padding:1px 4px;border:1px solid rgba(148,163,184,.5);border-radius:2px">Road cut</span>');
-          if(enrLocal[_BElocal.fishing]) flags.push('<span style="color:#00D4FF;font-size:9px;padding:1px 4px;border:1px solid rgba(0,212,255,.5);border-radius:2px">Fishing</span>');
+          if(enrLocal[_BElocal.fishing]) flags.push('<span style="color:#7f8fa6;font-size:9px;padding:1px 4px;border:1px solid rgba(127,143,166,.5);border-radius:2px">Fishing</span>');
           if(enrLocal[_BElocal.quarry]) flags.push('<span style="color:#A8A29E;font-size:9px;padding:1px 4px;border:1px solid rgba(168,162,158,.5);border-radius:2px">Quarrying</span>');
           if(enrLocal[_BElocal.stacked]) flags.push('<span style="color:#F472B6;font-size:9px;padding:1px 4px;border:1px solid rgba(244,114,182,.5);border-radius:2px">Stacked \'20</span>');
           if(enrLocal[_BElocal.kristine]) flags.push('<span style="color:#60A5FA;font-size:9px;padding:1px 4px;border:1px solid rgba(96,165,250,.5);border-radius:2px">Kristine \'24</span>');
@@ -4010,6 +4024,12 @@ function openPanel(m){
     h+='<span class="rp-act-cta-arr">›</span>';
     h+='</div>';
 
+    // Download buttons
+    h+='<div class="rp-dl-wrap">';
+    h+='<button class="rp-dl-btn" id="rp-dl-btn-main" onclick="generateSVIReport(this)">⬇ Download Situation Report (PDF)</button>';
+    h+='<button class="rp-dl-btn-compare" onclick="openCompareModal()">◈ Compare with another municipality</button>';
+    h+='</div>';
+
   }
 
   rp.innerHTML = h;
@@ -4797,7 +4817,7 @@ function showAlertPanel(level){
     road:{icon:'🚗',label:'Roads',color:'#38BDF8'},
     power:{icon:'⚡',label:'Power',color:'#FFD93D'},
     health:{icon:'🏥',label:'Health',color:'#00E096'},
-    water:{icon:'💧',label:'Water',color:'#00D4FF'},
+    water:{icon:'💧',label:'Water',color:'#7f8fa6'},
     tenure:{icon:'📄',label:'Aid Access',color:'#A855F7'}
   };
   h+='<div style="'+SEC+';border-top:2px solid rgba(167,139,250,0.5)">';
@@ -4894,7 +4914,7 @@ function showAlertPanel(level){
     h+='<div style="'+SEC_HDR+';color:#94a3b8">'+(activeCas.size>0?'Active Failures':'Baseline Pressure Points')+'</div>';
     h+='<div style="'+SEC_BODY+'">';
     var statusColor={'MONITORING':'#4ade80','WATCH':'#4ade80','AT RISK':'#fbbf24','ACTIVATING':'#fb923c','WALL ACTIVE':'#f87171','FAILING':'#f87171','FAILED':'#dc2626','SYSTEMIC FAILURE':'#dc2626','UNDER STRESS':'#fb923c'};
-    var borderColors={road:'#38BDF8',power:'#FFD93D',health:'#00E096',water:'#00D4FF',tenure:'#A855F7'};
+    var borderColors={road:'#38BDF8',power:'#FFD93D',health:'#00E096',water:'#7f8fa6',tenure:'#A855F7'};
     var dimLabels={road:'Road Network',power:'Power Grid',health:'Health System',water:'Water System',tenure:'Tenure / Aid Access'};
     var dimIcons={road:'🚗',power:'⚡',health:'🏥',water:'💧',tenure:'📄'};
     cascadesToShow.forEach(function(dim){
@@ -4957,7 +4977,7 @@ function showAlertPanel(level){
     Array.from(activeCas).forEach(function(dim){
       var a=NGO_ACTIONS[dim];
       if(!a) return;
-      var bc={road:'#38BDF8',power:'#FFD93D',health:'#00E096',water:'#00D4FF',tenure:'#A855F7'}[dim]||'#94a3b8';
+      var bc={road:'#38BDF8',power:'#FFD93D',health:'#00E096',water:'#7f8fa6',tenure:'#A855F7'}[dim]||'#94a3b8';
       var cardId='ngo-'+dim;
       h+='<div style="margin-bottom:8px;border-radius:8px;border:1px solid rgba(255,255,255,.08);border-top:2px solid '+bc+';overflow:hidden">';
       // Collapsible header
@@ -5188,8 +5208,8 @@ function initLandingMap(){
     // Islands — cyan dashed outline
     for(var _li=1;_li<LAND_POLYS.length;_li++){
       L.polygon(LAND_POLYS[_li],{
-        color:'rgba(0,212,255,0.45)',
-        fillColor:'rgba(0,212,255,0.04)',
+        color:'rgba(127,143,166,0.45)',
+        fillColor:'rgba(127,143,166,0.04)',
         fillOpacity:1,
         weight:1.2,
         dashArray:'4,4',
@@ -5262,6 +5282,456 @@ function enterApp(grp){
 window.addEventListener('load',function(){
   initLandingMap();
 });
+
+// ================================================================
+// PDF REPORT GENERATOR
+// ================================================================
+
+function generateSVIReport(btn){
+  var muni=_selectedMuni;
+  if(!muni) return;
+  if(btn){ btn.disabled=true; btn.textContent='⏳ Preparing PDF…'; }
+  function doGen(){
+    try{
+      _doGenReport(muni,null);
+    }catch(e){ console.error('PDF error:',e); alert('PDF generation failed: '+e.message); }
+    if(btn){ btn.disabled=false; btn.textContent='⬇ Download Situation Report (PDF)'; }
+  }
+  if(!window.jspdf){
+    var s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    s.onload=doGen;
+    s.onerror=function(){
+      if(btn){ btn.disabled=false; btn.textContent='⬇ Download Situation Report (PDF)'; }
+      alert('Could not load PDF library. Check internet connection and try again.');
+    };
+    document.head.appendChild(s);
+  } else { doGen(); }
+}
+
+function openCompareModal(){
+  var modal=document.getElementById('rp-compare-modal');
+  if(!modal){
+    modal=document.createElement('div');
+    modal.id='rp-compare-modal';
+    var opts=MUNICIPIOS.map(function(m){
+      return '<option value="'+m.n+'"'+((_selectedMuni&&m.n===_selectedMuni.n)?' disabled':'')+'>'
+        +m.n+(_selectedMuni&&m.n===_selectedMuni.n?' (current)':'')+'</option>';
+    }).join('');
+    modal.innerHTML='<div id="rp-compare-inner">'
+      +'<h3>Compare municipalities</h3>'
+      +'<p>Select a second municipality to generate a side-by-side PDF comparison report.</p>'
+      +'<select id="rp-compare-sel"><option value="">— Choose municipality —</option>'+opts+'</select>'
+      +'<div style="display:flex;gap:8px">'
+      +'<button onclick="_confirmCompare()" style="flex:1;padding:9px;background:rgba(99,179,237,.1);border:1px solid rgba(99,179,237,.3);border-radius:7px;color:#90cdf4;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">Generate Comparison PDF</button>'
+      +'<button onclick="document.getElementById(\'rp-compare-modal\').classList.remove(\'open\')" style="padding:9px 14px;background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#64748b;font-size:11px;cursor:pointer;font-family:inherit">Cancel</button>'
+      +'</div></div>';
+    modal.onclick=function(e){ if(e.target===modal) modal.classList.remove('open'); };
+    document.body.appendChild(modal);
+  }
+  modal.classList.add('open');
+}
+
+function _confirmCompare(){
+  var sel=document.getElementById('rp-compare-sel');
+  if(!sel||!sel.value){ return; }
+  var m2=MUNICIPIOS.find(function(m){ return m.n===sel.value; });
+  if(!m2){ return; }
+  document.getElementById('rp-compare-modal').classList.remove('open');
+  function doGen(){
+    try{ _doGenReport(_selectedMuni,m2); }
+    catch(e){ alert('PDF generation failed: '+e.message); }
+  }
+  if(!window.jspdf){
+    var s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    s.onload=doGen; document.head.appendChild(s);
+  } else { doGen(); }
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function _pdfColor(v){
+  if(v>0.75) return [225,45,80];
+  if(v>0.55) return [235,100,48];
+  if(v>0.38) return [215,170,38];
+  return [0,180,118];
+}
+function _pdfScoreLabel(v){
+  return v>0.75?'CRITICAL':v>0.55?'HIGH':v>0.38?'MODERATE':'LOW';
+}
+
+function _pdfGaps(muni,localNha){
+  var g=[];
+  if(muni.svi_doc>0.55||muni.ptenure>0.38)
+    g.push({score:muni.svi_doc,label:'Documentation wall',
+      text:'~'+Math.round(muni.ptenure*100)+'% of households estimated without formal land title. DSWD aid eligibility screening creates a barrier for most-vulnerable residents. Pre-disaster documentation drives are the single highest-impact intervention.'});
+  if(muni.pvol>0.72&&muni.in_pdz)
+    g.push({score:muni.pvol,label:'PDZ evacuation preparedness',
+      text:'Municipality includes mandatory-evacuation PDZ barangays. Verify APSEMO drill coverage across all sitios. Confirm transport availability and pre-positioned supplies before typhoon season.'});
+  else if(muni.pvol>0.65)
+    g.push({score:muni.pvol,label:'Volcanic hazard exposure',
+      text:'Significant volcanic proximity score. Maintain PHIVOLCS alert channel access at barangay level and ensure all residents understand evacuation triggers.'});
+  if(muni.svi_road>0.55)
+    g.push({score:muni.svi_road,label:'Road isolation risk',
+      text:'Elevated road vulnerability (score: '+Math.round(muni.svi_road*100)+'%). Identify secondary evacuation routes and pre-position transport assets before each disaster season.'});
+  if(localNha.length>0)
+    g.push({score:Math.min(1,Math.max.apply(null,localNha.map(function(s){ return s.zscore/5; }))),
+      label:'NHA resettlement compound risk',
+      text:localNha.length+' site'+(localNha.length>1?'s':'')+' ('+localNha.map(function(s){ return s.n; }).join(', ')+') require monitoring for secondary hazard exposure and title-transfer completion.'});
+  if(muni.svi_cell>0.48)
+    g.push({score:muni.svi_cell,label:'Cell coverage gaps',
+      text:'Communication vulnerability score: '+Math.round(muni.svi_cell*100)+'%. Community radio backup or barangay early warning nodes recommended for signal-gap areas.'});
+  if(g.length===0)
+    g.push({score:0.22,label:'No critical pre-event gaps flagged',
+      text:'Standard BDRRMC protocols apply. Coordinate with APSEMO on next drill cycle and revisit after next field assessment.'});
+  return g.slice(0,4);
+}
+
+function _pdfResAssets(muni){
+  var always=['APSEMO','PHIVOLCS','Bantay Mayon'];
+  var result=[];
+  RES_NODES.forEach(function(node){
+    var isGlobal=always.some(function(k){ return node.name.indexOf(k)!==-1; });
+    var isLocal=node.name.indexOf(muni.n)!==-1
+      ||(node.tags||[]).some(function(t){ return t.indexOf(muni.n)!==-1; })
+      ||(node.body||[]).some(function(b){ return b.indexOf(muni.n)!==-1; });
+    if(isGlobal||isLocal) result.push(node);
+  });
+  // deduplicate and limit
+  var seen={};
+  return result.filter(function(n){ if(seen[n.name]) return false; seen[n.name]=true; return true; }).slice(0,4);
+}
+
+function _pdfInterpretation(muni,physS,fullSVI,localNha){
+  var lines=[];
+  // Overall
+  if(fullSVI>0.72)
+    lines.push(muni.n+' ranks among the highest-vulnerability communities in Albay Province. Physical and social risk factors compound each other, and many households would face significant barriers accessing emergency assistance without targeted pre-intervention.');
+  else if(fullSVI>0.52)
+    lines.push(muni.n+' carries moderate-to-high compound vulnerability. Physical hazard exposure is substantial, and social barriers — particularly around documentation and poverty — reduce the effective ability of many households to access disaster assistance.');
+  else if(fullSVI>0.32)
+    lines.push(muni.n+' has moderate overall vulnerability. Specific sub-populations (informal settlers, the elderly, and households in road-isolated barangays) remain at elevated risk even where aggregate scores appear lower.');
+  else
+    lines.push(muni.n+' has relatively lower compound vulnerability compared to other Albay municipalities. All communities in the province face non-trivial volcanic and weather hazard exposure, but this municipality\'s social resilience indicators are comparatively stronger.');
+
+  // Dominant hazard
+  var maxHaz=Math.max(muni.pvol,muni.ptyph,muni.pfl);
+  var hazName=maxHaz===muni.pvol?'volcanic proximity (Mayon)':maxHaz===muni.ptyph?'typhoon and storm surge':'flood and lahar corridor exposure';
+  lines.push('The dominant physical hazard driver is '+hazName+' ('+Math.round(maxHaz*100)+'%). '+(muni.in_pdz?'This municipality contains PDZ barangays subject to mandatory evacuation at Alert Level 3.':'This municipality sits outside the Mayon PDZ core zone but remains within the regional volcanic and weather risk envelope.'));
+
+  // Documentation
+  if(muni.svi_doc>0.55)
+    lines.push('The most critical social dimension is the documentation barrier: approximately '+Math.round(muni.ptenure*100)+'% of households lack formal land title. In past disasters, this has translated directly into aid exclusion at DSWD registration centers. Addressing this before the next event — not after — is the highest-leverage action available to local government.');
+
+  // Road/cell
+  if(muni.svi_road>0.58)
+    lines.push('Road network vulnerability is elevated ('+Math.round(muni.svi_road*100)+'%), creating a meaningful risk that evacuation corridors will be disrupted during simultaneous hazard events such as a typhoon triggering lahar flows in Mayon gully channels.');
+
+  // NHA
+  if(localNha.length>0)
+    lines.push('This municipality contains '+localNha.length+' NHA resettlement site'+(localNha.length>1?'s':'')+'. Displaced households may face compound hazard exposure at their new location and, in several cases, still-incomplete title transfers — effectively reproducing the documentation barrier in a new setting.');
+
+  return lines.slice(0,4);
+}
+
+// ── Core report renderer ──────────────────────────────────────────────────────
+
+function _doGenReport(muni,muni2){
+  var jsPDF=window.jspdf.jsPDF;
+  var isCompare=!!muni2;
+  var ori=isCompare?'landscape':'portrait';
+  var fmt='a4';
+  var doc=new jsPDF({orientation:ori,unit:'mm',format:fmt});
+  var PW=isCompare?297:210, PH=isCompare?210:297;
+
+  if(isCompare){
+    _renderCompare(doc,muni,muni2,PW,PH);
+  } else {
+    _renderSingle(doc,muni,PW,PH);
+  }
+
+  var d=new Date().toISOString().slice(0,10);
+  var fname='SVI-Report-'+muni.n.replace(/\s+/g,'-')+(muni2?'-vs-'+muni2.n.replace(/\s+/g,'-'):'')+ '-'+d+'.pdf';
+  doc.save(fname);
+}
+
+function _renderSingle(doc,muni,PW,PH){
+  var ML=15, CW=PW-ML*2;
+  var y=0;
+
+  // Compute scores
+  var physS=Math.min(1,calcPhys(muni));
+  var fullSVI=Math.min(1,physS+muni.svi_doc*0.25+muni.svi_housing*0.18+muni.svi_poverty*0.20+muni.svi_road*0.15+muni.svi_cell*0.10+muni.svi_elderly*0.12);
+  var localNha=NHA_SITES.filter(function(s){ return s.muni===muni.n; });
+  var sc=_pdfColor(fullSVI);
+
+  // ── helpers local to this page ──────────────────────────
+  function sHdr(label,y_){
+    doc.setFont('helvetica','bold'); doc.setFontSize(7); doc.setTextColor(65,105,170);
+    doc.text(label,ML,y_);
+    var tw=doc.getTextWidth(label)+3;
+    doc.setDrawColor(35,62,115); doc.setLineWidth(0.25);
+    doc.line(ML+tw,y_-0.5,ML+CW,y_-0.5);
+  }
+  function scoreBar(label,note,value,x,y_,bW,lW){
+    var c=_pdfColor(value);
+    doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(125,165,215);
+    doc.text(label,x,y_+3.5);
+    if(note){
+      doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.setTextColor(60,95,148);
+      doc.text(note,x+lW,y_+3);
+    }
+    var trackX=x+lW, trackW=bW-lW-16;
+    doc.setFillColor(12,24,50); doc.roundedRect(trackX,y_,trackW,5,1,1,'F');
+    doc.setFillColor(c[0],c[1],c[2]); doc.roundedRect(trackX,y_,Math.max(2,trackW*value),5,1,1,'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(c[0],c[1],c[2]);
+    doc.text(Math.round(value*100)+'%',x+bW,y_+3.5,{align:'right'});
+  }
+  function wrapText(text,x,y_,maxW,size,rgb){
+    doc.setFont('helvetica','normal'); doc.setFontSize(size); doc.setTextColor(rgb[0],rgb[1],rgb[2]);
+    var lines=doc.splitTextToSize(text,maxW);
+    doc.text(lines,x,y_);
+    return y_+lines.length*(size*0.38+0.4)+0.5;
+  }
+
+  // ── HEADER ───────────────────────────────────────────────
+  doc.setFillColor(5,11,26); doc.rect(0,0,PW,30,'F');
+  doc.setFillColor(sc[0],sc[1],sc[2]); doc.rect(0,0,PW,1.8,'F'); // accent stripe
+
+  doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.setTextColor(55,90,155);
+  doc.text('ALBAY SOCIAL VULNERABILITY & MULTI-HAZARD INTELLIGENCE  ·  SITUATIONAL BRIEF',ML,9.5);
+
+  doc.setFont('helvetica','bold'); doc.setFontSize(20); doc.setTextColor(230,242,255);
+  doc.text(muni.n.toUpperCase(),ML,21.5);
+
+  doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(55,90,155);
+  doc.text('Albay Province · Region V, Philippines',ML,27.5);
+
+  // SVI badge top-right
+  var bx=PW-ML-28, by=4;
+  doc.setFillColor(sc[0],sc[1],sc[2]); doc.roundedRect(bx,by,26,22,3,3,'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(17); doc.setTextColor(5,11,26);
+  doc.text(Math.round(fullSVI*100)+'',bx+13,by+13.5,{align:'center'});
+  doc.setFont('helvetica','bold'); doc.setFontSize(5.5); doc.setTextColor(5,11,26);
+  doc.text('SVI COMPOSITE',bx+13,by+19.5,{align:'center'});
+
+  y=33;
+
+  // ── META STRIP ────────────────────────────────────────────
+  doc.setFillColor(10,20,44); doc.rect(0,y,PW,14,'F');
+  var meta=[
+    {l:'POPULATION',v:(muni.pop||0).toLocaleString('en-PH')},
+    {l:'PDZ ZONE',v:muni.in_pdz?'Inside PDZ ⚠':'Outside PDZ'},
+    {l:'ROAD RISK',v:(muni.road||'?').toUpperCase()},
+    {l:'POWER RESTORE',v:'~'+muni.pwr+' days'},
+  ];
+  meta.forEach(function(m,i){
+    var mx=ML+i*(CW/4);
+    doc.setFont('helvetica','normal'); doc.setFontSize(6.5); doc.setTextColor(50,85,148);
+    doc.text(m.l,mx,y+5.5);
+    doc.setFont('helvetica','bold'); doc.setFontSize(9.5); doc.setTextColor(185,215,255);
+    doc.text(m.v,mx,y+11.5);
+  });
+  y=50;
+
+  // ── VULNERABILITY PROFILE ─────────────────────────────────
+  sHdr('VULNERABILITY PROFILE',y+4.5); y+=8;
+
+  // Composite (big bar, full width)
+  doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(155,190,235);
+  doc.text('Overall SVI Composite',ML,y+3.5);
+  var slbl=_pdfScoreLabel(fullSVI);
+  var sc2=_pdfColor(fullSVI);
+  var trW=CW-44;
+  doc.setFillColor(12,24,50); doc.roundedRect(ML+44,y,trW,6,1.5,1.5,'F');
+  doc.setFillColor(sc2[0],sc2[1],sc2[2]); doc.roundedRect(ML+44,y,Math.max(3,trW*fullSVI),6,1.5,1.5,'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(sc2[0],sc2[1],sc2[2]);
+  doc.text(Math.round(fullSVI*100)+'%  '+slbl,ML+CW,y+4.5,{align:'right'});
+  y+=10;
+
+  // Three key dimensions (2-column)
+  var dims=[
+    {n:'Hazard Exposure',val:physS,note:'Vol '+Math.round(muni.pvol*100)+'%  Typh '+Math.round(muni.ptyph*100)+'%  Flood '+Math.round(muni.pfl*100)+'%'},
+    {n:'Social Sensitivity',val:(muni.svi_housing+muni.svi_poverty+muni.svi_elderly)/3,note:'Housing, poverty & elderly concentration'},
+    {n:'Documentation Barrier',val:muni.svi_doc,note:'~'+Math.round(muni.ptenure*100)+'% of households lack formal title'},
+    {n:'Road Isolation',val:muni.svi_road,note:'Evacuation corridor disruption risk'},
+    {n:'Cell Coverage Gap',val:muni.svi_cell,note:'Communication vulnerability'},
+    {n:'Adaptive Capacity',val:1-(muni.res||0.35),note:'Lower score = stronger resilience'},
+  ];
+  var startY=y, colHalfW=CW/2-3;
+  dims.forEach(function(d,i){
+    var cx=(i%2===0)?ML:ML+CW/2+3;
+    var cy=startY+Math.floor(i/2)*10;
+    scoreBar(d.n,null,d.val,cx,cy,colHalfW,46);
+    doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.setTextColor(50,82,135);
+    doc.text(d.n,cx,cy+8.5); // reuse cx for note below label — actually just reuse the note below
+    // Put note under bar
+    doc.setFont('helvetica','normal'); doc.setFontSize(6.8); doc.setTextColor(50,85,140);
+    doc.text(d.note,cx+46,cy+8.5);
+  });
+  y=startY+3*10+5;
+
+  // ── WHAT THIS MEANS ─────────────────────────────────────
+  sHdr('WHAT THIS MEANS',y+4.5); y+=8;
+
+  var interp=_pdfInterpretation(muni,physS,fullSVI,localNha);
+  interp.forEach(function(sent){
+    y=wrapText(sent,ML,y,CW,8.5,[138,172,220]);
+    y+=1.5;
+  });
+  y+=3;
+
+  // ── PAGE 2 check ─────────────────────────────────────────
+  var needsPage2 = y > 196;
+  if(needsPage2){ doc.addPage(); y=18; }
+
+  // ── PRIORITY GAPS ─────────────────────────────────────────
+  sHdr('PRIORITY RISKS & GAPS',y+4.5); y+=8;
+
+  var gaps=_pdfGaps(muni,localNha);
+  gaps.forEach(function(g){
+    var gc=_pdfColor(g.score);
+    // bullet dot
+    doc.setFillColor(gc[0],gc[1],gc[2]); doc.circle(ML+1.8,y+1.8,1.4,'F');
+    // label
+    doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(gc[0],gc[1],gc[2]);
+    doc.text(g.label,ML+5,y+2.8);
+    y+=6;
+    y=wrapText(g.text,ML+5,y,CW-5,8,[115,150,200]);
+    y+=2.5;
+  });
+  y+=2;
+
+  // ── RESILIENCE ASSETS ─────────────────────────────────────
+  if(y<(needsPage2?185:248)){
+    sHdr('RESILIENCE ANCHORS',y+4.5); y+=8;
+    var assets=_pdfResAssets(muni);
+    assets.forEach(function(node){
+      doc.setFillColor(0,175,112); doc.circle(ML+1.8,y+1.8,1.4,'F');
+      doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(0,175,112);
+      doc.text(node.name,ML+5,y+2.8);
+      y+=6;
+      y=wrapText(node.short,ML+5,y,CW-5,8,[95,140,178]);
+      y+=2.5;
+    });
+  }
+
+  // ── FOOTER ───────────────────────────────────────────────
+  var fy=PH-22;
+  doc.setFillColor(8,15,38); doc.rect(0,fy-1,PW,PH-fy+1,'F');
+  doc.setDrawColor(30,55,110); doc.setLineWidth(0.25); doc.line(ML,fy,ML+CW,fy);
+
+  doc.setFont('helvetica','bold'); doc.setFontSize(6.5); doc.setTextColor(50,85,148);
+  doc.text('DATA SOURCES',ML,fy+5);
+
+  doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.setTextColor(45,78,128);
+  var srcText='PSA Census 2020 · PHIVOLCS volcanic hazard maps · IOM LandLedger 2023 · NHA resettlement data (PMC7989691) · APSEMO field records · MGB hazard assessments · NAMRIA topographic data';
+  var srcLines=doc.splitTextToSize(srcText,CW);
+  doc.text(srcLines,ML,fy+10);
+
+  doc.setFont('helvetica','italic'); doc.setFontSize(6.5); doc.setTextColor(38,68,118);
+  var dateStr=new Date().toLocaleDateString('en-PH',{year:'numeric',month:'long',day:'numeric'});
+  doc.text('Generated '+dateStr+' · Albay SVHI · For field use — not an official government document.',ML,fy+17);
+}
+
+function _renderCompare(doc,m1,m2,PW,PH){
+  // Landscape A4: two-column side-by-side comparison
+  var ML=12, colW=(PW-ML*2-8)/2, div=ML+colW+4;
+
+  // Page header
+  doc.setFillColor(5,11,26); doc.rect(0,0,PW,12,'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(7.5); doc.setTextColor(50,90,158);
+  doc.text('ALBAY SVHI  ·  MUNICIPAL COMPARISON REPORT',PW/2,7.5,{align:'center'});
+  // Divider line
+  doc.setDrawColor(30,55,110); doc.setLineWidth(0.3); doc.line(div,12,div,PH-18);
+
+  // Render each column
+  [m1,m2].forEach(function(muni,ci){
+    var xOff=ci===0?ML:div+4;
+    _renderColumn(doc,muni,xOff,colW,PH);
+  });
+
+  // Footer
+  var fy=PH-14;
+  doc.setFillColor(8,15,38); doc.rect(0,fy,PW,PH-fy,'F');
+  doc.setFont('helvetica','italic'); doc.setFontSize(6.5); doc.setTextColor(38,68,118);
+  var dateStr=new Date().toLocaleDateString('en-PH',{year:'numeric',month:'long',day:'numeric'});
+  doc.text('Generated '+dateStr+' · Albay SVHI · Data: PSA 2020, PHIVOLCS, IOM LandLedger, NHA/PMC7989691, APSEMO · Not an official government document.',PW/2,fy+9,{align:'center'});
+}
+
+function _renderColumn(doc,muni,x,cW,PH){
+  var y=14;
+  var physS=Math.min(1,calcPhys(muni));
+  var fullSVI=Math.min(1,physS+muni.svi_doc*0.25+muni.svi_housing*0.18+muni.svi_poverty*0.20+muni.svi_road*0.15+muni.svi_cell*0.10+muni.svi_elderly*0.12);
+  var localNha=NHA_SITES.filter(function(s){ return s.muni===muni.n; });
+  var sc=_pdfColor(fullSVI);
+
+  // Column header
+  doc.setFillColor(10,20,44); doc.rect(x,y,cW,18,'F');
+  doc.setFillColor(sc[0],sc[1],sc[2]); doc.rect(x,y,cW,1.5,'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.setTextColor(225,240,255);
+  doc.text(muni.n.toUpperCase(),x+4,y+10.5);
+  // SVI badge
+  doc.setFillColor(sc[0],sc[1],sc[2]); doc.roundedRect(x+cW-22,y+2,19,13,2,2,'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.setTextColor(5,11,26);
+  doc.text(Math.round(fullSVI*100)+'',x+cW-12.5,y+10.5,{align:'center'});
+  y+=21;
+
+  // Meta
+  doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.setTextColor(55,90,155);
+  doc.text((muni.pop||0).toLocaleString()+' pop · '+(muni.in_pdz?'Inside PDZ':'Outside PDZ')+' · '+muni.road+' road risk',x+2,y+3);
+  y+=7;
+
+  // Bars
+  function cBar(label,val){
+    var c=_pdfColor(val);
+    doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(115,155,210);
+    doc.text(label,x+2,y+3);
+    var trW=cW-42;
+    doc.setFillColor(12,24,50); doc.roundedRect(x+cW-trW-6,y,trW,4.5,1,1,'F');
+    doc.setFillColor(c[0],c[1],c[2]); doc.roundedRect(x+cW-trW-6,y,Math.max(1.5,trW*val),4.5,1,1,'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(7.5); doc.setTextColor(c[0],c[1],c[2]);
+    doc.text(Math.round(val*100)+'%',x+cW,y+3,{align:'right'});
+    y+=7;
+  }
+
+  cBar('Composite SVI',fullSVI);
+  cBar('Hazard Exposure',physS);
+  cBar('Documentation Barrier',muni.svi_doc);
+  cBar('Poverty/Housing',( muni.svi_poverty+muni.svi_housing)/2);
+  cBar('Road Isolation',muni.svi_road);
+  cBar('Resilience',muni.res||0.3); // note: higher = better here
+  y+=2;
+
+  // Interpretation
+  doc.setFillColor(8,17,38); doc.roundedRect(x,y,cW,3,'F'); // section header bg
+  doc.setFont('helvetica','bold'); doc.setFontSize(6); doc.setTextColor(55,92,158);
+  doc.text('INTERPRETATION',x+2,y+2.5);
+  y+=5;
+  var interp=_pdfInterpretation(muni,physS,fullSVI,localNha);
+  interp.slice(0,2).forEach(function(sent){
+    doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(120,158,210);
+    var lines=doc.splitTextToSize(sent,cW-2);
+    doc.text(lines,x+2,y);
+    y+=lines.length*3.1+2;
+  });
+  y+=2;
+
+  // Gaps
+  doc.setFont('helvetica','bold'); doc.setFontSize(6); doc.setTextColor(55,92,158);
+  doc.text('PRIORITY GAPS',x+2,y+2.5);
+  y+=5;
+  var gaps=_pdfGaps(muni,localNha);
+  gaps.slice(0,3).forEach(function(g){
+    var gc=_pdfColor(g.score);
+    doc.setFillColor(gc[0],gc[1],gc[2]); doc.circle(x+3,y+1.5,1.2,'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(7.5); doc.setTextColor(gc[0],gc[1],gc[2]);
+    doc.text(g.label,x+6,y+2.5);
+    y+=5.5;
+  });
+}
+
 </script>
 <div id="rp-score-tip"></div>
 <script>
