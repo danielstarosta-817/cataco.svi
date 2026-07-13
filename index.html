@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Brackish Projects — Social Vulnerability Intelligence Suite</title>
+<title>Brackish Projects — Social Vulnerability Intelligence</title>
 <meta name="description" content="A suite of interactive maps showing where physical hazard and social vulnerability converge — built for local governments, public officials, and community organizations.">
 <link rel="icon" type="image/png" href="assets/brackish-favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -645,14 +645,16 @@
       flagSub: 'Yaracuy – La Guaira – Distrito Capital – Miranda – Carabobo',
       shortName: 'the Venezuela earthquake tool',
       title: 'Where seismic risk meets institutional collapse.',
-      blurb: 'Twin M7.2 and M7.5 earthquakes centered in Veroes, Yaracuy sent prolonged shaking through the La Guaira-Caracas corridor. This tool maps how seismic exposure compounds with poverty, corruption-flagged construction, and institutional collapse across five affected states.',
+      blurb: 'Twin M7.2 and M7.5 earthquakes centered in Veroes, Yaracuy sent prolonged shaking through the La Guaira-Caracas corridor. This storymap shows the sixty-year history of institutional decay that led to the poverty, corruption-flagged construction, and infrastructure collapse. A risk history, rather than a risk map.',
       stats: [
         { val: 'M7.2 & M7.5', lbl: 'Twin earthquakes, June 2026', color: 'var(--red)' },
-        { val: '5', lbl: 'States mapped', color: 'var(--secondary)' },
-        { val: '68.5%', lbl: 'Monetary poverty, ENCOVI 2025', color: 'var(--accent)' }
+        { val: '1967', lbl: 'Caracas earthquake', color: 'var(--secondary)' },
+        { val: '1999', lbl: 'Vargas mudslides', color: 'var(--secondary)' },
+        { val: '2005', lbl: 'Miranda/Caracas floods', color: 'var(--accent)' }
       ],
       tags: ['Total Lack of Response Structure', 'Institutional Mismanagement', 'Infrastructural Decay', 'Multi-Dimensional Economic Fragility'],
       href: 'venezuela/index.html',
+      launchLabel: 'Launch storymap',
       accent: '#FF8C65',
       outline: {
         viewBox: '30 30 400 270',
@@ -708,7 +710,7 @@
           <div class="tc-actions">
             ${t.wip
               ? `<span class="tc-launch tc-launch-disabled" aria-disabled="true">Coming soon ${arrowSvg}</span>`
-              : `<a class="tc-launch" href="${t.href}">Launch tool ${arrowSvg}</a>`}
+              : `<a class="tc-launch" href="${t.href}">${t.launchLabel || 'Launch tool'} ${arrowSvg}</a>`}
             ${t.thinking ? `<button class="tc-think-btn" type="button" data-think="${t.id}">How we thought about this ${thinkSvg}</button>` : ''}
           </div>
         </div>
