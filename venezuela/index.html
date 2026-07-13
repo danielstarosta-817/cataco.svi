@@ -42,6 +42,10 @@ body{background:var(--bg);color:var(--ink);font-family:'Inter',-apple-system,san
   background:radial-gradient(120% 100% at 30% 20%, #241a10 0%, #0b0a08 65%);transition:opacity .5s ease}
 .media-tag{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold-dim);padding:3px 10px;border-radius:20px}
 #heroPlaceholder .media-caption{font-size:12.5px;color:var(--ink-faint);max-width:22em;line-height:1.5}
+#heroEmbed{position:absolute;inset:0;overflow-y:auto;transition:opacity .5s ease;background:#000;opacity:0}
+#heroEmbed .yt-frame{width:100%;height:100%;border:0;display:block}
+#heroEmbed .tw-hero-wrap{width:100%;max-width:420px;margin:0 auto;padding:28px 16px;box-sizing:border-box}
+#heroEmbed blockquote.twitter-tweet{margin:0 auto!important}
 #photocol::after{content:'';position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,.55) 0%, rgba(0,0,0,0) 30%);pointer-events:none;z-index:10}
 #yrOverlay{position:absolute;top:20px;left:20px;z-index:20}
 #yrOverlay .yr{font-family:'Fraunces',serif;font-size:2.1rem;font-weight:500;color:var(--gold);line-height:1;text-shadow:0 2px 12px rgba(0,0,0,.6)}
@@ -63,7 +67,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Inter',-apple-system,san
 /* middle: prominent timeline, now wider and with a visible panel so it never disappears */
 #timelinecol{width:15vw;min-width:150px;max-width:190px;flex-shrink:0;position:relative;border-right:1px solid var(--line);
   display:flex;align-items:center;justify-content:center;background:var(--panel)}
-#spineTrack{position:relative;width:4px;height:82%;border-radius:4px;overflow:visible}
+#spineTrack{position:relative;width:4px;height:94%;border-radius:4px;overflow:visible}
 #spineTrack .track-baseline{position:absolute;left:0;top:0;width:100%;height:100%;border-radius:4px;background:rgba(242,237,228,.22)}
 #spineTrack .track-bg{position:absolute;left:0;top:0;width:100%;height:100%;border-radius:4px;overflow:hidden}
 .seg-dim{position:absolute;left:0;width:100%}
@@ -102,6 +106,10 @@ p.body-text{font-size:.99rem;color:var(--ink);max-width:38em;margin-bottom:1.05e
 .thread h4 a:hover{border-color:var(--gold)}
 .ch.accent-blood .thread h4 a{border-color:var(--blood-dim)}
 .ch.accent-blood .thread h4 a:hover{border-color:var(--blood)}
+.body-text a{color:inherit;text-decoration:none;border-bottom:1px solid var(--gold-dim)}
+.body-text a:hover{border-color:var(--gold)}
+.ch.accent-blood .body-text a{border-color:var(--blood-dim)}
+.ch.accent-blood .body-text a:hover{border-color:var(--blood)}
 .tool-direct-link{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.03em;color:var(--ink-faint);
   border-bottom:1px solid var(--ink-faint);margin-left:.6em;vertical-align:middle}
 .tool-direct-link:hover{color:var(--ink);border-color:var(--ink)}
@@ -122,15 +130,16 @@ p.body-text{font-size:.99rem;color:var(--ink);max-width:38em;margin-bottom:1.05e
 
 @media (max-width:1000px){
   #storywrap{flex-direction:column}
-  #stickyWrap{position:sticky;top:0;height:56vh;width:100%}
-  #photocol{width:60%}
-  #timelinecol{width:40%;min-width:110px;max-width:none}
+  #stickyWrap{position:sticky;top:0;height:64vh;width:100%}
+  #photocol{width:56%}
+  #timelinecol{width:44%;min-width:110px;max-width:none}
   #textcol{width:100%}
-  .spine-node{width:100px;gap:4px}
-  .spine-dot{width:10px;height:10px}
-  .spine-node.active .spine-dot{width:14px;height:14px}
-  .spine-label{font-size:9.5px}
-  .spine-node.active .spine-label{font-size:11px}
+  #spineTrack{height:98%}
+  .spine-node{width:96px;gap:2px}
+  .spine-dot{width:7px;height:7px;border-width:1.5px}
+  .spine-node.active .spine-dot{width:11px;height:11px}
+  .spine-label{font-size:7.5px;line-height:1.15}
+  .spine-node.active .spine-label{font-size:9.5px}
   .live-embed iframe{height:420px}
 }
 
@@ -155,6 +164,7 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
       <img id="heroImg" style="opacity:0" src=""/>
       <video id="heroVid" style="opacity:0" muted loop playsinline autoplay></video>
       <div id="heroPlaceholder"></div>
+      <div id="heroEmbed"></div>
       <div id="yrOverlay"><div class="yr" id="badgeYr">1967</div></div>
       <div id="playBadge"><span class="dot"></span>Real footage, VTV, 25 Jun 2026</div>
       <div id="toolFrameWrap">
@@ -182,8 +192,8 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
     <section class="ch accent-blood" data-lat="10.504" data-lng="-66.849" data-zoom="14" data-radius="2200" data-color="blood" data-yr="1967"
       data-img="https://alchetron.com/cdn/1967-caracas-earthquake-405e4b4a-66a3-4947-8d55-fdf28439775-resize-750.jpeg"
      >
-      <p class="eyebrow">Chapter 1 — 1967: the ground remembers</p>
-      <h2 class="chapter-title serif">The ground remembers.</h2>
+      <p class="eyebrow">Chapter 1 — 1967: m6.6</p>
+      <h2 class="chapter-title serif">The earthquake we forgot.</h2>
       <p class="body-text">On July 29, 1967, a magnitude 6.5–6.6 earthquake hit the Venezuelan coast about 20 kilometers from Caracas. Four apartment towers in Altamira and Los Palos Grandes (Edificio San José, Mijagual, Neverí, and Palace/Corvin) collapsed completely. Mansión Charaima and the Hotel Macuto Sheraton in Caraballeda and Macuto lost most of their floors. Two hundred to 236 people died, about 2,000 were injured, 40 buildings were declared uninhabitable, 180 more were severely damaged.</p>
       <p class="body-text">This is not a story about corruption. Not yet, at least.</p>
       <p class="body-text">In 1967, Venezuela was a functioning democracy, oil-wealthy, thirty-one years from Chávez, with none of the "notorious," weaponized cronyism that defines the later chapters of this story. The ground did this anyway. That's the point of starting here: the seismic risk under Caracas and the Vargas coast isn't a symptom of anything that came later. It's older than all of it, and it was never going away. What changes across the next fifty-nine years isn't the risk. It's the country's capacity to answer it.</p>
@@ -334,7 +344,19 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
     </section>
 
     <section class="ch accent-blood" data-lat="10.60" data-lng="-66.93" data-zoom="11" data-radius="15000" data-color="blood" data-yr="Voices"
-      data-img="" data-placeholder-tag="Real voices, no visual" data-credit="No photo chosen for this chapter yet. Sourced quotes below stand on their own.">
+      data-placeholder-tag="Real voices, no visual" data-credit="No photo chosen for this chapter yet. Sourced quotes below stand on their own."
+      data-imgs='[
+        {"type":"placeholder"},
+        {"type":"placeholder"},
+        {"type":"placeholder"},
+        {"type":"placeholder"},
+        {"type":"placeholder"},
+        {"type":"placeholder"},
+        {"type":"placeholder"},
+        {"type":"youtube","yt":"f36dnKMgtHw","caption":"AFP: Venezuelans confront army over earthquake rescue response"},
+        {"type":"twitter","url":"https://x.com/patriciajaniot/status/2072118958929346958","caption":"CICPC looting confrontation, via Patricia Janiot"},
+        {"type":"twitter","url":"https://x.com/patriciajaniot/status/2072118958929346958","caption":"CICPC looting confrontation, via Patricia Janiot"}
+      ]'>
       <p class="eyebrow">Chapter 12 — voices from the ground</p>
       <h2 class="chapter-title serif">What it actually felt like.</h2>
       <p class="body-text">Everything above is analysis: numbers, patterns, institutions. None of it happened to a statistic. It happened to specific people, in specific buildings, on one morning in June, and the parts of this story that are hardest to hold are the ones that are hardest to summarize. So instead of summarizing them, here are some of them, in their own words, as reported by the journalists who were there.</p>
@@ -391,16 +413,7 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
         <p class="body-text">Some of this anger was captured live, by people filming it as it happened. In La Guaira, a civilian rescue worker confronted soldiers standing near the rubble with rifles instead of tools.</p>
         <p class="ground-quote">"Why did you bring weapons? You should have brought a shovel, a pickaxe. We're not at war. We're in an emergency."</p>
         <p class="ground-cite">Unnamed rescue worker, La Guaira, reported by The World/PRX, July 2, 2026</p>
-        <p class="body-text">In one of the most widely shared videos of the response, residents at the Vallarta residences in Playa Grande surrounded a CICPC officer they accused of pocketing cash pulled from the rubble instead of helping search it, tearing the bills up in front of him on camera.</p>
-
-        <div class="live-embed">
-          <div class="live-head">
-            <span class="live-tag"><span class="dot"></span>Video, via X/Twitter</span>
-            <a class="live-link" href="https://x.com/patriciajaniot/status/2072118958929346958" target="_blank" rel="noopener">Open direct ↗</a>
-          </div>
-          <blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/patriciajaniot/status/2072118958929346958"></a></blockquote>
-          <div class="live-fallback">If the embed above doesn't load, use "Open direct." Posted by journalist Patricia Janiot, widely shared as the CICPC looting-confrontation video.</div>
-        </div>
+        <p class="body-text">In one of the most widely shared videos of the response, residents at the Vallarta residences in Playa Grande surrounded a CICPC officer they accused of pocketing cash pulled from the rubble instead of helping search it, tearing the bills up in front of him on camera. Video, via journalist Patricia Janiot: <a class="live-link" href="https://x.com/patriciajaniot/status/2072118958929346958" target="_blank" rel="noopener">open direct ↗</a></p>
 
         <p class="body-text">Opposition leader Juan Pablo Guanipa posted his own condemnation of the military's conduct during the response.</p>
         <p class="ground-quote">"The videos of soldiers, under orders from the corrupt Military High Command, confiscating or preventing the entry of aid collected by our people are unacceptable."</p>
@@ -496,6 +509,7 @@ window.addEventListener('resize',layoutSpine);
 var heroImg=document.getElementById('heroImg');
 var heroVid=document.getElementById('heroVid');
 var heroPlaceholder=document.getElementById('heroPlaceholder');
+var heroEmbed=document.getElementById('heroEmbed');
 var yrOverlay=document.getElementById('yrOverlay');
 var badgeYr=document.getElementById('badgeYr');
 var playBadge=document.getElementById('playBadge');
@@ -549,10 +563,18 @@ function paintChapter(sec,imgIdx){
   var imgs=getImgs(sec);
   var current=imgs[imgIdx||0];
   heroImg.style.opacity=0; heroVid.style.opacity=0; heroPlaceholder.style.opacity=0; playBadge.style.display='none';
+  heroEmbed.style.opacity=0; heroEmbed.innerHTML='';
 
   if(vid){
     setTimeout(()=>{ heroVid.src=vid; heroVid.play().catch(()=>{}); heroVid.style.opacity=1; },200);
     playBadge.style.display='flex';
+  } else if(current && current.type==='youtube'){
+    heroEmbed.innerHTML='<iframe class="yt-frame" src="https://www.youtube.com/embed/'+current.yt+'?rel=0" title="'+(current.caption||'Video')+'" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+    heroEmbed.style.opacity=1;
+  } else if(current && current.type==='twitter'){
+    heroEmbed.innerHTML='<div class="tw-hero-wrap"><blockquote class="twitter-tweet" data-theme="dark"><a href="'+current.url+'"></a></blockquote></div>';
+    heroEmbed.style.opacity=1;
+    if(window.twttr && window.twttr.widgets) twttr.widgets.load(heroEmbed);
   } else if(current && current.src){
     var blurAmt=sec.dataset.blur==='true'?'6px':'0px';
     var pos=current.pos||sec.dataset.pos||'50% 50%';
