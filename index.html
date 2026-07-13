@@ -68,24 +68,12 @@
     display:flex;align-items:center;justify-content:space-between;
     height:64px;
   }
-  .nav-cream-cut{
-    position:absolute;top:0;left:0;height:100%;
-    width:300px;
-    background:#F8F1E7;
-    clip-path:polygon(0 0, 100% 0, calc(100% - 30px) 100%, 0 100%);
-    z-index:0;
-    transition:background-color .35s ease;
-  }
-  @media(max-width:640px){.nav-cream-cut{width:100%;clip-path:none}}
-  header.nav.scrolled .nav-cream-cut{background:var(--bg)}
   .brand{
     position:relative;z-index:1;
     display:flex;align-items:center;gap:11px;
     font-weight:800;font-size:15px;letter-spacing:-.01em;
-    color:#1C3646;
-    transition:color .35s ease;
+    color:var(--text);
   }
-  header.nav.scrolled .brand{color:var(--text)}
   .brand-mark{height:36px;width:auto;flex-shrink:0;display:block}
   nav.nav-links{display:flex;gap:28px;font-size:13px;font-weight:600;color:var(--text-dim)}
   nav.nav-links a{transition:color .15s}
@@ -370,7 +358,6 @@
 
 <header class="nav">
   <div class="wrap">
-    <div class="nav-cream-cut"></div>
     <div class="brand">
       <img class="brand-mark" src="assets/brackish-waves.png" alt="Brackish Projects">
       Brackish Projects
@@ -748,18 +735,6 @@
     cards.forEach(c => io.observe(c));
   } else {
     cards.forEach(c => c.classList.add('in'));
-  }
-
-  // Turn the nav's cream cut dark once the hero headline scrolls out of view.
-  const navEl = document.querySelector('header.nav');
-  const heroH1 = document.querySelector('.hero h1');
-  if (navEl && heroH1 && 'IntersectionObserver' in window){
-    const headerIo = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        navEl.classList.toggle('scrolled', !entry.isIntersecting);
-      });
-    }, { threshold: 0, rootMargin: '-64px 0px 0px 0px' });
-    headerIo.observe(heroH1);
   }
 
   // ── Thinking modal ─────────────────────────────────────────────────
