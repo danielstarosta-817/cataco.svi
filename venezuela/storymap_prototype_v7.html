@@ -54,6 +54,9 @@ body{background:var(--bg);color:var(--ink);font-family:'Inter',-apple-system,san
 #yrOverlay.blood .yr{color:#e88686}
 #playBadge{position:absolute;bottom:20px;right:20px;z-index:20;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
   color:var(--ink);background:rgba(11,10,8,.65);border:1px solid rgba(242,237,228,.3);padding:4px 10px;display:none;align-items:center;gap:6px}
+#playBadge.unmute-btn{cursor:pointer;background:rgba(217,164,65,.92);border-color:var(--gold);color:#141210;padding:8px 16px;font-size:12px;box-shadow:0 2px 14px rgba(0,0,0,.5);transition:transform .15s ease,background .15s ease}
+#playBadge.unmute-btn:hover{transform:scale(1.04);background:var(--gold)}
+#playBadge.unmute-btn .dot{background:#141210}
 #playBadge .dot{width:6px;height:6px;border-radius:50%;background:var(--blood)}
 
 #toolFrameWrap{position:absolute;inset:0;z-index:40;display:none;flex-direction:column;background:#0b0a08}
@@ -443,9 +446,9 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
       <p class="eyebrow">Chapter 13 — live tools</p>
       <h2 class="chapter-title serif">What's tracking this right now.</h2>
       <p class="body-text">Everything above is history and analysis. Everything below is live, changing by the hour, and built by people outside any government channel, mostly volunteers, doing accounting the state itself hasn't. None of these are affiliated with this project, and none of them have been independently verified here beyond confirming the sites exist and describe themselves this way. Treat them as a starting point, not a final source. Click a name to open it on the left; use "open direct" if a site refuses to load inside the panel.</p>
+      <div class="thread"><h4><a href="https://reportaven.com" class="tool-embed-link" data-name="Reporta Ven">Reporta Ven</a> <a href="https://reportaven.com" target="_blank" rel="noopener" class="tool-direct-link">open direct ↗</a></h4><p class="body-text">A citizen-reporting portal for damage and needs.</p></div>
       <div class="thread"><h4><a href="https://crisisvenezuela.org/colapsos" class="tool-embed-link" data-name="Crisis Venezuela">Crisis Venezuela</a> <a href="https://crisisvenezuela.org/colapsos" target="_blank" rel="noopener" class="tool-direct-link">open direct ↗</a></h4><p class="body-text">A dedicated tracker of building collapses nationwide (crisisvenezuela.org/colapsos).</p></div>
       <div class="thread"><h4><a href="https://crisis-pulse-ve.netlify.app" class="tool-embed-link" data-name="Crisis Pulse">Crisis Pulse</a> <a href="https://crisis-pulse-ve.netlify.app" target="_blank" rel="noopener" class="tool-direct-link">open direct ↗</a></h4><p class="body-text">A real-time dashboard aggregating crisis indicators across the country.</p></div>
-      <div class="thread"><h4><a href="https://reportaven.com" class="tool-embed-link" data-name="Reporta Ven">Reporta Ven</a> <a href="https://reportaven.com" target="_blank" rel="noopener" class="tool-direct-link">open direct ↗</a></h4><p class="body-text">A citizen-reporting portal for damage and needs.</p></div>
       <div class="thread"><h4><a href="https://terremoto.hazlohoy.org" class="tool-embed-link" data-name="Hazlo Hoy / Venezuela Ayuda">Hazlo Hoy / Venezuela Ayuda</a> <a href="https://terremoto.hazlohoy.org" target="_blank" rel="noopener" class="tool-direct-link">open direct ↗</a></h4><p class="body-text">An aid-coordination hub connecting needs with donors and volunteers.</p></div>
       <div class="thread"><h4><a href="https://terremotovenezuela.com" class="tool-embed-link" data-name="Damage Map (terremotovenezuela.com)">Damage Map (terremotovenezuela.com)</a> <a href="https://terremotovenezuela.com" target="_blank" rel="noopener" class="tool-direct-link">open direct ↗</a></h4><p class="body-text">A crowd-sourced map of reported structural damage. A separate structural-damage layer on this same site has been credited elsewhere to independent mapper @mariangelli; it wasn't confirmed here as a distinct, separately hosted tool.</p></div>
       <div class="thread"><h4><a href="https://www.sismovenezuela.com" class="tool-embed-link" data-name="SismoVenezuela">SismoVenezuela</a> <a href="https://www.sismovenezuela.com" target="_blank" rel="noopener" class="tool-direct-link">open direct ↗</a></h4><p class="body-text">Real-time damage, missing-persons, and aid-center heatmap, embedded live earlier in "Everything at once."</p></div>
@@ -554,9 +557,17 @@ function localImgIndex(sec){
   return Math.floor(frac*imgs.length);
 }
 
+var DEFAULT_TOOL={url:'https://reportaven.com',name:'Reporta Ven'};
 function paintChapter(sec,imgIdx){
   var isBlood=sec.dataset.color==='blood';
-  if(sec.dataset.yr!=='Tools') closeToolFrame();
+  if(sec.dataset.yr!=='Tools'){
+    closeToolFrame();
+  } else if(!toolFrameWrap.classList.contains('open')){
+    toolFrame.src=DEFAULT_TOOL.url;
+    toolFrameLabel.textContent=DEFAULT_TOOL.name;
+    toolFrameOpenDirect.href=DEFAULT_TOOL.url;
+    toolFrameWrap.classList.add('open');
+  }
 
   badgeYr.textContent=sec.dataset.yr;
   yrOverlay.className=isBlood?'blood':'';
@@ -567,16 +578,28 @@ function paintChapter(sec,imgIdx){
   heroImg.style.opacity=0; heroVid.style.opacity=0; heroPlaceholder.style.opacity=0; playBadge.style.display='none';
   heroEmbed.style.opacity=0; heroEmbed.innerHTML='';
 
+  playBadge.classList.remove('unmute-btn');
+  playBadge.onclick=null;
+
   if(vid){
     heroVid.controls=false; heroVid.loop=true; heroVid.muted=true;
     setTimeout(()=>{ heroVid.src=vid; heroVid.play().catch(()=>{}); heroVid.style.opacity=1; },200);
     playBadge.innerHTML='<span class="dot"></span>Real footage, VTV, 25 Jun 2026';
     playBadge.style.display='flex';
   } else if(current && current.type==='mp4'){
-    var wantMuted=!!current.muted;
-    heroVid.controls=true; heroVid.loop=false; heroVid.muted=wantMuted;
+    heroVid.controls=true; heroVid.loop=false; heroVid.muted=true;
     setTimeout(()=>{ heroVid.src=current.src; heroVid.play().catch(()=>{}); heroVid.style.opacity=1; },200);
-    playBadge.innerHTML='<span class="dot"></span>'+(current.caption||'Real footage, via X/Twitter')+(wantMuted?' — tap to unmute':' — tap play for sound');
+    var capText=current.caption||'Real footage, via X/Twitter';
+    function setUnmuteBadge(){
+      playBadge.classList.add('unmute-btn');
+      playBadge.innerHTML='<span class="dot"></span>🔇 '+capText+' — tap for sound';
+    }
+    setUnmuteBadge();
+    playBadge.onclick=function(){
+      heroVid.muted=false;
+      playBadge.classList.remove('unmute-btn');
+      playBadge.innerHTML='<span class="dot"></span>🔊 '+capText;
+    };
     playBadge.style.display='flex';
   } else if(current && current.type==='youtube'){
     heroEmbed.innerHTML='<iframe class="yt-frame" src="https://www.youtube.com/embed/'+current.yt+'?rel=0" title="'+(current.caption||'Video')+'" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'+
