@@ -4,7 +4,7 @@
 
 ---
 
-## 1. 1967: The Earthquake We Forgot
+## 1. 1967: The Earthquake Some Forgot
 
 On July 29, 1967, a magnitude 6.5–6.6 earthquake hit the Venezuelan coast about 20 kilometers from Caracas. Four apartment towers in Altamira and Los Palos Grandes (Edificio San José, Mijagual, Neverí, and Palace/Corvin) collapsed completely. Mansión Charaima and the Hotel Macuto Sheraton in Caraballeda and Macuto lost most of their floors. Two hundred to 236 people died, about 2,000 were injured, 40 buildings were declared uninhabitable, 180 more were severely damaged.
 

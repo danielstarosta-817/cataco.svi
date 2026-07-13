@@ -175,7 +175,6 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
       <div id="toolFrameWrap">
         <div id="toolFrameHead">
           <span id="toolFrameLabel"></span>
-          <button id="toolFrameClose" type="button">✕ Back to photo</button>
         </div>
         <iframe id="toolFrame" src="" loading="lazy" title="Live tool"></iframe>
         <div id="toolFrameFallback">If this doesn't load, the site may block embedding. <a id="toolFrameOpenDirect" target="_blank" rel="noopener">Open it directly ↗</a></div>
@@ -198,7 +197,7 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
       data-img="https://alchetron.com/cdn/1967-caracas-earthquake-405e4b4a-66a3-4947-8d55-fdf28439775-resize-750.jpeg"
      >
       <p class="eyebrow">Chapter 1 — 1967: m6.6</p>
-      <h2 class="chapter-title serif">The earthquake we forgot.</h2>
+      <h2 class="chapter-title serif">The earthquake some forgot.</h2>
       <p class="body-text">On July 29, 1967, a magnitude 6.5–6.6 earthquake hit the Venezuelan coast about 20 kilometers from Caracas. Four apartment towers in Altamira and Los Palos Grandes (Edificio San José, Mijagual, Neverí, and Palace/Corvin) collapsed completely. Mansión Charaima and the Hotel Macuto Sheraton in Caraballeda and Macuto lost most of their floors. Two hundred to 236 people died, about 2,000 were injured, 40 buildings were declared uninhabitable, 180 more were severely damaged.</p>
       <p class="body-text">This is not a story about corruption. Not yet, at least.</p>
       <p class="body-text">In 1967, Venezuela was a functioning democracy, oil-wealthy, thirty-one years from Chávez, with none of the "notorious," weaponized cronyism that defines the later chapters of this story. The ground did this anyway. That's the point of starting here: the seismic risk under Caracas and the Vargas coast isn't a symptom of anything that came later. It's older than all of it, and it was never going away. What changes across the next fifty-nine years isn't the risk. It's the country's capacity to answer it.</p>
@@ -437,8 +436,7 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
       <p class="body-text">None of these people are speaking for the whole country. They're each describing one morning, one building, one ward, from wherever they happened to be standing in it. That's the point of putting them here rather than folding them into the numbers above: the numbers explain the shape of the disaster, but these are what it actually felt like from inside it.</p>
     </section>
 
-    <section class="ch" data-lat="10.35" data-lng="-66.5" data-zoom="7" data-radius="1" data-color="gold" data-yr="Tools"
-      data-img="https://commons.wikimedia.org/wiki/Special:FilePath/Department%20of%20State%20Urban%20Seach%20and%20Rescue%20Assist%20in%20Venezuela%20(9782041).jpg?width=1400">
+    <section class="ch" data-lat="10.35" data-lng="-66.5" data-zoom="7" data-radius="1" data-color="gold" data-yr="Tools">
       <p class="eyebrow">Chapter 13 — live tools</p>
       <h2 class="chapter-title serif">What's tracking this right now.</h2>
       <p class="body-text">Everything above is history and analysis. Everything below is live, changing by the hour, and built by people outside any government channel, mostly volunteers, doing accounting the state itself hasn't. None of these are affiliated with this project, and none of them have been independently verified here beyond confirming the sites exist and describe themselves this way. Treat them as a starting point, not a final source. Click a name to open it on the left; use "open direct" if a site refuses to load inside the panel.</p>
@@ -459,7 +457,7 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
   </div>
 </div>
 
-<footer>Design prototype v7 — timeline column widened and given its own visible panel so it reads clearly regardless of window width; map tiles switched to a provider that doesn't require an API key; chapter 1 now uses the photo you picked.</footer>
+<footer></footer>
 
 <script>
 var chapters=[...document.querySelectorAll('#textcol .ch')];
@@ -534,7 +532,6 @@ document.querySelectorAll('.tool-embed-link').forEach(a=>{
     toolFrameWrap.classList.add('open');
   });
 });
-document.getElementById('toolFrameClose').addEventListener('click',closeToolFrame);
 
 function getImgs(sec){
   if(sec.dataset.imgs){
@@ -616,7 +613,9 @@ function paintChapter(sec,imgIdx){
     var blurAmt=sec.dataset.blur==='true'?'6px':'0px';
     var pos=current.pos||sec.dataset.pos||'50% 50%';
     var fit=sec.dataset.fit||'cover';
-    setTimeout(()=>{ heroImg.src=current.src; heroImg.style.objectFit=fit; heroImg.style.objectPosition=pos; heroImg.style.filter='saturate(.92) contrast(1.03) blur('+blurAmt+')'; heroImg.style.opacity=1; },200);
+    var targetSrc=current.src;
+    heroImg.style.objectFit=fit; heroImg.style.objectPosition=pos; heroImg.style.filter='saturate(.92) contrast(1.03) blur('+blurAmt+')';
+    setTimeout(()=>{ if(getImgs(sec)[imgIdx||0]!==current) return; heroImg.src=targetSrc; heroImg.style.opacity=1; },200);
   } else {
     heroPlaceholder.style.opacity=1;
     var tagText=sec.dataset.placeholderTag||'No verified image yet';
