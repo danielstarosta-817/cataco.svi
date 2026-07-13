@@ -25,3 +25,7 @@ ken_admin_boundaries.geojson/
 GD_Targeting_Reference_Starosta.docx
 venezuela/*
 !venezuela/index.html
+!venezuela/index2.html
+!venezuela/storymap_prototype_v7.html
+!venezuela/motm_*
+!venezuela/how_we_got_here_chapters_draft.md
