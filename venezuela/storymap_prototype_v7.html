@@ -353,8 +353,8 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
       data-imgs='[
         {"type":"mp4","src":"floor_by_floor_collapse.mp4","caption":"Venezuela Earthquake: Floor By Floor, Destruction Gets Worse"},
         {"type":"mp4","src":"floor_by_floor_collapse.mp4","caption":"Venezuela Earthquake: Floor By Floor, Destruction Gets Worse"},
-        {"type":"mp4","src":"floor_by_floor_collapse.mp4","caption":"Venezuela Earthquake: Floor By Floor, Destruction Gets Worse"},
-        {"type":"mp4","src":"floor_by_floor_collapse.mp4","caption":"Venezuela Earthquake: Floor By Floor, Destruction Gets Worse"},
+        {"type":"mp4","src":"cctv_twin_quakes.mp4","caption":"CCTV footage shows moment twin quakes struck","muted":true},
+        {"type":"mp4","src":"cctv_twin_quakes.mp4","caption":"CCTV footage shows moment twin quakes struck","muted":true},
         {"type":"mp4","src":"festival_moment_earthquake.mp4","caption":"Moment earthquake hit during festival celebrations in Venezuela"},
         {"type":"mp4","src":"festival_moment_earthquake.mp4","caption":"Moment earthquake hit during festival celebrations in Venezuela"},
         {"type":"mp4","src":"festival_moment_earthquake.mp4","caption":"Moment earthquake hit during festival celebrations in Venezuela"},
@@ -573,9 +573,10 @@ function paintChapter(sec,imgIdx){
     playBadge.innerHTML='<span class="dot"></span>Real footage, VTV, 25 Jun 2026';
     playBadge.style.display='flex';
   } else if(current && current.type==='mp4'){
-    heroVid.controls=true; heroVid.loop=false; heroVid.muted=true;
+    var wantMuted=!!current.muted;
+    heroVid.controls=true; heroVid.loop=false; heroVid.muted=wantMuted;
     setTimeout(()=>{ heroVid.src=current.src; heroVid.play().catch(()=>{}); heroVid.style.opacity=1; },200);
-    playBadge.innerHTML='<span class="dot"></span>'+(current.caption||'Real footage, via X/Twitter')+' — tap to unmute';
+    playBadge.innerHTML='<span class="dot"></span>'+(current.caption||'Real footage, via X/Twitter')+(wantMuted?' — tap to unmute':' — tap play for sound');
     playBadge.style.display='flex';
   } else if(current && current.type==='youtube'){
     heroEmbed.innerHTML='<iframe class="yt-frame" src="https://www.youtube.com/embed/'+current.yt+'?rel=0" title="'+(current.caption||'Video')+'" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'+
