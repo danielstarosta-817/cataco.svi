@@ -69,6 +69,24 @@ body{background:var(--bg);color:var(--ink);font-family:'Inter',-apple-system,san
 #toolFrameFallback{padding:8px 14px;font-size:11px;color:var(--ink-faint);background:#141210;border-top:1px solid rgba(242,237,228,.15)}
 #toolFrameFallback a{color:var(--gold)}
 
+footer{padding:34px 20px 46px;text-align:center}
+#sourcesLinkBtn{background:none;border:1px solid rgba(242,237,228,.3);color:var(--ink-faint);font-size:11px;font-family:'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:7px 18px;cursor:pointer;border-radius:16px}
+#sourcesLinkBtn:hover{border-color:var(--gold);color:var(--gold)}
+#sourcesModal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(11,10,8,.82);padding:24px}
+#sourcesModal.open{display:flex}
+#sourcesModalPanel{background:#141210;border:1px solid rgba(242,237,228,.2);border-radius:6px;max-width:640px;width:100%;max-height:82vh;overflow-y:auto}
+#sourcesModalHead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 22px;border-bottom:1px solid rgba(242,237,228,.15);position:sticky;top:0;background:#141210}
+#sourcesModalHead h3{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:500;color:var(--ink);margin:0}
+#sourcesModalClose{flex-shrink:0;background:none;border:1px solid rgba(242,237,228,.35);color:var(--ink);font-size:11px;font-family:'Inter',sans-serif;padding:4px 10px;cursor:pointer;border-radius:14px}
+#sourcesModalClose:hover{border-color:var(--ink)}
+#sourcesModalBody{padding:20px 22px 26px}
+#sourcesModalBody h4{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin:22px 0 8px}
+#sourcesModalBody h4:first-child{margin-top:0}
+#sourcesModalBody p{font-size:13.5px;line-height:1.6;color:var(--ink-dim);margin:0 0 4px}
+#sourcesModalBody a{color:var(--ink);text-decoration:underline;text-decoration-color:rgba(242,237,228,.3)}
+#sourcesModalBody a:hover{text-decoration-color:var(--gold);color:var(--gold)}
+#sourcesModalBody .src-note{font-size:12px;color:var(--ink-faint);margin-top:20px;font-style:italic}
+
 /* middle: prominent timeline, now wider and with a visible panel so it never disappears */
 #timelinecol{width:15vw;min-width:150px;max-width:190px;flex-shrink:0;position:relative;border-right:1px solid var(--line);
   display:flex;align-items:center;justify-content:center;background:var(--panel)}
@@ -300,8 +318,9 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
     </section>
 
     <section class="ch accent-blood" data-lat="10.60" data-lng="-66.93" data-zoom="10" data-radius="45000" data-color="blood" data-yr="2026"
-      data-vid="https://commons.wikimedia.org/wiki/Special:FilePath/Tomas%20a%C3%A9reas%20de%20edificios%20destruidos%20en%20La%20Guaira%20por%20los%20terremotos%20de%20Venezuela.webm"
-     >
+      data-imgs='[
+        {"type":"mp4","src":"https://commons.wikimedia.org/wiki/Special:FilePath/Tomas%20a%C3%A9reas%20de%20edificios%20destruidos%20en%20La%20Guaira%20por%20los%20terremotos%20de%20Venezuela.webm","caption":"Real footage, VTV, 25 Jun 2026","muted":true}
+      ]'>
       <p class="eyebrow">Chapter 9 — 2026: m7.2 and m7.5, 39 seconds apart</p>
       <h2 class="chapter-title serif">Everything at once.</h2>
       <p class="body-text">Six months before the earthquake, Maduro himself was already gone. On January 3, 2026, a US military operation captured him and flew him to New York, where he's now indicted on narco-terrorism charges. His vice president, Delcy Rodríguez, was sworn in as acting president two days later, constitutionally obligated to call an election within 30 days. Five months on, she still hadn't, the same military and PSUV apparatus remained intact around her, and the opposition disputed her legitimacy outright.</p>
@@ -323,8 +342,11 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
 
     <section class="ch accent-blood" data-lat="10.53" data-lng="-66.87" data-zoom="10" data-radius="20000" data-color="blood" data-yr="2026"
       data-imgs='[
+        {"type":"mp4","src":"https://commons.wikimedia.org/wiki/Special:FilePath/Tomas%20a%C3%A9reas%20de%20edificios%20destruidos%20en%20La%20Guaira%20por%20los%20terremotos%20de%20Venezuela.webm","caption":"Real footage, VTV, 25 Jun 2026","muted":true},
+        {"type":"mp4","src":"https://commons.wikimedia.org/wiki/Special:FilePath/Tomas%20a%C3%A9reas%20de%20edificios%20destruidos%20en%20La%20Guaira%20por%20los%20terremotos%20de%20Venezuela.webm","caption":"Real footage, VTV, 25 Jun 2026","muted":true},
+        {"type":"mp4","src":"https://commons.wikimedia.org/wiki/Special:FilePath/Tomas%20a%C3%A9reas%20de%20edificios%20destruidos%20en%20La%20Guaira%20por%20los%20terremotos%20de%20Venezuela.webm","caption":"Real footage, VTV, 25 Jun 2026","muted":true},
         {"src":"block_rescue_stretcher.jpg"},
-        {"src":"block_aid_workers.webp"}
+        {"src":"block_rescue_stretcher.jpg"}
       ]'>
       <p class="eyebrow">Chapter 10 — 2026: block by block</p>
       <h2 class="chapter-title serif">A view from the ground.</h2>
@@ -457,7 +479,27 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
   </div>
 </div>
 
-<footer></footer>
+<footer><button id="sourcesLinkBtn" type="button">Sources ↗</button></footer>
+
+<div id="sourcesModal">
+  <div id="sourcesModalPanel">
+    <div id="sourcesModalHead">
+      <h3>Sources</h3>
+      <button id="sourcesModalClose" type="button">✕ Close</button>
+    </div>
+    <div id="sourcesModalBody">
+      <h4>News reporting quoted directly</h4>
+      <p>AFP, Associated Press (AP), CBS Mornings, Al Jazeera, PBS NewsHour, and The World (PRX/GBH).</p>
+      <h4>On-the-ground social posts embedded or referenced</h4>
+      <p>Patricia Janiot (X/Twitter), @EmmaRincon (X/Twitter), Juan Pablo Guanipa (X/Twitter), and VTV state television aerial footage (via Wikimedia Commons).</p>
+      <h4>Data and institutional sources</h4>
+      <p>FUNVISIS (Fundación Venezolana de Investigaciones Sismológicas); UN OCHA humanitarian appeal figures; Microsoft AI for Good Lab's building-damage assessment for Catia La Mar; and Humanitarian Data Exchange (HDX) administrative boundary data used for the parish-level map.</p>
+      <h4>Live monitoring tools linked in "What's tracking this right now"</h4>
+      <p><a href="https://reportaven.com" target="_blank" rel="noopener">Reporta Ven</a>, <a href="https://www.sismovenezuela.com" target="_blank" rel="noopener">SismoVenezuela</a>, <a href="https://terremoto.hazlohoy.org" target="_blank" rel="noopener">Hazlo Hoy / Venezuela Ayuda</a>, <a href="https://terremotovenezuela.com" target="_blank" rel="noopener">terremotovenezuela.com</a>, <a href="https://terremotovenezuela.app" target="_blank" rel="noopener">Earthquake Venezuela App</a>, <a href="https://venezuelatebusca.com" target="_blank" rel="noopener">Venezuela Te Busca</a>, <a href="https://venezuelareporta.org" target="_blank" rel="noopener">Venezuela Reporta</a>, <a href="https://desaparecidosterremotovenezuela.com" target="_blank" rel="noopener">Missing Persons Venezuela Earthquake</a>, and the <a href="https://tasks.hotosm.org" target="_blank" rel="noopener">HOTOSM Tasking Manager</a>.</p>
+      <p class="src-note">The historical chapters (1967, 1999, 2005, and the 2003–2025 economic and institutional collapse) draw on public reporting and government/NGO data for each event. This is a research prototype, not a peer-reviewed publication — figures should be cross-checked against primary sources before reuse.</p>
+    </div>
+  </div>
+</div>
 
 <script>
 var chapters=[...document.querySelectorAll('#textcol .ch')];
@@ -512,6 +554,12 @@ var heroEmbed=document.getElementById('heroEmbed');
 var yrOverlay=document.getElementById('yrOverlay');
 var badgeYr=document.getElementById('badgeYr');
 var playBadge=document.getElementById('playBadge');
+
+var sourcesModal=document.getElementById('sourcesModal');
+document.getElementById('sourcesLinkBtn').addEventListener('click',()=>sourcesModal.classList.add('open'));
+document.getElementById('sourcesModalClose').addEventListener('click',()=>sourcesModal.classList.remove('open'));
+sourcesModal.addEventListener('click',e=>{ if(e.target===sourcesModal) sourcesModal.classList.remove('open'); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') sourcesModal.classList.remove('open'); });
 
 var toolFrameWrap=document.getElementById('toolFrameWrap');
 var toolFrame=document.getElementById('toolFrame');
@@ -615,7 +663,7 @@ function paintChapter(sec,imgIdx){
     var fit=sec.dataset.fit||'cover';
     var targetSrc=current.src;
     heroImg.style.objectFit=fit; heroImg.style.objectPosition=pos; heroImg.style.filter='saturate(.92) contrast(1.03) blur('+blurAmt+')';
-    setTimeout(()=>{ if(getImgs(sec)[imgIdx||0]!==current) return; heroImg.src=targetSrc; heroImg.style.opacity=1; },200);
+    setTimeout(()=>{ if(imgs[imgIdx||0]!==current) return; heroImg.src=targetSrc; heroImg.style.opacity=1; },200);
   } else {
     heroPlaceholder.style.opacity=1;
     var tagText=sec.dataset.placeholderTag||'No verified image yet';
