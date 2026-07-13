@@ -354,10 +354,10 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
         {"type":"placeholder"},
         {"type":"placeholder"},
         {"type":"placeholder"},
-        {"type":"youtube","yt":"f36dnKMgtHw","caption":"AFP: Venezuelans confront army over earthquake rescue response"},
-        {"type":"twitter","url":"https://x.com/patriciajaniot/status/2072118958929346958","caption":"CICPC looting confrontation, via Patricia Janiot"},
-        {"type":"twitter","url":"https://x.com/patriciajaniot/status/2072118958929346958","caption":"CICPC looting confrontation, via Patricia Janiot"},
-        {"type":"twitter","url":"https://x.com/EmmaRincon/status/2071369378008858905","caption":"Soldiers accused of standing by or looting, via @EmmaRincon"}
+        {"type":"mp4","src":"afp_show_me_tough.mp4","caption":"AFP: Venezuelans confront army over earthquake rescue response"},
+        {"type":"mp4","src":"https://video.twimg.com/amplify_video/2072117791189045249/vid/avc1/480x852/V6Mar2R7GplsoBbN.mp4","caption":"CICPC looting confrontation, via Patricia Janiot"},
+        {"type":"mp4","src":"https://video.twimg.com/amplify_video/2072117791189045249/vid/avc1/480x852/V6Mar2R7GplsoBbN.mp4","caption":"CICPC looting confrontation, via Patricia Janiot"},
+        {"type":"mp4","src":"https://video.twimg.com/amplify_video/2072117746284826624/vid/avc1/480x640/XP4Ymml5qpAd4nht.mp4","caption":"Soldiers accused of standing by or looting, via @EmmaRincon"}
       ]'>
       <p class="eyebrow">Chapter 12 — voices from the ground</p>
       <h2 class="chapter-title serif">What it actually felt like.</h2>
@@ -560,7 +560,14 @@ function paintChapter(sec,imgIdx){
   heroEmbed.style.opacity=0; heroEmbed.innerHTML='';
 
   if(vid){
+    heroVid.controls=false; heroVid.loop=true; heroVid.muted=true;
     setTimeout(()=>{ heroVid.src=vid; heroVid.play().catch(()=>{}); heroVid.style.opacity=1; },200);
+    playBadge.innerHTML='<span class="dot"></span>Real footage, VTV, 25 Jun 2026';
+    playBadge.style.display='flex';
+  } else if(current && current.type==='mp4'){
+    heroVid.controls=true; heroVid.loop=false; heroVid.muted=true;
+    setTimeout(()=>{ heroVid.src=current.src; heroVid.play().catch(()=>{}); heroVid.style.opacity=1; },200);
+    playBadge.innerHTML='<span class="dot"></span>'+(current.caption||'Real footage, via X/Twitter')+' — tap to unmute';
     playBadge.style.display='flex';
   } else if(current && current.type==='youtube'){
     heroEmbed.innerHTML='<iframe class="yt-frame" src="https://www.youtube.com/embed/'+current.yt+'?rel=0" title="'+(current.caption||'Video')+'" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
