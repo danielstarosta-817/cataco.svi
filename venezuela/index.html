@@ -50,6 +50,16 @@ body{background:var(--bg);color:var(--ink);font-family:'Inter',-apple-system,san
   color:var(--ink);background:rgba(11,10,8,.65);border:1px solid rgba(242,237,228,.3);padding:4px 10px;display:none;align-items:center;gap:6px}
 #playBadge .dot{width:6px;height:6px;border-radius:50%;background:var(--blood)}
 
+#toolFrameWrap{position:absolute;inset:0;z-index:40;display:none;flex-direction:column;background:#0b0a08}
+#toolFrameWrap.open{display:flex}
+#toolFrameHead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;background:#141210;border-bottom:1px solid rgba(242,237,228,.2)}
+#toolFrameLabel{font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--gold);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#toolFrameClose{flex-shrink:0;background:none;border:1px solid rgba(242,237,228,.35);color:var(--ink);font-size:11px;font-family:'Inter',sans-serif;padding:4px 10px;cursor:pointer;border-radius:14px}
+#toolFrameClose:hover{border-color:var(--ink)}
+#toolFrame{flex:1;width:100%;border:0;background:#141210}
+#toolFrameFallback{padding:8px 14px;font-size:11px;color:var(--ink-faint);background:#141210;border-top:1px solid rgba(242,237,228,.15)}
+#toolFrameFallback a{color:var(--gold)}
+
 /* middle: prominent timeline, now wider and with a visible panel so it never disappears */
 #timelinecol{width:15vw;min-width:150px;max-width:190px;flex-shrink:0;position:relative;border-right:1px solid var(--line);
   display:flex;align-items:center;justify-content:center;background:var(--panel)}
@@ -87,6 +97,9 @@ p.body-text{font-size:.99rem;color:var(--ink);max-width:38em;margin-bottom:1.05e
 .thread h4 a:hover{border-color:var(--gold)}
 .ch.accent-blood .thread h4 a{border-color:var(--blood-dim)}
 .ch.accent-blood .thread h4 a:hover{border-color:var(--blood)}
+.tool-direct-link{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.03em;color:var(--ink-faint);
+  border-bottom:1px solid var(--ink-faint);margin-left:.6em;vertical-align:middle}
+.tool-direct-link:hover{color:var(--ink);border-color:var(--ink)}
 .sourceline{font-size:11.5px;color:var(--ink-faint);margin-top:1.8em;font-style:italic;max-width:38em}
 
 /* inline live map embed block, second visual within chapter 8 */
@@ -136,6 +149,14 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
       <div id="heroPlaceholder"></div>
       <div id="yrOverlay"><div class="yr" id="badgeYr">1967</div></div>
       <div id="playBadge"><span class="dot"></span>Real footage, VTV, 25 Jun 2026</div>
+      <div id="toolFrameWrap">
+        <div id="toolFrameHead">
+          <span id="toolFrameLabel"></span>
+          <button id="toolFrameClose" type="button">✕ Back to photo</button>
+        </div>
+        <iframe id="toolFrame" src="" loading="lazy" title="Live tool"></iframe>
+        <div id="toolFrameFallback">If this doesn't load, the site may block embedding. <a id="toolFrameOpenDirect" target="_blank" rel="noopener">Open it directly ↗</a></div>
+      </div>
           </div>
     <div id="timelinecol">
       <div id="spineTrack">
@@ -382,21 +403,21 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
     </section>
 
     <section class="ch" data-lat="10.35" data-lng="-66.5" data-zoom="7" data-radius="1" data-color="gold" data-yr="Tools"
-      data-img="" data-placeholder-tag="Live, external, unaffiliated" data-credit="These tools are run independently of this project and of each other. Check each one's own methodology before treating its numbers as fact.">
+      data-img="https://commons.wikimedia.org/wiki/Special:FilePath/Department%20of%20State%20Urban%20Seach%20and%20Rescue%20Assist%20in%20Venezuela%20(9782041).jpg?width=1400">
       <p class="eyebrow">Chapter 13 — live tools</p>
       <h2 class="chapter-title serif">What's tracking this right now.</h2>
-      <p class="body-text">Everything above is history and analysis. Everything below is live, changing by the hour, and built by people outside any government channel, mostly volunteers, doing accounting the state itself hasn't. None of these are affiliated with this project, and none of them have been independently verified here beyond confirming the sites exist and describe themselves this way. Treat them as a starting point, not a final source.</p>
-      <div class="thread"><h4><a href="https://crisisvenezuela.org/colapsos" target="_blank" rel="noopener">Crisis Venezuela</a></h4><p class="body-text">A dedicated tracker of building collapses nationwide (crisisvenezuela.org/colapsos).</p></div>
-      <div class="thread"><h4><a href="https://crisis-pulse-ve.netlify.app" target="_blank" rel="noopener">Crisis Pulse</a></h4><p class="body-text">A real-time dashboard aggregating crisis indicators across the country.</p></div>
-      <div class="thread"><h4><a href="https://reportaven.com" target="_blank" rel="noopener">Reporta Ven</a></h4><p class="body-text">A citizen-reporting portal for damage and needs.</p></div>
-      <div class="thread"><h4><a href="https://terremoto.hazlohoy.org" target="_blank" rel="noopener">Hazlo Hoy / Venezuela Ayuda</a></h4><p class="body-text">An aid-coordination hub connecting needs with donors and volunteers.</p></div>
-      <div class="thread"><h4><a href="https://terremotovenezuela.com" target="_blank" rel="noopener">Damage Map (terremotovenezuela.com)</a></h4><p class="body-text">A crowd-sourced map of reported structural damage. A separate structural-damage layer on this same site has been credited elsewhere to independent mapper @mariangelli; it wasn't confirmed here as a distinct, separately hosted tool.</p></div>
-      <div class="thread"><h4><a href="https://www.sismovenezuela.com" target="_blank" rel="noopener">SismoVenezuela</a></h4><p class="body-text">Real-time damage, missing-persons, and aid-center heatmap, embedded live earlier in "Everything at once."</p></div>
-      <div class="thread"><h4><a href="https://terremotovenezuela.app" target="_blank" rel="noopener">Earthquake Venezuela App</a></h4><p class="body-text">A rescue and aid-coordination platform.</p></div>
-      <div class="thread"><h4><a href="https://venezuelatebusca.com" target="_blank" rel="noopener">Venezuela Te Busca</a></h4><p class="body-text">A missing-persons registry.</p></div>
-      <div class="thread"><h4><a href="https://venezuelareporta.org" target="_blank" rel="noopener">Venezuela Reporta</a></h4><p class="body-text">A second, separately run missing-persons registry.</p></div>
-      <div class="thread"><h4><a href="https://desaparecidosterremotovenezuela.com" target="_blank" rel="noopener">Missing Persons Venezuela Earthquake</a></h4><p class="body-text">A missing-persons registry that also exposes a public API for its data.</p></div>
-      <div class="thread"><h4><a href="https://tasks.hotosm.org" target="_blank" rel="noopener">HOTOSM: Humanitarian OpenStreetMap Team</a></h4><p class="body-text">HOT's Tasking Manager, which is coordinating a 2026 Venezuela earthquake mapping response among volunteer mappers. The specific project page for that response wasn't confirmed here; this links to the general Tasking Manager, where it can be searched by name.</p></div>
+      <p class="body-text">Everything above is history and analysis. Everything below is live, changing by the hour, and built by people outside any government channel, mostly volunteers, doing accounting the state itself hasn't. None of these are affiliated with this project, and none of them have been independently verified here beyond confirming the sites exist and describe themselves this way. Treat them as a starting point, not a final source. Click a name to open it on the left; use "open direct" if a site refuses to load inside the panel.</p>
+      <div class="thread"><h4><a href="https://crisisvenezuela.org/colapsos" class="tool-embed-link" data-name="Crisis Venezuela">Crisis Venezuela</a> <a href="https://crisisvenezuela.org/colapsos" target="_blank" rel="noopener" class="tool-direct-link">open direct ↗</a></h4><p class="body-text">A dedicated tracker of building collapses nationwide (crisisvenezuela.org/colapsos).</p></div>
+      <div class="thread"><h4><a href="https://crisis-pulse-ve.netlify.app" class="tool-embed-link" data-name="Crisis Pulse">Crisis Pulse</a> <a href="https://crisis-pulse-ve.netlify.app" target="_blank" rel="noopener" class="tool-direct-link">open direct ↗</a></h4><p class="body-text">A real-time dashboard aggregating crisis indicators across the country.</p></div>
+      <div class="thread"><h4><a href="https://reportaven.com" class="tool-embed-link" data-name="Reporta Ven">Reporta Ven</a> <a href="https://reportaven.com" target="_blank" rel="noopener" class="tool-direct-link">open direct ↗</a></h4><p class="body-text">A citizen-reporting portal for damage and needs.</p></div>
+      <div class="thread"><h4><a href="https://terremoto.hazlohoy.org" class="tool-embed-link" data-name="Hazlo Hoy / Venezuela Ayuda">Hazlo Hoy / Venezuela Ayuda</a> <a href="https://terremoto.hazlohoy.org" target="_blank" rel="noopener" class="tool-direct-link">open direct ↗</a></h4><p class="body-text">An aid-coordination hub connecting needs with donors and volunteers.</p></div>
+      <div class="thread"><h4><a href="https://terremotovenezuela.com" class="tool-embed-link" data-name="Damage Map (terremotovenezuela.com)">Damage Map (terremotovenezuela.com)</a> <a href="https://terremotovenezuela.com" target="_blank" rel="noopener" class="tool-direct-link">open direct ↗</a></h4><p class="body-text">A crowd-sourced map of reported structural damage. A separate structural-damage layer on this same site has been credited elsewhere to independent mapper @mariangelli; it wasn't confirmed here as a distinct, separately hosted tool.</p></div>
+      <div class="thread"><h4><a href="https://www.sismovenezuela.com" class="tool-embed-link" data-name="SismoVenezuela">SismoVenezuela</a> <a href="https://www.sismovenezuela.com" target="_blank" rel="noopener" class="tool-direct-link">open direct ↗</a></h4><p class="body-text">Real-time damage, missing-persons, and aid-center heatmap, embedded live earlier in "Everything at once."</p></div>
+      <div class="thread"><h4><a href="https://terremotovenezuela.app" class="tool-embed-link" data-name="Earthquake Venezuela App">Earthquake Venezuela App</a> <a href="https://terremotovenezuela.app" target="_blank" rel="noopener" class="tool-direct-link">open direct ↗</a></h4><p class="body-text">A rescue and aid-coordination platform.</p></div>
+      <div class="thread"><h4><a href="https://venezuelatebusca.com" class="tool-embed-link" data-name="Venezuela Te Busca">Venezuela Te Busca</a> <a href="https://venezuelatebusca.com" target="_blank" rel="noopener" class="tool-direct-link">open direct ↗</a></h4><p class="body-text">A missing-persons registry.</p></div>
+      <div class="thread"><h4><a href="https://venezuelareporta.org" class="tool-embed-link" data-name="Venezuela Reporta">Venezuela Reporta</a> <a href="https://venezuelareporta.org" target="_blank" rel="noopener" class="tool-direct-link">open direct ↗</a></h4><p class="body-text">A second, separately run missing-persons registry.</p></div>
+      <div class="thread"><h4><a href="https://desaparecidosterremotovenezuela.com" class="tool-embed-link" data-name="Missing Persons Venezuela Earthquake">Missing Persons Venezuela Earthquake</a> <a href="https://desaparecidosterremotovenezuela.com" target="_blank" rel="noopener" class="tool-direct-link">open direct ↗</a></h4><p class="body-text">A missing-persons registry that also exposes a public API for its data.</p></div>
+      <div class="thread"><h4><a href="https://tasks.hotosm.org" class="tool-embed-link" data-name="HOTOSM: Humanitarian OpenStreetMap Team">HOTOSM: Humanitarian OpenStreetMap Team</a> <a href="https://tasks.hotosm.org" target="_blank" rel="noopener" class="tool-direct-link">open direct ↗</a></h4><p class="body-text">HOT's Tasking Manager, which is coordinating a 2026 Venezuela earthquake mapping response among volunteer mappers. The specific project page for that response wasn't confirmed here; this links to the general Tasking Manager, where it can be searched by name.</p></div>
       <p class="body-text">Some of these will go offline, change scope, or get superseded as the response drags on. This list is a snapshot, not a permanent registry.</p>
     </section>
 
@@ -455,6 +476,27 @@ var yrOverlay=document.getElementById('yrOverlay');
 var badgeYr=document.getElementById('badgeYr');
 var playBadge=document.getElementById('playBadge');
 
+var toolFrameWrap=document.getElementById('toolFrameWrap');
+var toolFrame=document.getElementById('toolFrame');
+var toolFrameLabel=document.getElementById('toolFrameLabel');
+var toolFrameOpenDirect=document.getElementById('toolFrameOpenDirect');
+
+function closeToolFrame(){
+  toolFrameWrap.classList.remove('open');
+  toolFrame.src='about:blank';
+}
+document.querySelectorAll('.tool-embed-link').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    var url=a.getAttribute('href');
+    toolFrame.src=url;
+    toolFrameLabel.textContent=a.dataset.name||a.textContent;
+    toolFrameOpenDirect.href=url;
+    toolFrameWrap.classList.add('open');
+  });
+});
+document.getElementById('toolFrameClose').addEventListener('click',closeToolFrame);
+
 function getImgs(sec){
   if(sec.dataset.imgs){
     try{ return JSON.parse(sec.dataset.imgs); }catch(e){ return []; }
@@ -474,6 +516,7 @@ function localImgIndex(sec){
 
 function paintChapter(sec,imgIdx){
   var isBlood=sec.dataset.color==='blood';
+  if(sec.dataset.yr!=='Tools') closeToolFrame();
 
   badgeYr.textContent=sec.dataset.yr;
   yrOverlay.className=isBlood?'blood':'';
