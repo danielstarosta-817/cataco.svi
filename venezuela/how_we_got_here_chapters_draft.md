@@ -56,7 +56,7 @@ This isn't a story about the rain being anyone's fault. It's the first real stre
 
 In February 2005, it happened again. The Pacairigua river and Silma stream overflowed in Guatire; the Guaire river overflowed through Caracas during a record 84.7mm rainfall in 24 hours; Barlovento flooded again. Seven states (Falcón, Yaracuy, Carabobo, Aragua, Miranda, Vargas, Distrito Capital) were placed under national emergency. 178,623 people affected, 24,398 displaced, 62 confirmed dead, 37,021 homes damaged nationally.
 
-For the first time in this story, a disaster repeats inside living memory: people who survived 1999 watching it happen again. But the more important thing happening in 2005 is under the water, not in it: the currency-control system created in 2003 (CADIVI) is now two years old, and the arbitrage economy between the official exchange rate and the black market is becoming a way of life for anyone positioned to profit from the gap. This is the moment the economic bottom starts becoming visible at the same time the ground proves, a second time, that it hasn't forgotten 1999.
+For the first time in this story, a disaster repeats inside living memory: people who survived 1999 watching it happen again. But what actually matters about 2005 has little to do with the rain: the currency-control system created in 2003 (CADIVI) is now two years old, and the arbitrage economy between the official exchange rate and the black market is becoming a way of life for anyone positioned to profit from the gap. This is the moment the economic bottom starts becoming visible at the same time the ground proves, a second time, that it hasn't forgotten 1999.
 
 ---
 
