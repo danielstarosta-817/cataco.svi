@@ -209,7 +209,7 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
 
     <section class="ch" data-lat="10.5061" data-lng="-66.9146" data-zoom="13" data-radius="3000" data-color="gold" data-yr="1998"
       data-img="https://media-cldnry.s-nbcnews.com/image/upload/t_fit-760w,f_auto,q_auto:best/MSNBC/Components/Slideshows/_production/_archive/News/_International%20News/South%20America/ss-120509-hugo-chavez/ss-120925-hugo-chavez-08.jpg"
-      data-pos="100% 40%"
+      data-fit="contain"
       data-blur="true"
      >
       <p class="eyebrow">Chapter 4 — 1998: hugo chávez</p>
@@ -538,7 +538,8 @@ function paintChapter(sec,imgIdx){
   } else if(current && current.src){
     var blurAmt=sec.dataset.blur==='true'?'6px':'0px';
     var pos=current.pos||sec.dataset.pos||'50% 50%';
-    setTimeout(()=>{ heroImg.src=current.src; heroImg.style.objectPosition=pos; heroImg.style.filter='saturate(.92) contrast(1.03) blur('+blurAmt+')'; heroImg.style.opacity=1; },200);
+    var fit=sec.dataset.fit||'cover';
+    setTimeout(()=>{ heroImg.src=current.src; heroImg.style.objectFit=fit; heroImg.style.objectPosition=pos; heroImg.style.filter='saturate(.92) contrast(1.03) blur('+blurAmt+')'; heroImg.style.opacity=1; },200);
   } else {
     heroPlaceholder.style.opacity=1;
     var tagText=sec.dataset.placeholderTag||'No verified image yet';
