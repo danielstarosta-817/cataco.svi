@@ -577,6 +577,7 @@ function paintChapter(sec,imgIdx){
   var current=imgs[imgIdx||0];
   heroImg.style.opacity=0; heroVid.style.opacity=0; heroPlaceholder.style.opacity=0; playBadge.style.display='none';
   heroEmbed.style.opacity=0; heroEmbed.innerHTML='';
+  heroVid.pause();
 
   playBadge.classList.remove('unmute-btn');
   playBadge.onclick=null;
