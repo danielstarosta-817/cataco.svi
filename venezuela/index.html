@@ -91,6 +91,11 @@ p.body-text{font-size:.99rem;color:var(--ink);max-width:38em;margin-bottom:1.05e
   border-left:3px solid var(--gold);padding-left:.8em;margin:1.6em 0 .4em;max-width:34em;color:var(--ink)}
 .ch.accent-blood .ground-quote{border-color:var(--blood)}
 .ground-cite{font-family:'Inter',sans-serif;font-style:normal;font-size:12.5px;color:var(--ink-faint);margin:0 0 1.4em;padding-left:.8em;max-width:34em}
+.toll-stats{display:flex;flex-wrap:wrap;gap:2em;margin:1.8em 0 1.2em;padding-top:1.2em;border-top:1px solid var(--line);max-width:34em}
+.toll-item{display:flex;flex-direction:column;gap:.25em}
+.toll-val{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:600;color:var(--gold)}
+.ch.accent-blood .toll-val{color:var(--blood)}
+.toll-lbl{font-family:'Inter',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);max-width:12em}
 .thread h4{font-family:'Fraunces',serif;font-weight:500;font-size:1.15rem;margin:1.5em 0 .3em;color:var(--gold)}
 .ch.accent-blood .thread h4{color:var(--blood)}
 .thread h4 a{color:inherit;text-decoration:none;border-bottom:1px solid var(--gold-dim)}
@@ -209,7 +214,8 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
 
     <section class="ch" data-lat="10.5061" data-lng="-66.9146" data-zoom="13" data-radius="3000" data-color="gold" data-yr="1998"
       data-img="https://media-cldnry.s-nbcnews.com/image/upload/t_fit-760w,f_auto,q_auto:best/MSNBC/Components/Slideshows/_production/_archive/News/_International%20News/South%20America/ss-120509-hugo-chavez/ss-120925-hugo-chavez-08.jpg"
-      data-fit="contain"
+      data-fit="cover"
+      data-pos="center center"
       data-blur="true"
      >
       <p class="eyebrow">Chapter 4 — 1998: hugo chávez</p>
@@ -222,18 +228,27 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
         {"src":"https://commons.wikimedia.org/wiki/Special:FilePath/Partially_collapsed_building,_Vargas_1999.jpg?width=1400"},
         {"src":"https://www.caracaschronicles.com/wp-content/uploads/2019/12/unnamed-2.jpg"}
       ]'>
-      <p class="eyebrow">Chapter 5 — 1999: vargas</p>
+      <p class="eyebrow">Chapter 5 — 1999: a different kind of disaster</p>
       <h2 class="chapter-title serif">Vargas.</h2>
       <p class="body-text">Fourteen months after Chávez took office, on December 14–16, 1999, extreme rainfall (up to 911mm over a few days) triggered debris flows along roughly 100 kilometers of the Vargas coast, burying entire neighborhoods between Catia La Mar and past Caruao. It wasn't the country's first warning: the 1967 earthquake, thirty-two years earlier and on the same stretch of coast, had already shown what weak construction and thin state capacity meant for this land. The response gave a preview of habits that would recur for decades: the government's attention that week was on a referendum for Chávez's new constitution, scheduled for December 15, the same day the rain turned into landslides, and no evacuation was organized before the worst of it hit. In the weeks after, two US Navy ships offering personnel and equipment, the USS Nashville and USS Tortuga, were initially turned away, even as Chávez separately accepted a US Army emergency team on the ground, and security forces sent in to stop looting were accused of abuses of their own.</p>
       <p class="body-text">The death toll is disputed: official counts land near 700–3,000; academic estimates run as high as 10,000–30,000, a gap largely blamed on how poorly informal settlements were ever counted in the first place. A population-based reconstruction by anthropologist Rogelio Altez, comparing Vargas's pre-disaster population of roughly 308,000 to the roughly 230,000 counted in the December 2000 census against forensic records of 521 confirmed dead and 331 missing, argues the real toll sits far closer to the low end: the three hardest-hit parishes, Caraballeda, Macuto, and Naiguatá, had a combined population of only about 68,000 before the disaster, too few people to support the 15,000-to-50,000 estimates that still circulate.</p>
       <p class="body-text">This isn't a story about the rain being anyone's fault. It's the first real stress test, in a generation, of whatever disaster-response capacity Venezuela still had.</p>
+      <div class="toll-stats">
+        <div class="toll-item"><span class="toll-val">700–30,000</span><span class="toll-lbl">Deaths (official count to academic estimate)</span></div>
+        <div class="toll-item"><span class="toll-val">~77,700</span><span class="toll-lbl">Net population drop, Vargas state, 1999–2000</span></div>
+      </div>
     </section>
 
-    <section class="ch" data-lat="10.470" data-lng="-66.540" data-zoom="10" data-radius="30000" data-color="gold" data-yr="2005" data-img="" data-credit="No verified freely licensed photo sourced yet for the February 2005 floods.">
+    <section class="ch" data-lat="10.470" data-lng="-66.540" data-zoom="10" data-radius="30000" data-color="gold" data-yr="2005" data-img="flood2005_car_debris.webp">
       <p class="eyebrow">Chapter 6 — 2005: the second time</p>
-      <h2 class="chapter-title serif">The second time.</h2>
-      <p class="body-text">In February 2005, it happened again. The Pacairigua river and Silma stream overflowed in Guatire; the Guaire river overflowed through Caracas during a record 84.7mm rainfall in 24 hours. Seven states were placed under national emergency. 178,623 people affected, 24,398 displaced, 62 confirmed dead.</p>
+      <h2 class="chapter-title serif">Rain, mud, and clay.</h2>
+      <p class="body-text">In February 2005, it happened again. The Pacairigua river and Silma stream overflowed in Guatire; the Guaire river overflowed through Caracas during a record 84.7mm rainfall in 24 hours. Seven states were placed under national emergency.</p>
       <p class="body-text">The more important thing happening in 2005 is under the water, not in it: the currency-control system created in 2003 (CADIVI) is now two years old, and an arbitrage economy is becoming a way of life for anyone positioned to profit from the gap.</p>
+      <div class="toll-stats">
+        <div class="toll-item"><span class="toll-val">62</span><span class="toll-lbl">Confirmed dead</span></div>
+        <div class="toll-item"><span class="toll-val">24,398</span><span class="toll-lbl">Displaced</span></div>
+        <div class="toll-item"><span class="toll-val">178,623</span><span class="toll-lbl">People affected</span></div>
+      </div>
     </section>
 
     <section class="ch accent-blood" data-lat="10.5" data-lng="-66.92" data-zoom="12" data-radius="8000" data-color="blood" data-yr="2017"
@@ -293,7 +308,10 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
     </section>
 
     <section class="ch accent-blood" data-lat="10.53" data-lng="-66.87" data-zoom="10" data-radius="20000" data-color="blood" data-yr="2026"
-      data-img="" data-credit="No image sourced yet for this chapter specifically. Could reuse the Los Palos Grandes / Altamira 2026 damage photo from Chapter 8, or source one for Petunia 1 / Catia La Mar directly.">
+      data-imgs='[
+        {"src":"block_aid_distribution.png"},
+        {"src":"block_aid_workers.webp"}
+      ]'>
       <p class="eyebrow">Chapter 10 — 2026: block by block</p>
       <h2 class="chapter-title serif">Block by block.</h2>
       <p class="body-text">Everything in the last chapter happened at once, but it didn't happen the same way everywhere. "The earthquake" is really dozens of different, distinct events depending on which neighborhood you're standing in, and each one explains a different reason this recovery is going to be hard. Four of them, in particular, show the range.</p>
