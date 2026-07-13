@@ -121,8 +121,11 @@ p.body-text{font-size:.99rem;color:var(--ink);max-width:38em;margin-bottom:1.05e
   #photocol{width:60%}
   #timelinecol{width:40%;min-width:110px;max-width:none}
   #textcol{width:100%}
-  .spine-node{width:100px}
-  .spine-label{font-size:11px}
+  .spine-node{width:100px;gap:4px}
+  .spine-dot{width:10px;height:10px}
+  .spine-node.active .spine-dot{width:14px;height:14px}
+  .spine-label{font-size:9.5px}
+  .spine-node.active .spine-label{font-size:11px}
   .live-embed iframe{height:420px}
 }
 
@@ -186,7 +189,7 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
         {"src":"https://static01.nyt.com/images/2026/01/09/multimedia/09xp-oil-timeline-wkcp/09xp-oil-timeline-wkcp-articleLarge.jpg?quality=75&auto=webp&disable=upscale"},
         {"src":"https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iCGv1BhRx1_I/v1/-1x-1.webp"}
       ]'>
-      <p class="eyebrow">Chapter 2 — the boom years: wealth without a floor</p>
+      <p class="eyebrow">Chapter 2 — the boom years</p>
       <h2 class="chapter-title serif">Wealth without a floor.</h2>
       <p class="body-text">By 1950, Venezuela had the fourth-highest GDP per capita on Earth, twice as rich as Chile, four times richer than Japan, twelve times richer than China. It stayed the richest major economy in Latin America into the 1980s. The 1970s OPEC oil shock quadrupled its revenues; between 1974 and 1979 the government spent more, in absolute terms, than in the entirety of its prior independent history.</p>
       <p class="body-text">None of that wealth ever had to prove it could survive contact with a real crisis. A country that rich, on a single commodity, doesn't need deep institutions: it needs a functioning oil ministry and enough cash to paper over everything else.</p>
@@ -459,7 +462,10 @@ function layoutSpine(){
     cum+=lens[i];
     var node=document.createElement('div');
     node.className='spine-node'+(ch.dataset.color==='blood'?' blood':'');
-    node.style.top=(cum/total*100)+'%';
+    // Labels are spaced evenly (not proportional to chapter length) so they never crowd
+    // or overlap regardless of how many chapters there are; the fill bar above still
+    // tracks real scroll progress through the actual content.
+    node.style.top=(((i+1)/chapters.length)*100)+'%';
     node.innerHTML='<div class="spine-dot"></div><div class="spine-label">'+ch.dataset.yr+'</div>';
     node.addEventListener('click',()=>ch.scrollIntoView({behavior:'smooth'}));
     spineTrack.appendChild(node);
