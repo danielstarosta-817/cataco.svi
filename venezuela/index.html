@@ -339,8 +339,7 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
 
     <section class="ch" data-lat="10.55" data-lng="-66.85" data-zoom="9" data-radius="70000" data-color="gold" data-yr="Now"
       data-imgs='[
-        {"type":"mp4","src":"floor_by_floor_collapse.mp4","caption":"Venezuela Earthquake: Floor By Floor, Destruction Gets Worse"},
-        {"src":"https://commons.wikimedia.org/wiki/Special:FilePath/Department%20of%20State%20Urban%20Seach%20and%20Rescue%20Assist%20in%20Venezuela%20(9782041).jpg?width=1400"}
+        {"type":"mp4","src":"floor_by_floor_collapse.mp4","caption":"Venezuela Earthquake: Floor By Floor, Destruction Gets Worse"}
       ]'>
       <p class="eyebrow">Chapter 11 — what now</p>
       <h2 class="chapter-title serif">Reading the next ten years.</h2>
@@ -362,9 +361,6 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
         {"type":"mp4","src":"festival_moment_earthquake.mp4","caption":"Moment earthquake hit during festival celebrations in Venezuela"},
         {"type":"mp4","src":"festival_moment_earthquake.mp4","caption":"Moment earthquake hit during festival celebrations in Venezuela"},
         {"type":"mp4","src":"festival_moment_earthquake.mp4","caption":"Moment earthquake hit during festival celebrations in Venezuela"},
-        {"type":"placeholder"},
-        {"type":"placeholder"},
-        {"type":"placeholder"},
         {"type":"mp4","src":"afp_show_me_tough.mp4","caption":"AFP: Venezuelans confront army over earthquake rescue response"},
         {"type":"mp4","src":"https://video.twimg.com/amplify_video/2072117791189045249/vid/avc1/480x852/V6Mar2R7GplsoBbN.mp4","caption":"CICPC looting confrontation, via Patricia Janiot"},
         {"type":"mp4","src":"https://video.twimg.com/amplify_video/2072117791189045249/vid/avc1/480x852/V6Mar2R7GplsoBbN.mp4","caption":"CICPC looting confrontation, via Patricia Janiot"},
@@ -575,9 +571,10 @@ function paintChapter(sec,imgIdx){
   var vid=sec.dataset.vid;
   var imgs=getImgs(sec);
   var current=imgs[imgIdx||0];
-  heroImg.style.opacity=0; heroVid.style.opacity=0; heroPlaceholder.style.opacity=0; playBadge.style.display='none';
+  var continuingSameVideo=!!(current && current.type==='mp4' && heroVid.dataset.playingSrc===current.src && !heroVid.paused);
+  heroImg.style.opacity=0; heroPlaceholder.style.opacity=0; playBadge.style.display='none';
   heroEmbed.style.opacity=0; heroEmbed.innerHTML='';
-  heroVid.pause();
+  if(!continuingSameVideo){ heroVid.pause(); heroVid.style.opacity=0; heroVid.dataset.playingSrc=''; }
 
   playBadge.classList.remove('unmute-btn');
   playBadge.onclick=null;
@@ -589,7 +586,12 @@ function paintChapter(sec,imgIdx){
     playBadge.style.display='flex';
   } else if(current && current.type==='mp4'){
     heroVid.controls=true; heroVid.loop=false; heroVid.muted=true;
-    setTimeout(()=>{ heroVid.src=current.src; heroVid.play().catch(()=>{}); heroVid.style.opacity=1; },200);
+    if(!continuingSameVideo){
+      heroVid.dataset.playingSrc=current.src;
+      setTimeout(()=>{ heroVid.src=current.src; heroVid.play().catch(()=>{}); heroVid.style.opacity=1; },200);
+    } else {
+      heroVid.style.opacity=1;
+    }
     var capText=current.caption||'Real footage, via X/Twitter';
     function setUnmuteBadge(){
       playBadge.classList.add('unmute-btn');
