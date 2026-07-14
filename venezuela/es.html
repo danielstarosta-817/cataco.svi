@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Terremoto de Venezuela de 2026 – Cómo llegamos aquí</title>
+<meta name="description" content="Terremoto de Venezuela de 2026 – Cómo llegamos aquí"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0a08;--ink:#f2ede4;--ink-dim:#a89f8f;--ink-faint:#6b6459;
+  --line:rgba(242,237,228,.14);--gold:#d9a441;--gold-dim:#5f4a24;--blood:#c24747;--blood-dim:#5a2828;
+  --panel:#141210;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',-apple-system,sans-serif;font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased}
+.serif{font-family:'Fraunces',Georgia,serif}
+.eyebrow{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+::selection{background:var(--gold);color:#1a1508}
+
+#cover{min-height:100vh;display:flex;align-items:flex-end;padding:8vh 8vw 14vh;
+  background:
+    linear-gradient(180deg, rgba(11,10,8,.5) 0%, rgba(11,10,8,.72) 45%, var(--bg) 100%),
+    radial-gradient(160% 100% at 50% 0%, rgba(36,26,13,.28) 0%, rgba(11,10,8,.08) 55%),
+    url('https://www.usatoday.com/gcdn/authoring/authoring-images/2026/06/28/USAT/90731443007-2283216149.jpg?width=1320&height=744&fit=crop&format=pjpg&auto=webp');
+  background-size:cover;background-position:center 35%;background-repeat:no-repeat;
+  border-bottom:none}
+/* cover bg: USA Today, editorial photo, rights reserved, not cleared — swap before this ships publicly. Darkened substantially via layered gradient above to match dark editorial palette. */
+#coverGap{height:12vh;background:var(--bg)}
+#cover h1{font-family:'Fraunces',serif;font-weight:400;font-size:clamp(2rem,4.4vw,3.4rem);line-height:1.12;letter-spacing:-.01em;max-width:17ch}
+#cover .sub{margin-top:1.4rem;font-size:1.1rem;color:var(--ink-dim);max-width:42em}
+.wrap{max-width:720px}
+
+#storywrap{display:flex;position:relative}
+#stickyWrap{position:sticky;top:0;height:100vh;display:flex;flex-shrink:0}
+
+/* left: photojournalism panel */
+#photocol{width:32vw;flex-shrink:0;position:relative;overflow:hidden;border-right:1px solid var(--line);background:#000}
+#heroImg,#heroVid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .5s ease;filter:saturate(.92) contrast(1.03)}
+#heroPlaceholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:2rem;
+  background:radial-gradient(120% 100% at 30% 20%, #241a10 0%, #0b0a08 65%);transition:opacity .5s ease}
+.media-tag{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold-dim);padding:3px 10px;border-radius:20px}
+#heroPlaceholder .media-caption{font-size:12.5px;color:var(--ink-faint);max-width:22em;line-height:1.5}
+#heroEmbed{position:absolute;inset:0;overflow-y:auto;transition:opacity .5s ease;background:#000;opacity:0}
+#heroEmbed .yt-frame{width:100%;height:100%;border:0;display:block}
+#heroEmbed .yt-fallback-link{position:absolute;bottom:16px;left:16px;z-index:5;font-size:11px;color:var(--ink);background:rgba(11,10,8,.65);border:1px solid rgba(242,237,228,.3);padding:4px 10px;text-decoration:none;border-radius:14px}
+#heroEmbed .yt-fallback-link:hover{border-color:var(--ink)}
+#heroEmbed .tw-hero-wrap{width:100%;max-width:420px;margin:0 auto;padding:28px 16px;box-sizing:border-box}
+#heroEmbed blockquote.twitter-tweet{margin:0 auto!important}
+#photocol::after{content:'';position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,.55) 0%, rgba(0,0,0,0) 30%);pointer-events:none;z-index:10}
+#yrOverlay{position:absolute;top:20px;left:20px;z-index:20}
+#yrOverlay .yr{font-family:'Fraunces',serif;font-size:2.1rem;font-weight:500;color:var(--gold);line-height:1;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+#yrOverlay.blood .yr{color:#e88686}
+#playBadge{position:absolute;bottom:20px;right:20px;z-index:20;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink);background:rgba(11,10,8,.65);border:1px solid rgba(242,237,228,.3);padding:4px 10px;display:none;align-items:center;gap:6px}
+#playBadge.unmute-btn{cursor:pointer;background:rgba(217,164,65,.92);border-color:var(--gold);color:#141210;padding:8px 16px;font-size:12px;box-shadow:0 2px 14px rgba(0,0,0,.5);transition:transform .15s ease,background .15s ease}
+#playBadge.unmute-btn:hover{transform:scale(1.04);background:var(--gold)}
+#playBadge.unmute-btn .dot{background:#141210}
+#playBadge .dot{width:6px;height:6px;border-radius:50%;background:var(--blood)}
+
+#toolFrameWrap{position:absolute;inset:0;z-index:40;display:none;flex-direction:column;background:#0b0a08}
+#toolFrameWrap.open{display:flex}
+#toolFrameHead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;background:#141210;border-bottom:1px solid rgba(242,237,228,.2)}
+#toolFrameLabel{font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--gold);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#toolFrameClose{flex-shrink:0;background:none;border:1px solid rgba(242,237,228,.35);color:var(--ink);font-size:11px;font-family:'Inter',sans-serif;padding:4px 10px;cursor:pointer;border-radius:14px}
+#toolFrameClose:hover{border-color:var(--ink)}
+#toolFrame{flex:1;width:100%;border:0;background:#141210}
+#toolFrameFallback{padding:8px 14px;font-size:11px;color:var(--ink-faint);background:#141210;border-top:1px solid rgba(242,237,228,.15)}
+#toolFrameFallback a{color:var(--gold)}
+
+footer{padding:34px 20px 46px;text-align:center}
+#sourcesLinkBtn{background:none;border:1px solid rgba(242,237,228,.3);color:var(--ink-faint);font-size:11px;font-family:'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:7px 18px;cursor:pointer;border-radius:16px}
+#sourcesLinkBtn:hover{border-color:var(--gold);color:var(--gold)}
+#sourcesModal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(11,10,8,.82);padding:24px}
+#sourcesModal.open{display:flex}
+#sourcesModalPanel{background:#141210;border:1px solid rgba(242,237,228,.2);border-radius:6px;max-width:640px;width:100%;max-height:82vh;overflow-y:auto}
+#sourcesModalHead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 22px;border-bottom:1px solid rgba(242,237,228,.15);position:sticky;top:0;background:#141210}
+#sourcesModalHead h3{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:500;color:var(--ink);margin:0}
+#sourcesModalClose{flex-shrink:0;background:none;border:1px solid rgba(242,237,228,.35);color:var(--ink);font-size:11px;font-family:'Inter',sans-serif;padding:4px 10px;cursor:pointer;border-radius:14px}
+#sourcesModalClose:hover{border-color:var(--ink)}
+#sourcesModalBody{padding:20px 22px 26px}
+#sourcesModalBody h4{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin:22px 0 8px}
+#sourcesModalBody h4:first-child{margin-top:0}
+#sourcesModalBody p{font-size:13.5px;line-height:1.6;color:var(--ink-dim);margin:0 0 4px}
+#sourcesModalBody a{color:var(--ink);text-decoration:underline;text-decoration-color:rgba(242,237,228,.3)}
+#sourcesModalBody a:hover{text-decoration-color:var(--gold);color:var(--gold)}
+#sourcesModalBody .src-note{font-size:12px;color:var(--ink-faint);margin-top:20px;font-style:italic}
+
+/* middle: prominent timeline, now wider and with a visible panel so it never disappears */
+#timelinecol{width:15vw;min-width:150px;max-width:190px;flex-shrink:0;position:relative;border-right:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;background:var(--panel)}
+#timelinecol::before{content:'';position:absolute;top:0;left:0;right:0;height:70px;background:linear-gradient(to bottom, var(--bg), transparent);pointer-events:none;z-index:5}
+#spineTrack{position:relative;width:4px;height:94%;border-radius:4px;overflow:visible}
+#spineTrack .track-baseline{position:absolute;left:0;top:0;width:100%;height:100%;border-radius:4px;background:rgba(242,237,228,.22)}
+#spineTrack .track-bg{position:absolute;left:0;top:0;width:100%;height:100%;border-radius:4px;overflow:hidden}
+.seg-dim{position:absolute;left:0;width:100%}
+#segFillWrap{position:absolute;left:0;top:0;width:100%;height:0%;overflow:hidden;transition:height .15s linear}
+.seg-bright{position:absolute;left:0;width:100%}
+.spine-node{position:absolute;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:7px;width:130px}
+.spine-dot{width:13px;height:13px;border-radius:50%;border:2.5px solid var(--ink-dim);background:var(--bg);transition:all .3s ease;flex-shrink:0}
+.spine-label{font-size:13px;font-weight:600;letter-spacing:.02em;color:var(--ink-dim);white-space:nowrap;opacity:.85;transition:all .25s ease;text-align:center}
+.spine-node.passed .spine-dot{background:var(--gold-dim);border-color:var(--gold-dim)}
+.spine-node.passed.blood .spine-dot{background:var(--blood-dim);border-color:var(--blood-dim)}
+.spine-node.passed .spine-label{color:var(--ink-dim);opacity:.9}
+.spine-node.active .spine-dot{width:18px;height:18px;background:var(--gold);border-color:var(--gold);box-shadow:0 0 0 6px rgba(217,164,65,.28)}
+.spine-node.active.blood .spine-dot{background:var(--blood);border-color:var(--blood);box-shadow:0 0 0 6px rgba(194,71,71,.28)}
+.spine-node.active .spine-label{color:var(--gold);opacity:1;font-weight:600;font-size:15px}
+.spine-node.active.blood .spine-label{color:var(--blood)}
+
+#textcol{width:53vw}
+.ch{min-height:100vh;padding:9vh 6vw;border-bottom:1px solid var(--line)}
+h2.chapter-title{font-size:clamp(2rem,4vw,3rem);font-weight:400;line-height:1.08;margin:.3em 0 .5em;letter-spacing:-.01em}
+p.body-text{font-size:.99rem;color:var(--ink);max-width:38em;margin-bottom:1.05em}
+.pullquote{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(1.25rem,2.2vw,1.6rem);line-height:1.32;
+  border-left:3px solid var(--gold);padding-left:.7em;margin:1.5em 0;max-width:28em}
+.ch.accent-blood .pullquote{border-color:var(--blood)}
+.ground-quote{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(1.1rem,1.8vw,1.35rem);line-height:1.4;
+  border-left:3px solid var(--gold);padding-left:.8em;margin:1.6em 0 .4em;max-width:34em;color:var(--ink)}
+.ch.accent-blood .ground-quote{border-color:var(--blood)}
+.ground-cite{font-family:'Inter',sans-serif;font-style:normal;font-size:12.5px;color:var(--ink-faint);margin:0 0 1.4em;padding-left:.8em;max-width:34em}
+.toll-stats{display:flex;flex-wrap:wrap;gap:2em;margin:1.8em 0 1.2em;padding-top:1.2em;border-top:1px solid var(--line);max-width:34em}
+.toll-item{display:flex;flex-direction:column;gap:.25em}
+.toll-val{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:600;color:var(--gold)}
+.ch.accent-blood .toll-val{color:var(--blood)}
+.toll-lbl{font-family:'Inter',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);max-width:12em}
+.thread h4{font-family:'Fraunces',serif;font-weight:500;font-size:1.15rem;margin:1.5em 0 .3em;color:var(--gold)}
+.ch.accent-blood .thread h4{color:var(--blood)}
+.thread h4 a{color:inherit;text-decoration:none;border-bottom:1px solid var(--gold-dim)}
+.thread h4 a:hover{border-color:var(--gold)}
+.ch.accent-blood .thread h4 a{border-color:var(--blood-dim)}
+.ch.accent-blood .thread h4 a:hover{border-color:var(--blood)}
+.body-text a{color:inherit;text-decoration:none;border-bottom:1px solid var(--gold-dim)}
+.body-text a:hover{border-color:var(--gold)}
+.ch.accent-blood .body-text a{border-color:var(--blood-dim)}
+.ch.accent-blood .body-text a:hover{border-color:var(--blood)}
+.tool-direct-link{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.03em;color:var(--ink-faint);
+  border-bottom:1px solid var(--ink-faint);margin-left:.6em;vertical-align:middle}
+.tool-direct-link:hover{color:var(--ink);border-color:var(--ink)}
+.sourceline{font-size:11.5px;color:var(--ink-faint);margin-top:1.8em;font-style:italic;max-width:38em}
+
+/* inline live map embed block, second visual within chapter 8 */
+.live-embed{margin:1.8em 0;border:1px solid var(--line);max-width:42em}
+.live-embed .live-head{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--line)}
+.live-embed .live-tag{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--blood);display:flex;align-items:center;gap:8px}
+.live-embed .live-tag .dot{width:7px;height:7px;border-radius:50%;background:var(--blood);animation:blink 1.6s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.live-embed .live-link{font-size:12px;color:var(--ink-dim);text-decoration:none;border-bottom:1px solid var(--ink-faint)}
+.live-embed .live-link:hover{color:var(--ink)}
+.live-embed iframe{width:100%;height:560px;border:0;display:block;background:#141210}
+.live-embed .live-fallback{padding:14px 16px;font-size:12.5px;color:var(--ink-faint);display:none}
+.live-embed blockquote.twitter-tweet{margin:0 auto;max-width:100%}
+.live-embed .twitter-tweet-rendered{margin:0 auto!important;display:block!important}
+
+@media (max-width:1000px){
+  #storywrap{flex-direction:column}
+  #stickyWrap{position:sticky;top:0;height:42vh;width:100%}
+  #photocol{width:100%}
+  /* timeline becomes a slim overlay strip on the right edge of the photo instead of
+     competing with it for width — otherwise neither the photo nor the labels have room. */
+  #timelinecol{position:absolute;top:0;right:0;bottom:0;width:60px;min-width:0;max-width:none;height:auto;
+    background:linear-gradient(to left, rgba(11,10,8,.85) 35%, rgba(11,10,8,0) 100%);
+    border-left:1px solid var(--line);border-right:none;z-index:30}
+  #timelinecol::before{display:none}
+  #textcol{width:100%}
+  #spineTrack{height:92%}
+  .spine-node{width:auto;gap:0}
+  .spine-dot{width:8px;height:8px;border-width:1.5px}
+  .spine-node.active .spine-dot{width:13px;height:13px}
+  /* only the active year label shows, floated left over the photo, so the strip never
+     turns into a wall of overlapping tiny text. */
+  .spine-label{display:none}
+  .spine-node.active .spine-label{display:block;position:absolute;top:50%;right:100%;margin-right:10px;
+    transform:translateY(-50%);white-space:nowrap;font-size:11px;line-height:1.2;
+    background:rgba(11,10,8,.9);padding:3px 8px;border-radius:4px;border:1px solid var(--line)}
+  .live-embed iframe{height:420px}
+}
+
+footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;border-top:1px solid var(--line)}
+
+.lang-toggle{position:fixed;top:16px;right:16px;z-index:300;display:flex;gap:6px;background:rgba(11,10,8,.55);
+  border:1px solid rgba(242,237,228,.25);border-radius:20px;padding:5px;backdrop-filter:blur(4px)}
+.lang-toggle a{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;
+  font-size:16px;text-decoration:none;opacity:.45;filter:grayscale(60%);transition:opacity .2s ease,filter .2s ease}
+.lang-toggle a:hover{opacity:.8}
+.lang-toggle a.active{opacity:1;filter:none;background:rgba(217,164,65,.18);box-shadow:0 0 0 1px rgba(217,164,65,.4) inset;cursor:default}
+@media (max-width:1000px){ .lang-toggle{display:none} }
+</style>
+</head>
+<body>
+
+<div class="lang-toggle">
+  <a href="index.html" title="English">🇺🇸</a>
+  <a href="es.html" class="active" title="Español" onclick="return false;">🇻🇪</a>
+</div>
+
+<section id="cover">
+  <div class="wrap">
+    <p class="eyebrow">Poniendo en contexto los terremotos de Caracas de 2026</p>
+    <h1 class="serif">Esto no es un mapa de riesgo. Es una historia de riesgo. Y quizás un futuro de riesgo.</h1>
+    <p class="sub">Los devastadores terremotos que golpearon Venezuela hace dos semanas no ocurrieron en el vacío. Para entender por qué el daño y la respuesta son tan condenatorios, hay que entender cómo llegamos aquí, desde el principio. Desde terremotos y deslaves pasados hasta intentos de golpe, el desmantelamiento de la infraestructura pública y la mayor fuga de cerebros y emigración de la historia moderna. El desastre empezó hace mucho tiempo, y todavía no ha terminado.</p>
+  </div>
+</section>
+
+<div id="coverGap"></div>
+
+<div id="storywrap">
+  <div id="stickyWrap">
+    <div id="photocol">
+      <img id="heroImg" style="opacity:0" src=""/>
+      <video id="heroVid" style="opacity:0" muted loop playsinline autoplay></video>
+      <div id="heroPlaceholder"></div>
+      <div id="heroEmbed"></div>
+      <div id="yrOverlay"><div class="yr" id="badgeYr">1967</div></div>
+      <div id="playBadge"><span class="dot"></span>Imágenes reales, VTV, 25 jun 2026</div>
+      <div id="toolFrameWrap">
+        <div id="toolFrameHead">
+          <span id="toolFrameLabel"></span>
+        </div>
+        <iframe id="toolFrame" src="" loading="lazy" title="Herramienta en vivo"></iframe>
+        <div id="toolFrameFallback">Si esto no carga, es posible que el sitio bloquee la incrustación. <a id="toolFrameOpenDirect" target="_blank" rel="noopener">Abrir directamente ↗</a></div>
+      </div>
+          </div>
+    <div id="timelinecol">
+      <div id="spineTrack">
+        <div class="track-baseline"></div>
+        <div class="track-bg">
+          <div class="seg-dim" id="segDim"></div>
+          <div id="segFillWrap"><div class="seg-bright" id="segBright"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="textcol">
+
+    <section class="ch accent-blood" data-lat="10.5061" data-lng="-66.9146" data-zoom="10" data-radius="50000" data-color="blood" data-yr="1812"
+      data-img="https://www.caracaschronicles.com/wp-content/uploads/2019/03/Caracas-Chronicles-Terremoto.jpg"
+      data-pos="68% 50%"
+     >
+      <p class="eyebrow">Capítulo 0 — 1812: M7.7</p>
+      <h2 class="chapter-title serif">"Si la naturaleza se opone, lucharemos contra ella y haremos que nos obedezca."</h2>
+      <p class="body-text">Sería conveniente decir que Venezuela simplemente no sabía que esto podía pasar, que la geología tomó por sorpresa a un país incapaz siquiera de imaginarlo, que la infraestructura en ruinas era por falta de necesidad, de conocimiento o de comprensión.</p>
+      <p class="body-text">Salvo que no es cierto, y nunca lo ha sido. Esta es una de las historias fundacionales del país, de esas que todo niño venezolano aprende en la escuela: el 26 de marzo de 1812, un terremoto de magnitud 7.7 arrasó Caracas, matando a un estimado de 15.000 a 20.000 personas y destruyendo la ciudad casi por completo. La tierra tembló lo suficiente como para sentirse en Bogotá, a más de 700 kilómetros de distancia.</p>
+      <p class="body-text">Simón Bolívar tenía 29 años cuando ocurrió, recién llegado a Caracas de sus campañas militares por la independencia, con una invasión española en el horizonte. Los testigos lo describieron con una camisa rota y manchada, las mangas arremangadas, sacando cuerpos de los escombros con sus propias manos. La gente decía que era el castigo de Dios por el "pecado de la independencia." Bolívar discutía con ellos en lugar de darles la razón. En un momento desenvainó su espada contra un sacerdote que rezaba por los muertos en vez de escarbar por los vivos, y le ordenó que empezara a sacar cuerpos. Dos siglos antes de que se filmara a soldados saqueando los escombros de un terremoto en lugar de despejarlos, este fue el instinto contrario: primero los sobrevivientes, todo lo demás después.</p>
+      <p class="body-text">Un médico realista lo encontró de pie sobre un montón de ruinas y le preguntó, en tono burlón, qué tenía que decir ahora que la naturaleza misma se había puesto en contra de la república. La respuesta de Bolívar es una de las frases más citadas de la historia venezolana: "Si la naturaleza se opone, lucharemos contra ella y haremos que nos obedezca."</p>
+      <p class="body-text">Los terremotos formaron parte del origen de Venezuela. El resto de esta historia trata sobre si volverá a ocurrir.</p>
+      <div class="toll-stats">
+        <div class="toll-item"><span class="toll-val">M7.7</span><span class="toll-lbl">Magnitud, 26 de marzo de 1812</span></div>
+        <div class="toll-item"><span class="toll-val">15.000–20.000</span><span class="toll-lbl">Muertos estimados, Caracas y provincias circundantes</span></div>
+      </div>
+    </section>
+
+    <section class="ch accent-blood" data-lat="10.504" data-lng="-66.849" data-zoom="14" data-radius="2200" data-color="blood" data-yr="1967"
+      data-img="https://alchetron.com/cdn/1967-caracas-earthquake-405e4b4a-66a3-4947-8d55-fdf28439775-resize-750.jpeg"
+     >
+      <p class="eyebrow">Capítulo 1 — 1967: m6.6</p>
+      <h2 class="chapter-title serif">El primer terremoto de la era moderna</h2>
+      <p class="body-text">El 29 de julio de 1967, un terremoto de magnitud 6.5–6.6 golpeó la costa venezolana a unos 20 kilómetros de Caracas. Cuatro torres de apartamentos en Altamira y Los Palos Grandes (Edificio San José, Mijagual, Neverí y Palace/Corvin) colapsaron por completo. La Mansión Charaima y el Hotel Macuto Sheraton, en Caraballeda y Macuto, perdieron la mayoría de sus pisos. Entre 200 y 236 personas murieron, cerca de 2.000 resultaron heridas, 40 edificios fueron declarados inhabitables y otros 180 sufrieron daños severos.</p>
+      <p class="body-text">Esta no es una historia sobre corrupción. Todavía no, al menos.</p>
+      <p class="body-text">En 1967, Venezuela era una democracia en funcionamiento, rica en petróleo, a treinta y un años de Chávez, sin nada del clientelismo "notorio" y armado que define los capítulos posteriores de esta historia. La tierra hizo esto de todos modos. Ese es el punto de empezar aquí: el riesgo sísmico bajo Caracas y la costa de Vargas no es síntoma de nada que viniera después. Es más antiguo que todo eso, y nunca iba a desaparecer. Lo que cambia en los siguientes cincuenta y nueve años no es el riesgo. Es la capacidad del país para responder a él.</p>
+    </section>
+
+    <section class="ch" data-lat="10.480" data-lng="-66.904" data-zoom="12" data-radius="15000" data-color="gold" data-yr="'50–'86"
+      data-imgs='[
+        {"src":"https://static01.nyt.com/images/2026/01/09/multimedia/09xp-oil-timeline-wkcp/09xp-oil-timeline-wkcp-articleLarge.jpg?quality=75&auto=webp&disable=upscale"},
+        {"src":"https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iCGv1BhRx1_I/v1/-1x-1.webp"}
+      ]'>
+      <p class="eyebrow">Capítulo 2 — los años de bonanza</p>
+      <h2 class="chapter-title serif">Riqueza sin piso.</h2>
+      <p class="body-text">Para 1950, Venezuela tenía el cuarto PIB per cápita más alto del planeta, el doble que Chile, cuatro veces más que Japón, doce veces más que China. Siguió siendo la economía más rica de América Latina hasta bien entrados los años ochenta. El shock petrolero de la OPEP en los años setenta cuadruplicó sus ingresos; entre 1974 y 1979 el gobierno gastó más, en términos absolutos, que en toda su historia independiente anterior.</p>
+      <p class="body-text">Esa riqueza nunca tuvo que demostrar que podía sobrevivir el contacto con una crisis real. Un país tan rico, dependiente de un solo producto, no necesita instituciones profundas: necesita un ministerio de petróleo que funcione y suficiente efectivo para tapar todo lo demás.</p>
+      <p class="body-text">Parte del dinero petrolero construyó cosas reales: escuelas, hospitales, carreteras, subsidios agrícolas. Pero buena parte se fue a otro lado. Bajo el presidente Jaime Lusinchi, a mediados de los años ochenta, un programa de control de cambio llamado RECADI debía repartir dólares baratos y subsidiados por el Estado a los importadores. En cambio, compradores bien conectados adquirían esos dólares a la tasa oficial artificial y los revendían en el mercado real con ganancias enormes; el Cato Institute estimó después que 36.000 millones de dólares pasaron por el esquema. Esto no fue un error puntual, sino una falla de diseño que el país seguiría reconstruyendo.</p>
+      <p class="body-text">Quienes se beneficiaron de esquemas como RECADI no eran un grupo único y fácil de etiquetar. Algunas de las mismas personas que después pasaron décadas como figuras de la oposición, incluidas algunas que solo alzaron la voz una vez a salvo en el exterior, hicieron dinero real con este tipo de arbitraje cambiario. Eso no es necesariamente hipocresía por sí solo. Durante la mayor parte de esta era, la cercanía a los contratos del Estado y a las tasas de cambio preferenciales fue una de las pocas vías confiables hacia una vida estable en Venezuela, y muchísima gente terminó dentro de ese sistema por necesidad más que por convicción. El mismo arreglo que enriqueció a los que estaban adentro también dejó a casi cualquiera que quisiera una vida normal con pocas formas de construirla sin pasar, de algún modo, por él.</p>
+      <p class="body-text">Luego, a mediados de los años ochenta, un exceso global de oferta petrolera hizo caer los precios cerca de un 70% en menos de un año. Una economía que nunca se diversificó ya no tenía nada a lo cual recurrir.</p>
+    </section>
+
+    <section class="ch accent-blood" data-lat="10.478" data-lng="-66.879" data-zoom="12" data-radius="12000" data-color="blood" data-yr="'89–92"
+      data-img="https://commons.wikimedia.org/wiki/Special:FilePath/Caracazo.jpg?width=1400">
+      <p class="eyebrow">Capítulo 3 — 1989–1992: empiezan a verse las grietas</p>
+      <h2 class="chapter-title serif">Un motín, dos golpes y un hombre con una promesa.</h2>
+      <p class="body-text">El 27 de febrero de 1989, el presidente Carlos Andrés Pérez anunció un paquete de austeridad para atender la deuda que habían dejado los años de bonanza; entre los cambios, un alza de 30% de la noche a la mañana en el pasaje del transporte público. Estallaron disturbios y saqueos en Guarenas que se extendieron a Caracas en un día. El gobierno decretó un toque de queda y activó el Plan Ávila, poniendo a la capital bajo ley marcial con soldados en las calles con munición real. El saldo oficial fue de 276 muertos; otras estimaciones llegan hasta 3.000. Los venezolanos lo llaman el Caracazo.</p>
+      <p class="body-text">Tres años después, el 4 de febrero de 1992, unidades del ejército lideradas por un oficial de rango medio llamado Hugo Chávez intentaron tomar el Palacio de Miraflores en un golpe de Estado contra Pérez. Fracasó, y Chávez fue a prisión, pero el intento lo convirtió en una figura nacional de todos modos. Un segundo intento de golpe siguió el 27 de noviembre de 1992. También fue sofocado, a un costo mucho mayor: 172 muertos.</p>
+      <p class="body-text">Para 1998, cuando Chávez se postuló a la presidencia como civil, no era un outsider prometiendo algo nuevo de la nada. Era el rostro de una rebelión contra un gobierno que ya había disparado contra sus propios ciudadanos en la calle por un pasaje de autobús.</p>
+    </section>
+
+    <section class="ch" data-lat="10.5061" data-lng="-66.9146" data-zoom="13" data-radius="3000" data-color="gold" data-yr="1998"
+      data-img="chavez_bolivar_portrait.webp"
+      data-fit="cover"
+      data-pos="center center"
+      data-blur="true"
+     >
+      <p class="eyebrow">Capítulo 4 — 1998: hugo chávez</p>
+      <h2 class="chapter-title serif">El ascenso del chavismo</h2>
+      <p class="body-text">Hugo Chávez fue elegido presidente en diciembre de 1998. Este capítulo es deliberadamente corto, porque 1998 en sí mismo no es la catástrofe: es el punto de inflexión a partir del cual todo lo demás en esta historia ocurre bajo un mismo proyecto político que se va consolidando, para bien y para mal.</p>
+    </section>
+
+    <section class="ch accent-blood" data-lat="10.600" data-lng="-66.930" data-zoom="10" data-radius="60000" data-color="blood" data-yr="1999"
+      data-imgs='[
+        {"src":"https://commons.wikimedia.org/wiki/Special:FilePath/Partially_collapsed_building,_Vargas_1999.jpg?width=1400"},
+        {"src":"https://www.caracaschronicles.com/wp-content/uploads/2019/12/unnamed-2.jpg"}
+      ]'>
+      <p class="eyebrow">Capítulo 5 — 1999: otro tipo de desastre</p>
+      <h2 class="chapter-title serif">Vargas.</h2>
+      <p class="body-text">Catorce meses después de que Chávez asumiera el cargo, entre el 14 y el 16 de diciembre de 1999, lluvias extremas (hasta 911 mm en pocos días) desataron flujos de escombros a lo largo de unos 100 kilómetros de la costa de Vargas, sepultando barrios enteros entre Catia La Mar y más allá de Caruao. No fue la primera advertencia del país: el terremoto de 1967, treinta y dos años antes y en el mismo tramo de costa, ya había mostrado lo que significaban una construcción débil y una capacidad estatal escasa para esta tierra. La respuesta dio un anticipo de hábitos que se repetirían durante décadas: la atención del gobierno esa semana estaba puesta en un referéndum sobre la nueva constitución de Chávez, programado para el 15 de diciembre, el mismo día en que la lluvia se convirtió en deslaves, y no se organizó ninguna evacuación antes de que llegara lo peor. En las semanas siguientes, dos buques de la Marina de EE.UU. que ofrecían personal y equipos, el USS Nashville y el USS Tortuga, fueron rechazados inicialmente, incluso cuando Chávez aceptó por separado un equipo de emergencia del Ejército de EE.UU. sobre el terreno, y las fuerzas de seguridad enviadas a detener los saqueos fueron acusadas de sus propios abusos.</p>
+      <p class="body-text">El número de muertos es disputado: los conteos oficiales rondan entre 700 y 3.000; estimaciones académicas llegan hasta 10.000–30.000, una brecha atribuida en gran parte a lo mal que se contaban los asentamientos informales para empezar. Una reconstrucción demográfica del antropólogo Rogelio Altez, que compara la población de Vargas antes del desastre, de unos 308.000 habitantes, con los aproximadamente 230.000 contados en el censo de diciembre de 2000 frente a registros forenses de 521 muertos confirmados y 331 desaparecidos, argumenta que la cifra real está mucho más cerca del extremo bajo: las tres parroquias más golpeadas, Caraballeda, Macuto y Naiguatá, tenían una población combinada de apenas unos 68.000 habitantes antes del desastre, muy pocos para sostener las estimaciones de 15.000 a 50.000 que todavía circulan.</p>
+      <p class="body-text">Esta no es una historia sobre que la lluvia sea culpa de alguien. Es la primera prueba de estrés real, en una generación, de la capacidad de respuesta a desastres que Venezuela todavía tenía.</p>
+      <div class="toll-stats">
+        <div class="toll-item"><span class="toll-val">700–30.000</span><span class="toll-lbl">Muertos (conteo oficial a estimación académica)</span></div>
+        <div class="toll-item"><span class="toll-val">~77.700</span><span class="toll-lbl">Caída neta de población, estado Vargas, 1999–2000</span></div>
+      </div>
+    </section>
+
+    <section class="ch" data-lat="10.470" data-lng="-66.540" data-zoom="10" data-radius="30000" data-color="gold" data-yr="2005" data-img="flood2005_car_debris.webp">
+      <p class="eyebrow">Capítulo 6 — 2005: la segunda vez</p>
+      <h2 class="chapter-title serif">Lluvia, barro y arcilla.</h2>
+      <p class="body-text">En febrero de 2005, volvió a pasar. El río Pacairigua y la quebrada Silma se desbordaron en Guatire; el río Guaire se desbordó a través de Caracas durante una lluvia récord de 84,7 mm en 24 horas. Siete estados fueron declarados en emergencia nacional.</p>
+      <p class="body-text">Lo que realmente importa de 2005 tiene poco que ver con la lluvia: el sistema de control de cambio creado en 2003 (CADIVI) ya tiene dos años, y una economía de arbitraje se está convirtiendo en una forma de vida para cualquiera con la posición adecuada para sacar provecho de la brecha.</p>
+      <div class="toll-stats">
+        <div class="toll-item"><span class="toll-val">62</span><span class="toll-lbl">Muertos confirmados</span></div>
+        <div class="toll-item"><span class="toll-val">24.398</span><span class="toll-lbl">Desplazados</span></div>
+        <div class="toll-item"><span class="toll-val">178.623</span><span class="toll-lbl">Personas afectadas</span></div>
+      </div>
+    </section>
+
+    <section class="ch accent-blood" data-lat="10.5" data-lng="-66.92" data-zoom="12" data-radius="8000" data-color="blood" data-yr="2017"
+      data-imgs='[
+        {"src":"motm_nbc_armored.webp"},
+        {"src":"motm_bnaibrith_signs.jpg"},
+        {"src":"motm_flag_teargas.webp"},
+        {"src":"motm_atlantic_1.avif"},
+        {"src":"motm_atlantic_2.avif"},
+        {"src":"motm_atlantic_3.avif"},
+        {"src":"motm_atlantic_4.avif"},
+        {"src":"motm_atlantic_5.avif"},
+        {"src":"motm_sbs_shield.avif"}
+      ]'>
+      <p class="eyebrow">Capítulo 7 — 2017: la madre de todas las marchas</p>
+      <h2 class="chapter-title serif">La ley deja de importar.</h2>
+      <p class="body-text">El 29 de marzo de 2017, el Tribunal Supremo de Justicia de Venezuela, copado de leales a Maduro, despojó a la Asamblea Nacional, controlada por la oposición, de sus poderes legislativos y los asumió efectivamente él mismo. La Asamblea Nacional era la única rama del gobierno que la oposición realmente controlaba, tras haberla ganado por una aplastante mayoría en 2015. La movida del tribunal fue, en la práctica, un autogolpe: el gobierno disolviendo el último organismo nacional que no controlaba, mediante un fallo legal en lugar de un tanque.</p>
+      <p class="body-text">La respuesta llegó tres semanas después, y el gobierno no la esperó tranquilo. Dos días antes de la marcha, Maduro ordenó ampliar la Milicia Nacional Bolivariana a 500.000 miembros, a cada uno de los cuales se le prometió un fusil, enmarcándolo como un seguro contra una repetición del intento de golpe de 2002 en su contra. Diosdado Cabello, ya un alto funcionario del PSUV, dijo que 60.000 colectivos motorizados y la milicia se desplegarían por Caracas el 19 de abril, "hasta que sea necesario," para detener lo que llamó el terrorismo de la oposición.</p>
+      <p class="body-text">El 19 de abril de 2017, simpatizantes de la oposición organizaron lo que llamaron la madre de todas las marchas, con manifestantes saliendo a las calles en al menos una docena de ciudades del país al mismo tiempo. En Caracas, los manifestantes que intentaban llegar al centro de la ciudad se toparon con la Guardia Nacional y colectivos oficialistas con gases lacrimógenos y balas de goma. Varias personas murieron y muchas más resultaron heridas solo ese día, el acto de apertura de una ola de protestas que se extendería por meses durante el resto de 2017.</p>
+      <p class="body-text">La marcha no logró sacar a Maduro, y el fallo del tribunal sobre la Asamblea nunca se revirtió realmente en la práctica. Lo que sí hizo fue marcar, pública e internacionalmente, el momento en que el enfrentamiento entre el gobierno y la coalición opositora dejó de ser un desacuerdo político y se convirtió en algo más cercano a una confrontación abierta, el mismo año en que Estados Unidos comenzó a sancionar el sistema financiero de Venezuela. La presión interna e internacional empezó a acumularse al mismo tiempo, y ninguna de las dos cedió durante el resto de la década que documenta el próximo capítulo.</p>
+    </section>
+
+    <section class="ch" data-lat="10.50" data-lng="-66.90" data-zoom="9" data-radius="55000" data-color="gold" data-yr="'05–'25"
+      data-imgs='[
+        {"src":"https://dims.apnews.com/dims4/default/68c821a/2147483647/strip/true/crop/3000x2000+0+0/resize/599x399!/quality/90/?url=https%3A%2F%2Fstorage.googleapis.com%2Fafs-prod%2Fmedia%2F537ff64805a14bcaad270f903a0259e6%2F3000.jpeg"},
+        {"src":"https://commons.wikimedia.org/wiki/Special:FilePath/Frontera%20San%20Antonio%20-%20C%C3%BAcuta%20(2018)%2001.jpg?width=1400"}
+      ]'>
+      <p class="eyebrow">Capítulo 8 — 2005–2025: breve historia de un colapso total</p>
+      <h2 class="chapter-title serif">Todo se desmorona</h2>
+      <p class="body-text">Dos décadas, varios hilos apretándose a la vez:</p>
+      <div class="thread"><h4>El dinero</h4><p class="body-text">CADIVI (2003) da paso a SICAD y SICAD II (2013), luego a CENCOEX, luego a SIMADI (2015). Entre 2016 y 2020, el bolívar atraviesa 38 meses acumulados de hiperinflación.</p></div>
+      <div class="thread"><h4>La gente</h4><p class="body-text">El éxodo empezó con una purga deliberada: durante el paro general de 2002–2003, el gobierno despidió a más de 18.000 empleados de PDVSA. Hoy más de 7,6 millones de venezolanos han sido desplazados. Cientos de miles cruzaron a pie el Tapón del Darién.</p></div>
+      <div class="thread"><h4>Las instituciones</h4><p class="body-text">FUNVISIS, que alguna vez operó entre 250 y 300 estaciones sismológicas en todo el país, quedó reducida a entre 3 y 5 en funcionamiento.</p></div>
+      <div class="thread"><h4>El voto</h4><p class="body-text">En 2023, María Corina Machado ganó la primaria de la oposición por una aplastante mayoría. El 28 de julio de 2024, el Consejo Nacional Electoral declaró ganador a Maduro sin publicar jamás los resultados por mesa. Machado recibió el Premio Nobel de la Paz 2025.</p></div>
+    </section>
+
+    <section class="ch accent-blood" data-lat="10.60" data-lng="-66.93" data-zoom="10" data-radius="45000" data-color="blood" data-yr="2026"
+      data-imgs='[
+        {"type":"mp4","src":"https://commons.wikimedia.org/wiki/Special:FilePath/Tomas%20a%C3%A9reas%20de%20edificios%20destruidos%20en%20La%20Guaira%20por%20los%20terremotos%20de%20Venezuela.webm","caption":"Imágenes reales, VTV, 25 jun 2026","muted":true}
+      ]'>
+      <p class="eyebrow">Capítulo 9 — 2026: m7.2 y m7.5, con 39 segundos de diferencia</p>
+      <h2 class="chapter-title serif">Todo a la vez.</h2>
+      <p class="body-text">Seis meses antes del terremoto, el propio Maduro ya no estaba. El 3 de enero de 2026, una operación militar de EE.UU. lo capturó y lo trasladó a Nueva York, donde ahora enfrenta cargos por narcoterrorismo. Su vicepresidenta, Delcy Rodríguez, juró como presidenta encargada dos días después, obligada constitucionalmente a convocar elecciones dentro de 30 días. Cinco meses más tarde, todavía no lo había hecho, el mismo aparato militar y del PSUV seguía intacto a su alrededor, y la oposición cuestionaba abiertamente su legitimidad.</p>
+      <p class="body-text">Ese era el gobierno a cargo cuando la tierra volvió a moverse el 24 de junio de 2026: terremotos gemelos, de magnitud 7.2 y 7.5, con 39 segundos de diferencia. A FUNVISIS le quedaban entre 3 y 5 estaciones en funcionamiento para detectarlo. En partes de La Guaira, hasta el 80% de los edificios sufrieron daños. Catia La Mar, Caraballeda, Morón, Naiguatá, Caracas, El Junquito y Carayaca resultaron todos con daños confirmados.</p>
+
+      <div class="live-embed">
+        <div class="live-head">
+          <span class="live-tag"><span class="dot"></span>En vivo: mapa de daños de SismoVenezuela</span>
+          <a class="live-link" href="https://www.sismovenezuela.com/" target="_blank" rel="noopener">Abrir directamente ↗</a>
+        </div>
+        <iframe src="https://www.sismovenezuela.com/" loading="lazy" title="Mapa de daños en tiempo real de SismoVenezuela"></iframe>
+        <div class="live-fallback" id="smvFallback">Si el recuadro de arriba aparece en blanco, es posible que el sitio de origen bloquee la incrustación. Usa "Abrir directamente." Mapa de calor en tiempo real de daños, personas desaparecidas y centros de acopio de ayuda, actualizado a partir de reportes en redes sociales aproximadamente cada 10 minutos.</div>
+      </div>
+
+      <p class="body-text">Soldados y policías fueron captados en cámara saqueando los escombros; unos pocos fueron arrestados, la mayoría no. Un equipo médico alemán fue rechazado en la entrada. Bomberos colombianos quedaron retenidos horas en el aeropuerto. Al ser consultada sobre las críticas, Rodríguez las calificó de "narrativas fabricadas en laboratorios de propaganda." PBS tampoco se guardó las palabras: un gobierno "completamente ineficaz," empeorando su propio terremoto.</p>
+      <p class="body-text">Nada de esto es incompetencia aislada.</p>
+      <p class="body-text">Sin dinero, sin ingenieros, sin instituciones, un gobierno que se protege a sí mismo antes de proteger al público, todo ello treinta años en construcción antes de que este terremoto siquiera ocurriera.</p>
+      <div class="toll-stats">
+        <div class="toll-item"><span class="toll-val">4.490</span><span class="toll-lbl">Muertos confirmados, al 13 de julio de 2026</span></div>
+        <div class="toll-item"><span class="toll-val">16.740</span><span class="toll-lbl">Heridos</span></div>
+        <div class="toll-item"><span class="toll-val">~50.000</span><span class="toll-lbl">Reportados desaparecidos o sin ubicar</span></div>
+        <div class="toll-item"><span class="toll-val">58.870</span><span class="toll-lbl">Edificios dañados o destruidos, estimación satelital</span></div>
+        <div class="toll-item"><span class="toll-val">6,8M</span><span class="toll-lbl">Personas potencialmente afectadas, según la OIM de la ONU</span></div>
+        <div class="toll-item"><span class="toll-val">US$37.000M</span><span class="toll-lbl">Daño directo estimado a vivienda e infraestructura, UNDRR</span></div>
+      </div>
+    </section>
+
+    <section class="ch accent-blood" data-lat="10.53" data-lng="-66.87" data-zoom="10" data-radius="20000" data-color="blood" data-yr="2026"
+      data-imgs='[
+        {"type":"mp4","src":"https://commons.wikimedia.org/wiki/Special:FilePath/Tomas%20a%C3%A9reas%20de%20edificios%20destruidos%20en%20La%20Guaira%20por%20los%20terremotos%20de%20Venezuela.webm","caption":"Imágenes reales, VTV, 25 jun 2026","muted":true},
+        {"type":"mp4","src":"https://commons.wikimedia.org/wiki/Special:FilePath/Tomas%20a%C3%A9reas%20de%20edificios%20destruidos%20en%20La%20Guaira%20por%20los%20terremotos%20de%20Venezuela.webm","caption":"Imágenes reales, VTV, 25 jun 2026","muted":true},
+        {"type":"mp4","src":"https://commons.wikimedia.org/wiki/Special:FilePath/Tomas%20a%C3%A9reas%20de%20edificios%20destruidos%20en%20La%20Guaira%20por%20los%20terremotos%20de%20Venezuela.webm","caption":"Imágenes reales, VTV, 25 jun 2026","muted":true},
+        {"src":"block_rescue_stretcher.jpg"},
+        {"src":"block_rescue_stretcher.jpg"}
+      ]'>
+      <p class="eyebrow">Capítulo 10 — 2026: cuadra por cuadra</p>
+      <h2 class="chapter-title serif">Una mirada desde el terreno.</h2>
+      <p class="body-text">Todo lo del capítulo anterior ocurrió a la vez, pero no ocurrió de la misma manera en todas partes. "El terremoto" es en realidad docenas de eventos distintos y diferentes según el barrio en el que uno esté parado, y cada uno explica una razón distinta por la que esta recuperación va a ser difícil. Cuatro de ellos, en particular, muestran ese rango.</p>
+      <div class="thread"><h4>Los mismos edificios, la misma advertencia</h4><p class="body-text">En Los Palos Grandes y en el vecino Bello Campo, cayeron tres torres: Petunia 1, Obelisco y Don Pepe. Petunia 1, de catorce pisos, colapsó piso por piso en lo que los rescatistas describieron como un acordeón de concreto. Diecisiete o dieciocho personas fueron rescatadas con vida; 35 cuerpos fueron recuperados después de entre los escombros. En la cercana Altamira, cinco personas fueron rescatadas con vida del Edificio Olimpo y dieciséis más de un edificio contiguo. Los ingenieros que revisaron los daños después señalaron una falla específica e identificable: construcción de planta baja blanda, plantas bajas abiertas para estacionamiento o locales comerciales con menos columnas estructurales que los pisos de arriba, que colapsan primero y se llevan todo lo de encima con ellas. Venezuela revisó su código sísmico de construcción después del terremoto de 1967. Nunca se hizo de la aplicación de ese código una prioridad real. Cincuenta y nueve años después, en los mismos dos barrios que perdieron torres la primera vez, los edificios fallaron de la misma manera otra vez.</p></div>
+      <div class="thread"><h4>Nunca antes evaluado</h4><p class="body-text">El Junquito y Carayaca, ambos en el borde occidental del área metropolitana de Caracas, fueron confirmados con daños en los días posteriores al terremoto, pero ninguno había tenido jamás una evaluación de riesgo formal antes del 24 de junio. En Carayaca, un edificio de uso mixto residencial colapsó y mató a 11 personas. No existía ningún mapa de qué edificios allí eran vulnerables y cuáles no, ninguna línea base con la cual comparar el daño. Los equipos de respuesta estaban construyendo ese panorama desde cero, después de los hechos, en medio de la emergencia, en lugar de partir de algo que ya existiera.</p></div>
+      <div class="thread"><h4>Casi enteramente destruido</h4><p class="body-text">En todo el estado La Guaira, hasta el 80% de los edificios sufrieron daños. En Catia La Mar específicamente, una evaluación de daños del AI for Good Lab de Microsoft estimó que casi un tercio de los aproximadamente 30.000 edificios del pueblo sufrieron daños, una de las tasas de daño más altas registradas en toda la zona de desastre. Esto no es un puñado de edificios que fallaron por una razón estructural identificable. Es un pueblo donde recuperarse significa, en la práctica, reconstruir un tercio de todo.</p></div>
+      <div class="thread"><h4>Aislado de sí mismo</h4><p class="body-text">Estar dentro del estado más golpeado no significa que cada parte de él pueda llegar a cualquier otra parte. El 26 de junio, una réplica derrumbó un puente que conectaba la parroquia de Caraballeda con el resto de La Guaira, interrumpiendo la labor de auxilio que ya estaba en marcha ahí. Visto en conjunto, todo el estado tiene exactamente una carretera que lo conecta con Caracas. Visto en detalle, la falla de un solo puente dentro de ese estado puede aislar a una parroquia dos veces: una vez del resto del país, y otra vez del resto de su propio estado.</p></div>
+      <p class="body-text">Ninguno de estos cuatro lugares necesita lo mismo. Una torre de catorce pisos con una falla estructural identificada necesita ingenieros y aplicación de normas. Un barrio sin datos de riesgo previos necesita una evaluación que debió existir hace años. Un pueblo que perdió un tercio de sus edificios necesita una reconstrucción a una escala más cercana a un reasentamiento que a una reparación. Una parroquia aislada por un solo puente necesita ese puente, específicamente, antes de que cualquier otra cosa sea siquiera alcanzable. La recuperación no es una sola palabra para un solo país. Es un problema distinto en cada uno de estos lugares, y la respuesta tiene que ser capaz de distinguir la diferencia.</p>
+    </section>
+
+    <section class="ch" data-lat="10.55" data-lng="-66.85" data-zoom="9" data-radius="70000" data-color="gold" data-yr="Ahora"
+      data-imgs='[
+        {"type":"mp4","src":"floor_by_floor_collapse.mp4","caption":"Terremoto en Venezuela: piso por piso, la destrucción empeora"}
+      ]'>
+      <p class="eyebrow">Capítulo 11 — qué sigue</p>
+      <h2 class="chapter-title serif">Leyendo los próximos diez años.</h2>
+      <p class="body-text">Todo lo anterior es historia. Esta última parte es un pronóstico, construido solo a partir de lo que ya está documentado: quién resultó más golpeado, qué le falta a la respuesta, qué pasa si el gobierno actualmente a cargo no cambia, y cómo luce una década realista para un país que entró a este terremoto con la vulnerabilidad sísmica de Turquía y la capacidad estatal de Haití.</p>
+      <div class="thread"><h4>Dónde golpeó más fuerte</h4><p class="body-text">Distrito Capital y La Guaira sufrieron el peor daño, seguidos de Carabobo, Yaracuy, Miranda, Aragua y Falcón. Se estima que entre el 40 y el 50% de los cerca de cinco millones de habitantes de Caracas viven en viviendas de barrios autoconstruidas en laderas nunca diseñadas para un 7.5.</p></div>
+      <div class="thread"><h4>Lo que falta</h4><p class="body-text">Alrededor de 16.700 a 17.300 personas seguían desplazadas en 79 a 87 refugios temporales a mediados de julio. El 8 de julio la ONU lanzó un llamado de 296 millones de dólares frente a una brecha de financiamiento más amplia de unos 627 millones de dólares.</p></div>
+      <div class="thread"><h4>Si el gobierno sigue igual</h4><p class="body-text">Diosdado Cabello, con una recompensa de 25 millones de dólares de EE.UU. sobre su cabeza, se paró junto a Rodríguez anunciando el plan de respuesta y fue captado por separado bloqueando un camión de rescate en video. Rafael Lacava integra la comisión de reconstrucción a pesar de sus propias sanciones.</p></div>
+      <div class="thread"><h4>Lo que realmente es posible</h4><p class="body-text">Venezuela ahora carga con el problema de construcción de Turquía sin el Estado funcional de Turquía, y el problema de rendición de cuentas de la ayuda de Haití sin el gobierno cooperativo de Haití. La versión realista de los próximos diez años se parece a una recuperación de dos velocidades.</p></div>
+    </section>
+
+    <section class="ch accent-blood" data-lat="10.60" data-lng="-66.93" data-zoom="11" data-radius="15000" data-color="blood" data-yr="Voces"
+      data-placeholder-tag="Voces reales, sin imagen" data-credit="Todavía no se eligió una foto para este capítulo. Las citas a continuación se sostienen por sí solas."
+      data-imgs='[
+        {"type":"mp4","src":"floor_by_floor_collapse.mp4","caption":"Terremoto en Venezuela: piso por piso, la destrucción empeora"},
+        {"type":"mp4","src":"floor_by_floor_collapse.mp4","caption":"Terremoto en Venezuela: piso por piso, la destrucción empeora"},
+        {"type":"mp4","src":"cctv_twin_quakes.mp4","caption":"Cámara de seguridad capta el momento de los terremotos gemelos","muted":true},
+        {"type":"mp4","src":"cctv_twin_quakes.mp4","caption":"Cámara de seguridad capta el momento de los terremotos gemelos","muted":true},
+        {"type":"mp4","src":"festival_moment_earthquake.mp4","caption":"Momento en que el terremoto golpeó durante celebraciones de un festival en Venezuela"},
+        {"type":"mp4","src":"festival_moment_earthquake.mp4","caption":"Momento en que el terremoto golpeó durante celebraciones de un festival en Venezuela"},
+        {"type":"mp4","src":"festival_moment_earthquake.mp4","caption":"Momento en que el terremoto golpeó durante celebraciones de un festival en Venezuela"},
+        {"type":"mp4","src":"festival_moment_earthquake.mp4","caption":"Momento en que el terremoto golpeó durante celebraciones de un festival en Venezuela"},
+        {"type":"mp4","src":"afp_show_me_tough.mp4","caption":"AFP: venezolanos confrontan al ejército por la respuesta de rescate tras el terremoto"},
+        {"type":"mp4","src":"https://video.twimg.com/amplify_video/2072117791189045249/vid/avc1/480x852/V6Mar2R7GplsoBbN.mp4","caption":"Confrontación por saqueo del CICPC, vía Patricia Janiot"},
+        {"type":"mp4","src":"https://video.twimg.com/amplify_video/2072117791189045249/vid/avc1/480x852/V6Mar2R7GplsoBbN.mp4","caption":"Confrontación por saqueo del CICPC, vía Patricia Janiot"},
+        {"type":"mp4","src":"https://video.twimg.com/amplify_video/2072117746284826624/vid/avc1/480x640/XP4Ymml5qpAd4nht.mp4","caption":"Soldados acusados de no actuar o de saquear, vía @EmmaRincon"}
+      ]'>
+      <p class="eyebrow">Capítulo 12 — voces desde el terreno</p>
+      <h2 class="chapter-title serif">Lo que realmente se sintió.</h2>
+      <p class="body-text">Todo lo anterior es análisis: números, patrones, instituciones. Nada de eso le ocurrió a una estadística. Le ocurrió a personas concretas, en edificios concretos, una mañana de junio, y las partes de esta historia más difíciles de sobrellevar son las más difíciles de resumir. Así que en lugar de resumirlas, aquí van algunas de ellas, en sus propias palabras, según lo reportado por los periodistas que estuvieron ahí.</p>
+
+      <div class="thread"><h4>La mañana que ocurrió</h4>
+        <p class="body-text">Tony Frangie, periodista, estaba en un ascensor en Caracas cuando llegó el primer temblor.</p>
+        <p class="ground-quote">"Empecé a rezar y a apretar todos los botones, esperando que se abriera."</p>
+        <p class="ground-cite">Tony Frangie, a CBS Mornings, 25 de junio de 2026</p>
+        <p class="body-text">El ascensor lo dejó salir en el sótano. El edificio se mantuvo en pie, y pasó las siguientes horas esperando afuera con los vecinos mientras le empezaban a llegar las noticias.</p>
+        <p class="ground-quote">"Hemos visto videos de edificios colapsando y una cantidad interminable de gente buscando a sus familias. Así que sí, esperamos que empeore."</p>
+        <p class="ground-cite">Tony Frangie, a CBS Mornings, 25 de junio de 2026</p>
+        <p class="body-text">En La Guaira, Antonio Bermúdez estaba en su sala cuando el temblor empezó "de repente."</p>
+        <p class="ground-quote">"Empecé a moverme, busqué refugio bajo una columna. Estaba entre mi cuarto y la ducha. Temblaba cada vez más fuerte. Me agarré de la pared y el edificio empezó a venirse abajo."</p>
+        <p class="ground-cite">Antonio Bermúdez, a AFP, 25 de junio de 2026</p>
+      </div>
+
+      <div class="thread"><h4>Escarbando</h4>
+        <p class="body-text">En Catia La Mar, un barrio de casi 200 torres de vivienda, Yilsmaris Blanco, de 39 años, describió aquello a lo que volvió.</p>
+        <p class="ground-quote">"Todo, todo colapsó. Damos gracias a Dios porque estamos vivos, pero ahora mismo hay gente sufriendo con sus familiares enterrados, con sus familiares aplastados y no los pueden sacar."</p>
+        <p class="ground-cite">Yilsmaris Blanco, a AFP, 25 de junio de 2026</p>
+        <p class="body-text">Larry Rojas, de 49 años, tenía familiares atrapados en un edificio colapsado cerca de ahí.</p>
+        <p class="ground-quote">"No tenemos nada, ahorita no tenemos nada, ni siquiera la fuerza o el valor para entrar ahí. De verdad, necesitamos que alguien nos ayude, que envíen maquinaria. Eso es lo que necesitamos para entrar a los edificios que colapsaron."</p>
+        <p class="ground-cite">Larry Rojas, a AFP, 25 de junio de 2026</p>
+        <p class="body-text">La gente no tenía acceso a agua, dijo, dejándolos "muriendo de sed," y los residentes ahora temían entrar incluso a los edificios que seguían en pie, porque "tenemos miedo de que también colapsen."</p>
+      </div>
+
+      <div class="thread"><h4>Ocho días bajo un centro comercial</h4>
+        <p class="body-text">Hernán Alberto Gil Flores, un guardia de seguridad nocturno de 43 años, quedó atrapado durante ocho días en el sótano colapsado del centro comercial Galerías Playa Grande en Catia La Mar, y se mantuvo con vida más allá de la ventana de 48 a 72 horas con la que suelen planificar los rescatistas porque su pequeña garita de seguridad mantuvo su forma mientras el concreto a su alrededor se venía abajo.</p>
+        <p class="ground-quote">"Cuando lo encontramos, nos pidió que no le dijéramos a su esposa que estaba vivo, por si no lo lograba. Nunca íbamos a dejarlo aquí."</p>
+        <p class="ground-cite">Minyar Collado, rescatista de la Cruz Roja costarricense, a AP, 2 de julio de 2026</p>
+        <p class="body-text">Su esposa, Gusbimar González, había pasado días desesperada antes de enterarse de que los rescatistas habían llegado hasta él.</p>
+        <p class="ground-quote">"Cuando supe que estaba vivo, vi un rayo de luz en la oscuridad."</p>
+        <p class="ground-cite">Gusbimar González, a AP, 2 de julio de 2026</p>
+        <p class="body-text">Durante las horas finales de la extracción, la bombera chilena María Paz Campos lo guio paso a paso por una videollamada.</p>
+        <p class="ground-quote">"Necesito que te mantengas los lentes puestos, por las partículas pequeñas que están cayendo, para evitar que te entren al ojo."</p>
+        <p class="ground-cite">María Paz Campos, a Hernán Alberto Gil Flores, vía video de AP, 2 de julio de 2026</p>
+        <p class="body-text">Fue sacado con vida el 2 de julio.</p>
+      </div>
+
+      <div class="thread"><h4>Lo que queda por atender</h4>
+        <p class="body-text">El rescate físico es solo una parte de lo que deja un desastre así.</p>
+        <p class="ground-quote">"Ya hemos pasado por un período de trauma complejo, que va a seguir ocurriendo, pero ahora se complica con infecciones."</p>
+        <p class="ground-cite">Eugenio Cova, jefe de la unidad de trauma, Hospital José Gregorio Hernández, Caracas, a Al Jazeera/AP, 2 de julio de 2026</p>
+        <p class="ground-quote">"Esto obviamente trae a la mente lo que está pasando en Gaza y Ucrania. Es como una escena de una película o de una zona de guerra. Nunca habíamos visto esto en tiempos de paz."</p>
+        <p class="ground-cite">Kevin Simm, trabajador humanitario voluntario, a Al Jazeera, 2 de julio de 2026</p>
+        <p class="ground-quote">Los terremotos "vuelven a poner en evidencia la incapacidad del gobierno venezolano de ofrecer un sistema de salud adecuado que cubra las necesidades del pueblo venezolano."</p>
+        <p class="ground-cite">Huniades Urbina, miembro de la junta directiva de la Sociedad Venezolana de Puericultura y Pediatría, a Al Jazeera/AP, 2 de julio de 2026</p>
+        <p class="body-text">David Smilde, investigador de la Universidad de Tulane que ha estudiado Venezuela por décadas, expresó la falla del Estado en términos más crudos.</p>
+        <p class="ground-quote">"Han tenido la capacidad de reprimir gente y encarcelar gente, pero no parecen estar en condiciones de ofrecer ni siquiera los elementos más básicos de ayuda ante un desastre."</p>
+        <p class="ground-cite">David Smilde, a The World/PRX, 2 de julio de 2026</p>
+      </div>
+
+      <div class="thread"><h4>Incompetencia como arma, o algo peor</h4>
+        <p class="body-text">Parte de esta rabia quedó captada en vivo, por gente que la filmaba mientras ocurría. En La Guaira, un rescatista civil confrontó a soldados parados cerca de los escombros con fusiles en lugar de herramientas.</p>
+        <p class="ground-quote">"¿Por qué trajeron armas? Debieron haber traído una pala, un pico. No estamos en guerra. Estamos en una emergencia."</p>
+        <p class="ground-cite">Rescatista sin identificar, La Guaira, reportado por The World/PRX, 2 de julio de 2026</p>
+        <p class="body-text">En uno de los videos más compartidos de la respuesta, residentes de las Residencias Vallarta en Playa Grande rodearon a un funcionario del CICPC al que acusaron de embolsarse efectivo sacado de los escombros en lugar de ayudar a buscar entre ellos, rompiendo los billetes frente a él en cámara. Video, vía la periodista Patricia Janiot: <a class="live-link" href="https://x.com/patriciajaniot/status/2072118958929346958" target="_blank" rel="noopener">abrir directamente ↗</a></p>
+
+        <p class="body-text">El líder opositor Juan Pablo Guanipa publicó su propia condena a la conducta militar durante la respuesta.</p>
+        <p class="ground-quote">"Los videos de militares, bajo órdenes del corrupto Alto Mando Militar, confiscando o impidiendo el ingreso de la ayuda recolectada por nuestro pueblo son inaceptables."</p>
+        <p class="ground-cite">Juan Pablo Guanipa, líder opositor, vía X/Twitter, 1 de julio de 2026</p>
+        <p class="body-text">Uno de varios videos que circulan de soldados y policías acusados de no actuar, extorsionar a residentes, o saquear en lugar de ayudar: <a class="live-link" href="https://x.com/EmmaRincon/status/2071369378008858905" target="_blank" rel="noopener">abrir directamente ↗</a></p>
+
+        <p class="body-text">Cuando la presidenta encargada Delcy Rodríguez visitó las ruinas de la torre Petunia colapsada en Chacao, los familiares de personas todavía sepultadas debajo no se contuvieron.</p>
+        <p class="ground-quote">"Basta ya de la campaña política en medio de una tragedia como la que estamos viviendo."</p>
+        <p class="ground-cite">Residente, le gritó a Delcy Rodríguez, Chacao, 26 de junio de 2026</p>
+      </div>
+
+      <p class="body-text">Ninguna de estas personas habla por todo el país. Cada una describe una mañana, un edificio, un barrio, desde donde le tocó estar parada. Ese es el sentido de ponerlas aquí en lugar de plegarlas a los números de arriba: los números explican la forma del desastre, pero esto es lo que realmente se sintió desde adentro.</p>
+    </section>
+
+    <section class="ch" data-lat="10.35" data-lng="-66.5" data-zoom="7" data-radius="1" data-color="gold" data-yr="Herramientas">
+      <p class="eyebrow">Capítulo 13 — herramientas en vivo</p>
+      <h2 class="chapter-title serif">Qué está monitoreando esto ahora mismo.</h2>
+      <p class="body-text">Todo lo anterior es historia y análisis. Todo lo que sigue está en vivo, cambiando cada hora, y construido por gente fuera de cualquier canal gubernamental, en su mayoría voluntarios, haciendo la contabilidad que el propio Estado no ha hecho. Ninguno de estos sitios está afiliado a este proyecto, y ninguno ha sido verificado de forma independiente más allá de confirmar que existen y se describen a sí mismos de esta manera. Trátalos como un punto de partida, no como una fuente definitiva. Haz clic en un nombre para abrirlo a la izquierda; usa "abrir directamente" si un sitio se niega a cargar dentro del panel.</p>
+      <div class="thread"><h4><a href="https://reportaven.com" class="tool-embed-link" data-name="Reporta Ven">Reporta Ven</a> <a href="https://reportaven.com" target="_blank" rel="noopener" class="tool-direct-link">abrir directamente ↗</a></h4><p class="body-text">Un portal de reportes ciudadanos de daños y necesidades.</p></div>
+      <div class="thread"><h4><a href="https://crisisvenezuela.org/colapsos" class="tool-embed-link" data-name="Crisis Venezuela">Crisis Venezuela</a> <a href="https://crisisvenezuela.org/colapsos" target="_blank" rel="noopener" class="tool-direct-link">abrir directamente ↗</a></h4><p class="body-text">Un rastreador dedicado a colapsos de edificios a nivel nacional (crisisvenezuela.org/colapsos).</p></div>
+      <div class="thread"><h4><a href="https://crisis-pulse-ve.netlify.app" class="tool-embed-link" data-name="Crisis Pulse">Crisis Pulse</a> <a href="https://crisis-pulse-ve.netlify.app" target="_blank" rel="noopener" class="tool-direct-link">abrir directamente ↗</a></h4><p class="body-text">Un panel en tiempo real que agrega indicadores de crisis en todo el país.</p></div>
+      <div class="thread"><h4><a href="https://terremoto.hazlohoy.org" class="tool-embed-link" data-name="Hazlo Hoy / Venezuela Ayuda">Hazlo Hoy / Venezuela Ayuda</a> <a href="https://terremoto.hazlohoy.org" target="_blank" rel="noopener" class="tool-direct-link">abrir directamente ↗</a></h4><p class="body-text">Un centro de coordinación de ayuda que conecta necesidades con donantes y voluntarios.</p></div>
+      <div class="thread"><h4><a href="https://terremotovenezuela.com" class="tool-embed-link" data-name="Damage Map (terremotovenezuela.com)">Mapa de daños (terremotovenezuela.com)</a> <a href="https://terremotovenezuela.com" target="_blank" rel="noopener" class="tool-direct-link">abrir directamente ↗</a></h4><p class="body-text">Un mapa colaborativo de daños estructurales reportados. Una capa separada de daño estructural en este mismo sitio ha sido atribuida en otros lados al mapeador independiente @mariangelli; no se confirmó aquí como una herramienta distinta y alojada por separado.</p></div>
+      <div class="thread"><h4><a href="https://www.sismovenezuela.com" class="tool-embed-link" data-name="SismoVenezuela">SismoVenezuela</a> <a href="https://www.sismovenezuela.com" target="_blank" rel="noopener" class="tool-direct-link">abrir directamente ↗</a></h4><p class="body-text">Mapa de calor en tiempo real de daños, personas desaparecidas y centros de acopio de ayuda, incrustado en vivo antes en "Todo a la vez."</p></div>
+      <div class="thread"><h4><a href="https://terremotovenezuela.app" class="tool-embed-link" data-name="Earthquake Venezuela App">Earthquake Venezuela App</a> <a href="https://terremotovenezuela.app" target="_blank" rel="noopener" class="tool-direct-link">abrir directamente ↗</a></h4><p class="body-text">Una plataforma de rescate y coordinación de ayuda.</p></div>
+      <div class="thread"><h4><a href="https://venezuelatebusca.com" class="tool-embed-link" data-name="Venezuela Te Busca">Venezuela Te Busca</a> <a href="https://venezuelatebusca.com" target="_blank" rel="noopener" class="tool-direct-link">abrir directamente ↗</a></h4><p class="body-text">Un registro de personas desaparecidas.</p></div>
+      <div class="thread"><h4><a href="https://venezuelareporta.org" class="tool-embed-link" data-name="Venezuela Reporta">Venezuela Reporta</a> <a href="https://venezuelareporta.org" target="_blank" rel="noopener" class="tool-direct-link">abrir directamente ↗</a></h4><p class="body-text">Un segundo registro de personas desaparecidas, administrado por separado.</p></div>
+      <div class="thread"><h4><a href="https://desaparecidosterremotovenezuela.com" class="tool-embed-link" data-name="Missing Persons Venezuela Earthquake">Missing Persons Venezuela Earthquake</a> <a href="https://desaparecidosterremotovenezuela.com" target="_blank" rel="noopener" class="tool-direct-link">abrir directamente ↗</a></h4><p class="body-text">Un registro de personas desaparecidas que también expone una API pública de sus datos.</p></div>
+      <div class="thread"><h4><a href="https://tasks.hotosm.org" class="tool-embed-link" data-name="HOTOSM: Humanitarian OpenStreetMap Team">HOTOSM: Equipo Humanitario de OpenStreetMap</a> <a href="https://tasks.hotosm.org" target="_blank" rel="noopener" class="tool-direct-link">abrir directamente ↗</a></h4><p class="body-text">El Tasking Manager de HOT, que está coordinando una respuesta de mapeo del terremoto de Venezuela de 2026 entre mapeadores voluntarios. No se confirmó aquí la página específica de ese proyecto; este enlace lleva al Tasking Manager general, donde puede buscarse por nombre.</p></div>
+      <p class="body-text">Algunas de estas herramientas dejarán de funcionar, cambiarán de alcance o serán reemplazadas a medida que avance la respuesta. Esta lista es una foto del momento, no un registro permanente.</p>
+    </section>
+
+  </div>
+</div>
+
+<footer><button id="sourcesLinkBtn" type="button">Fuentes ↗</button></footer>
+
+<div id="sourcesModal">
+  <div id="sourcesModalPanel">
+    <div id="sourcesModalHead">
+      <h3>Fuentes</h3>
+      <button id="sourcesModalClose" type="button">✕ Cerrar</button>
+    </div>
+    <div id="sourcesModalBody">
+      <h4>Reportería citada directamente</h4>
+      <p>AFP, Associated Press (AP), CBS Mornings, Al Jazeera, PBS NewsHour, y The World (PRX/GBH).</p>
+      <h4>Publicaciones en redes sociales desde el terreno, incrustadas o referenciadas</h4>
+      <p>Patricia Janiot (X/Twitter), @EmmaRincon (X/Twitter), Juan Pablo Guanipa (X/Twitter), y filmaciones aéreas de VTV, la televisora estatal (vía Wikimedia Commons).</p>
+      <h4>Fuentes de datos e institucionales</h4>
+      <p>FUNVISIS (Fundación Venezolana de Investigaciones Sismológicas); cifras del llamado humanitario de la ONU/OCHA; la evaluación de daños de edificios del AI for Good Lab de Microsoft para Catia La Mar; y datos de límites administrativos del Humanitarian Data Exchange (HDX) usados para el mapa a nivel de parroquia.</p>
+      <h4>Herramientas de monitoreo en vivo enlazadas en "Qué está monitoreando esto ahora mismo"</h4>
+      <p><a href="https://reportaven.com" target="_blank" rel="noopener">Reporta Ven</a>, <a href="https://www.sismovenezuela.com" target="_blank" rel="noopener">SismoVenezuela</a>, <a href="https://terremoto.hazlohoy.org" target="_blank" rel="noopener">Hazlo Hoy / Venezuela Ayuda</a>, <a href="https://terremotovenezuela.com" target="_blank" rel="noopener">terremotovenezuela.com</a>, <a href="https://terremotovenezuela.app" target="_blank" rel="noopener">Earthquake Venezuela App</a>, <a href="https://venezuelatebusca.com" target="_blank" rel="noopener">Venezuela Te Busca</a>, <a href="https://venezuelareporta.org" target="_blank" rel="noopener">Venezuela Reporta</a>, <a href="https://desaparecidosterremotovenezuela.com" target="_blank" rel="noopener">Missing Persons Venezuela Earthquake</a>, y el <a href="https://tasks.hotosm.org" target="_blank" rel="noopener">Tasking Manager de HOTOSM</a>.</p>
+      <p class="src-note">Los capítulos históricos (1967, 1999, 2005, y el colapso económico e institucional de 2003–2025) se basan en reportería pública y datos gubernamentales/de ONG para cada evento. Este es un prototipo de investigación, no una publicación revisada por pares — las cifras deben verificarse contra fuentes primarias antes de reutilizarse.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+var chapters=[...document.querySelectorAll('#textcol .ch')];
+var segDim=document.getElementById('segDim');
+var segFillWrap=document.getElementById('segFillWrap');
+var segBright=document.getElementById('segBright');
+var spineTrack=document.getElementById('spineTrack');
+
+function colorFor(ch,dim){
+  var isBlood=ch.dataset.color==='blood';
+  if(dim) return isBlood?'rgba(194,71,71,.3)':'rgba(217,164,65,.24)';
+  return isBlood?'#c24747':'#d9a441';
+}
+
+var nodes=[];
+function layoutSpine(){
+  var total=0;
+  var lens=chapters.map(ch=>{var h=ch.offsetHeight;total+=h;return h;});
+  segDim.innerHTML='';segBright.innerHTML='';
+  document.querySelectorAll('.spine-node').forEach(n=>n.remove());
+  var cum=0;
+  nodes=[];
+  chapters.forEach((ch,i)=>{
+    var topPct=(cum/total*100);
+    var hPct=(lens[i]/total*100);
+    var dimSeg=document.createElement('div');
+    dimSeg.style.cssText='position:absolute;top:'+topPct+'%;height:'+hPct+'%;width:100%;background:'+colorFor(ch,true);
+    segDim.appendChild(dimSeg);
+    var brightSeg=document.createElement('div');
+    brightSeg.style.cssText='position:absolute;top:'+topPct+'%;height:'+hPct+'%;width:100%;background:'+colorFor(ch,false);
+    segBright.appendChild(brightSeg);
+    cum+=lens[i];
+    var node=document.createElement('div');
+    node.className='spine-node'+(ch.dataset.color==='blood'?' blood':'');
+    // Labels are spaced evenly (not proportional to chapter length) so they never crowd
+    // or overlap regardless of how many chapters there are; the fill bar above still
+    // tracks real scroll progress through the actual content.
+    node.style.top=(((i+1)/chapters.length)*100)+'%';
+    node.innerHTML='<div class="spine-dot"></div><div class="spine-label">'+ch.dataset.yr+'</div>';
+    node.addEventListener('click',()=>ch.scrollIntoView({behavior:'smooth'}));
+    spineTrack.appendChild(node);
+    nodes.push(node);
+  });
+}
+layoutSpine();
+window.addEventListener('resize',layoutSpine);
+
+var heroImg=document.getElementById('heroImg');
+var heroVid=document.getElementById('heroVid');
+var heroPlaceholder=document.getElementById('heroPlaceholder');
+var heroEmbed=document.getElementById('heroEmbed');
+var yrOverlay=document.getElementById('yrOverlay');
+var badgeYr=document.getElementById('badgeYr');
+var playBadge=document.getElementById('playBadge');
+
+var sourcesModal=document.getElementById('sourcesModal');
+document.getElementById('sourcesLinkBtn').addEventListener('click',()=>sourcesModal.classList.add('open'));
+document.getElementById('sourcesModalClose').addEventListener('click',()=>sourcesModal.classList.remove('open'));
+sourcesModal.addEventListener('click',e=>{ if(e.target===sourcesModal) sourcesModal.classList.remove('open'); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') sourcesModal.classList.remove('open'); });
+
+var toolFrameWrap=document.getElementById('toolFrameWrap');
+var toolFrame=document.getElementById('toolFrame');
+var toolFrameLabel=document.getElementById('toolFrameLabel');
+var toolFrameOpenDirect=document.getElementById('toolFrameOpenDirect');
+
+function closeToolFrame(){
+  toolFrameWrap.classList.remove('open');
+  toolFrame.src='about:blank';
+}
+document.querySelectorAll('.tool-embed-link').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    var url=a.getAttribute('href');
+    toolFrame.src=url;
+    toolFrameLabel.textContent=a.dataset.name||a.textContent;
+    toolFrameOpenDirect.href=url;
+    toolFrameWrap.classList.add('open');
+  });
+});
+
+function getImgs(sec){
+  if(sec.dataset.imgs){
+    try{ return JSON.parse(sec.dataset.imgs); }catch(e){ return []; }
+  }
+  if(sec.dataset.img){ return [{src:sec.dataset.img, credit:sec.dataset.credit||''}]; }
+  return [];
+}
+
+function localImgIndex(sec){
+  var imgs=getImgs(sec);
+  if(imgs.length<2) return 0;
+  var r=sec.getBoundingClientRect();
+  var frac=(window.innerHeight*0.5 - r.top)/r.height;
+  frac=Math.min(0.999,Math.max(0,frac));
+  return Math.floor(frac*imgs.length);
+}
+
+var DEFAULT_TOOL={url:'https://reportaven.com',name:'Reporta Ven'};
+function paintChapter(sec,imgIdx){
+  var isBlood=sec.dataset.color==='blood';
+  if(sec.dataset.yr!=='Herramientas'){
+    closeToolFrame();
+  } else if(!toolFrameWrap.classList.contains('open')){
+    toolFrame.src=DEFAULT_TOOL.url;
+    toolFrameLabel.textContent=DEFAULT_TOOL.name;
+    toolFrameOpenDirect.href=DEFAULT_TOOL.url;
+    toolFrameWrap.classList.add('open');
+  }
+
+  badgeYr.textContent=sec.dataset.yr;
+  yrOverlay.className=isBlood?'blood':'';
+
+  var vid=sec.dataset.vid;
+  var imgs=getImgs(sec);
+  var current=imgs[imgIdx||0];
+  var continuingSameVideo=!!(current && current.type==='mp4' && heroVid.dataset.playingSrc===current.src && !heroVid.paused);
+  heroImg.style.opacity=0; heroPlaceholder.style.opacity=0; playBadge.style.display='none';
+  heroEmbed.style.opacity=0; heroEmbed.innerHTML='';
+  if(!continuingSameVideo){ heroVid.pause(); heroVid.style.opacity=0; heroVid.dataset.playingSrc=''; }
+
+  playBadge.classList.remove('unmute-btn');
+  playBadge.onclick=null;
+
+  if(vid){
+    heroVid.controls=false; heroVid.loop=true; heroVid.muted=true;
+    setTimeout(()=>{ heroVid.src=vid; heroVid.play().catch(()=>{}); heroVid.style.opacity=1; },200);
+    playBadge.innerHTML='<span class="dot"></span>Imágenes reales, VTV, 25 jun 2026';
+    playBadge.style.display='flex';
+  } else if(current && current.type==='mp4'){
+    heroVid.controls=true; heroVid.loop=false; heroVid.muted=true;
+    if(!continuingSameVideo){
+      heroVid.dataset.playingSrc=current.src;
+      setTimeout(()=>{ heroVid.src=current.src; heroVid.play().catch(()=>{}); heroVid.style.opacity=1; },200);
+    } else {
+      heroVid.style.opacity=1;
+    }
+    var capText=current.caption||'Imágenes reales, vía X/Twitter';
+    function setUnmuteBadge(){
+      playBadge.classList.add('unmute-btn');
+      playBadge.innerHTML='<span class="dot"></span>🔇 '+capText+' — toca para activar el sonido';
+    }
+    setUnmuteBadge();
+    playBadge.onclick=function(){
+      heroVid.muted=false;
+      playBadge.classList.remove('unmute-btn');
+      playBadge.innerHTML='<span class="dot"></span>🔊 '+capText;
+    };
+    playBadge.style.display='flex';
+  } else if(current && current.type==='youtube'){
+    heroEmbed.innerHTML='<iframe class="yt-frame" src="https://www.youtube.com/embed/'+current.yt+'?rel=0" title="'+(current.caption||'Video')+'" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'+
+      '<a class="yt-fallback-link" href="https://www.youtube.com/watch?v='+current.yt+'" target="_blank" rel="noopener">Ver en YouTube ↗</a>';
+    heroEmbed.style.opacity=1;
+  } else if(current && current.type==='twitter'){
+    heroEmbed.innerHTML='<div class="tw-hero-wrap"><blockquote class="twitter-tweet" data-theme="dark"><a href="'+current.url+'"></a></blockquote></div>';
+    heroEmbed.style.opacity=1;
+    if(window.twttr && window.twttr.widgets) twttr.widgets.load(heroEmbed);
+  } else if(current && current.src){
+    var blurAmt=sec.dataset.blur==='true'?'4px':'0px';
+    var pos=current.pos||sec.dataset.pos||'50% 50%';
+    var fit=sec.dataset.fit||'cover';
+    var flipT=(current.flip===true||sec.dataset.flip==='true')?'scaleX(-1)':'none';
+    var targetSrc=current.src;
+    // Wait out the full opacity fade-out (matches the .5s CSS transition) before touching
+    // fit/position/filter/transform/src, so the outgoing photo is fully invisible before any
+    // of that changes — otherwise a mid-fade style change (e.g. blur toggling) flashes visibly.
+    setTimeout(()=>{
+      if(imgs[imgIdx||0]!==current) return;
+      heroImg.style.objectFit=fit; heroImg.style.objectPosition=pos; heroImg.style.filter='saturate(.92) contrast(1.03) blur('+blurAmt+')'; heroImg.style.transform=flipT;
+      heroImg.src=targetSrc; heroImg.style.opacity=1;
+    },500);
+  } else {
+    heroPlaceholder.style.opacity=1;
+    var tagText=sec.dataset.placeholderTag||'Aún sin imagen verificada';
+    heroPlaceholder.innerHTML='<span class="media-tag">'+tagText+'</span><span class="media-caption">'+((current&&current.credit)||sec.dataset.credit||'Imagen de referencia.')+'</span>';
+  }
+}
+
+var lastActiveIdx=-1;
+var lastImgIdx=-1;
+function onScroll(){
+  var textcol=document.getElementById('textcol');
+  var totalH=textcol.offsetHeight;
+  var scrolled=window.scrollY - textcol.offsetTop + window.innerHeight*0.5;
+  var pct=Math.min(100,Math.max(0,(scrolled/totalH)*100));
+  segFillWrap.style.height=pct+'%';
+
+  var activeIdx=0;
+  chapters.forEach((ch,i)=>{
+    var r=ch.getBoundingClientRect();
+    if(r.top<window.innerHeight*0.5) activeIdx=i;
+  });
+  chapters.forEach((ch,i)=>{
+    var n=nodes[i];
+    n.classList.toggle('active',i===activeIdx);
+    n.classList.toggle('passed',i<activeIdx);
+  });
+  var imgIdx=localImgIndex(chapters[activeIdx]);
+  if(activeIdx!==lastActiveIdx || imgIdx!==lastImgIdx){
+    lastActiveIdx=activeIdx; lastImgIdx=imgIdx;
+    paintChapter(chapters[activeIdx],imgIdx);
+  }
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+onScroll();
+</script>
+
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</body>
+</html>

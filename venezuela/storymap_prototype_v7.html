@@ -178,9 +178,22 @@ p.body-text{font-size:.99rem;color:var(--ink);max-width:38em;margin-bottom:1.05e
 }
 
 footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;border-top:1px solid var(--line)}
+
+.lang-toggle{position:fixed;top:16px;right:16px;z-index:300;display:flex;gap:6px;background:rgba(11,10,8,.55);
+  border:1px solid rgba(242,237,228,.25);border-radius:20px;padding:5px;backdrop-filter:blur(4px)}
+.lang-toggle a{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;
+  font-size:16px;text-decoration:none;opacity:.45;filter:grayscale(60%);transition:opacity .2s ease,filter .2s ease}
+.lang-toggle a:hover{opacity:.8}
+.lang-toggle a.active{opacity:1;filter:none;background:rgba(217,164,65,.18);box-shadow:0 0 0 1px rgba(217,164,65,.4) inset;cursor:default}
+@media (max-width:1000px){ .lang-toggle{display:none} }
 </style>
 </head>
 <body>
+
+<div class="lang-toggle">
+  <a href="index.html" class="active" title="English" onclick="return false;">🇺🇸</a>
+  <a href="es.html" title="Español">🇻🇪</a>
+</div>
 
 <section id="cover">
   <div class="wrap">
@@ -366,6 +379,14 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
       <p class="body-text">Soldiers and police were caught looting the rubble on camera; a handful were arrested, most weren't. A German medical team was denied entry. Colombian firefighters were held for hours at the airport. Asked about the criticism, Rodríguez called it "narratives manufactured in propaganda laboratories." PBS didn't mince words either: a "completely ineffective" government, worsening its own earthquake.</p>
       <p class="body-text">None of this is incompetence in isolation.</p>
       <p class="body-text">No money, no engineers, no institutions, a government that protects itself before it protects the public, all of it thirty years in the making before this earthquake ever hit.</p>
+      <div class="toll-stats">
+        <div class="toll-item"><span class="toll-val">4,490</span><span class="toll-lbl">Confirmed dead, as of July 13, 2026</span></div>
+        <div class="toll-item"><span class="toll-val">16,740</span><span class="toll-lbl">Injured</span></div>
+        <div class="toll-item"><span class="toll-val">~50,000</span><span class="toll-lbl">Reported missing or unaccounted for</span></div>
+        <div class="toll-item"><span class="toll-val">58,870</span><span class="toll-lbl">Buildings damaged or destroyed, satellite estimate</span></div>
+        <div class="toll-item"><span class="toll-val">6.8M</span><span class="toll-lbl">People potentially affected, per the UN's IOM</span></div>
+        <div class="toll-item"><span class="toll-val">$37B</span><span class="toll-lbl">Estimated direct damage to housing &amp; infrastructure, UNDRR</span></div>
+      </div>
     </section>
 
     <section class="ch accent-blood" data-lat="10.53" data-lng="-66.87" data-zoom="10" data-radius="20000" data-color="blood" data-yr="2026"
