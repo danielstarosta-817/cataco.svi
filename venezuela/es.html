@@ -125,6 +125,8 @@ p.body-text{font-size:.99rem;color:var(--ink);max-width:38em;margin-bottom:1.05e
 .toll-val{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:600;color:var(--gold)}
 .ch.accent-blood .toll-val{color:var(--blood)}
 .toll-lbl{font-family:'Inter',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);max-width:12em}
+.toll-divider{flex-basis:100%;height:0;border-top:1px solid var(--line);margin:.4em 0 .2em}
+.toll-item--money .toll-val{color:var(--blood)}
 .thread h4{font-family:'Fraunces',serif;font-weight:500;font-size:1.15rem;margin:1.5em 0 .3em;color:var(--gold)}
 .ch.accent-blood .thread h4{color:var(--blood)}
 .thread h4 a{color:inherit;text-decoration:none;border-bottom:1px solid var(--gold-dim)}
@@ -323,8 +325,9 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
         <div class="toll-item"><span class="toll-val">62</span><span class="toll-lbl">Muertos confirmados</span></div>
         <div class="toll-item"><span class="toll-val">24.398</span><span class="toll-lbl">Desplazados</span></div>
         <div class="toll-item"><span class="toll-val">178.623</span><span class="toll-lbl">Personas afectadas</span></div>
-        <div class="toll-item"><span class="toll-val">US$230.000M</span><span class="toll-lbl">Est. liquidados por Cadivi/Cencoex para importaciones, 2003–2014, ~60% luego señalados como fraudulentos</span></div>
-        <div class="toll-item"><span class="toll-val">US$350.000M</span><span class="toll-lbl">Estimación independiente más amplia de fondos desviados del Estado durante la era del control de cambio</span></div>
+        <div class="toll-divider"></div>
+        <div class="toll-item toll-item--money"><span class="toll-val">US$230.000M</span><span class="toll-lbl">Est. liquidados por Cadivi/Cencoex para importaciones, 2003–2014, ~60% luego señalados como fraudulentos</span></div>
+        <div class="toll-item toll-item--money"><span class="toll-val">US$350.000M</span><span class="toll-lbl">Estimación independiente más amplia de fondos desviados del Estado durante la era del control de cambio</span></div>
       </div>
     </section>
 

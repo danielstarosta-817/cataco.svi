@@ -125,6 +125,8 @@ p.body-text{font-size:.99rem;color:var(--ink);max-width:38em;margin-bottom:1.05e
 .toll-val{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:600;color:var(--gold)}
 .ch.accent-blood .toll-val{color:var(--blood)}
 .toll-lbl{font-family:'Inter',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);max-width:12em}
+.toll-divider{flex-basis:100%;height:0;border-top:1px solid var(--line);margin:.4em 0 .2em}
+.toll-item--money .toll-val{color:var(--blood)}
 .thread h4{font-family:'Fraunces',serif;font-weight:500;font-size:1.15rem;margin:1.5em 0 .3em;color:var(--gold)}
 .ch.accent-blood .thread h4{color:var(--blood)}
 .thread h4 a{color:inherit;text-decoration:none;border-bottom:1px solid var(--gold-dim)}
@@ -323,8 +325,9 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
         <div class="toll-item"><span class="toll-val">62</span><span class="toll-lbl">Confirmed dead</span></div>
         <div class="toll-item"><span class="toll-val">24,398</span><span class="toll-lbl">Displaced</span></div>
         <div class="toll-item"><span class="toll-val">178,623</span><span class="toll-lbl">People affected</span></div>
-        <div class="toll-item"><span class="toll-val">$230B</span><span class="toll-lbl">Est. liquidated by CADIVI/CENCOEX for imports, 2003–2014, ~60% later flagged as fraudulent</span></div>
-        <div class="toll-item"><span class="toll-val">$350B</span><span class="toll-lbl">Broader independent estimate of funds diverted from state coffers over the currency-control era</span></div>
+        <div class="toll-divider"></div>
+        <div class="toll-item toll-item--money"><span class="toll-val">$230B</span><span class="toll-lbl">Est. liquidated by CADIVI/CENCOEX for imports, 2003–2014, ~60% later flagged as fraudulent</span></div>
+        <div class="toll-item toll-item--money"><span class="toll-val">$350B</span><span class="toll-lbl">Broader independent estimate of funds diverted from state coffers over the currency-control era</span></div>
       </div>
     </section>
 
