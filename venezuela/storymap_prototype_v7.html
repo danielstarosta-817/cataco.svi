@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>How We Got Here — Design Prototype v7 (fixed timeline visibility + map tiles)</title>
+<title>2026 Venezuela earthquake – How we got here</title>
+<meta name="description" content="2026 Venezuela earthquake – How we got here"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -154,16 +155,25 @@ p.body-text{font-size:.99rem;color:var(--ink);max-width:38em;margin-bottom:1.05e
 
 @media (max-width:1000px){
   #storywrap{flex-direction:column}
-  #stickyWrap{position:sticky;top:0;height:64vh;width:100%}
-  #photocol{width:56%}
-  #timelinecol{width:44%;min-width:110px;max-width:none}
+  #stickyWrap{position:sticky;top:0;height:42vh;width:100%}
+  #photocol{width:100%}
+  /* timeline becomes a slim overlay strip on the right edge of the photo instead of
+     competing with it for width — otherwise neither the photo nor the labels have room. */
+  #timelinecol{position:absolute;top:0;right:0;bottom:0;width:60px;min-width:0;max-width:none;height:auto;
+    background:linear-gradient(to left, rgba(11,10,8,.85) 35%, rgba(11,10,8,0) 100%);
+    border-left:1px solid var(--line);border-right:none;z-index:30}
+  #timelinecol::before{display:none}
   #textcol{width:100%}
-  #spineTrack{height:98%}
-  .spine-node{width:96px;gap:2px}
-  .spine-dot{width:7px;height:7px;border-width:1.5px}
-  .spine-node.active .spine-dot{width:11px;height:11px}
-  .spine-label{font-size:7.5px;line-height:1.15}
-  .spine-node.active .spine-label{font-size:9.5px}
+  #spineTrack{height:92%}
+  .spine-node{width:auto;gap:0}
+  .spine-dot{width:8px;height:8px;border-width:1.5px}
+  .spine-node.active .spine-dot{width:13px;height:13px}
+  /* only the active year label shows, floated left over the photo, so the strip never
+     turns into a wall of overlapping tiny text. */
+  .spine-label{display:none}
+  .spine-node.active .spine-label{display:block;position:absolute;top:50%;right:100%;margin-right:10px;
+    transform:translateY(-50%);white-space:nowrap;font-size:11px;line-height:1.2;
+    background:rgba(11,10,8,.9);padding:3px 8px;border-radius:4px;border:1px solid var(--line)}
   .live-embed iframe{height:420px}
 }
 
