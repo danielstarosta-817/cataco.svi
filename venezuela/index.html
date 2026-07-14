@@ -249,6 +249,7 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
       data-fit="cover"
       data-pos="center center"
       data-blur="true"
+      data-flip="true"
      >
       <p class="eyebrow">Chapter 4 — 1998: hugo chávez</p>
       <h2 class="chapter-title serif">Hugo Chávez.</h2>
@@ -661,8 +662,9 @@ function paintChapter(sec,imgIdx){
     var blurAmt=sec.dataset.blur==='true'?'6px':'0px';
     var pos=current.pos||sec.dataset.pos||'50% 50%';
     var fit=sec.dataset.fit||'cover';
+    var flipT=(current.flip===true||sec.dataset.flip==='true')?'scaleX(-1)':'none';
     var targetSrc=current.src;
-    heroImg.style.objectFit=fit; heroImg.style.objectPosition=pos; heroImg.style.filter='saturate(.92) contrast(1.03) blur('+blurAmt+')';
+    heroImg.style.objectFit=fit; heroImg.style.objectPosition=pos; heroImg.style.filter='saturate(.92) contrast(1.03) blur('+blurAmt+')'; heroImg.style.transform=flipT;
     setTimeout(()=>{ if(imgs[imgIdx||0]!==current) return; heroImg.src=targetSrc; heroImg.style.opacity=1; },200);
   } else {
     heroPlaceholder.style.opacity=1;
