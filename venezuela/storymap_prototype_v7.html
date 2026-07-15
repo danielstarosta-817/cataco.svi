@@ -642,6 +642,13 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
 
 <script>
 var chapters=[...document.querySelectorAll('#textcol .ch')];
+// Preload every hero image referenced anywhere in the story so switching to it
+// later paints instantly instead of flashing blank while the browser fetches it.
+chapters.forEach(function(sec){
+  getImgs(sec).forEach(function(im){
+    if(im && im.src && im.type!=='mp4'){ var pre=new Image(); pre.src=im.src; }
+  });
+});
 var segDim=document.getElementById('segDim');
 var segFillWrap=document.getElementById('segFillWrap');
 var segBright=document.getElementById('segBright');
@@ -738,7 +745,10 @@ function localImgIndex(sec){
 }
 
 var DEFAULT_TOOL={url:'https://reportaven.com',name:'Reporta Ven'};
+var paintGen=0;
 function paintChapter(sec,imgIdx){
+  paintGen++;
+  var myGen=paintGen;
   var isBlood=sec.dataset.color==='blood';
   if(sec.dataset.yr!=='Tools'){
     closeToolFrame();
@@ -765,14 +775,14 @@ function paintChapter(sec,imgIdx){
 
   if(vid){
     heroVid.controls=false; heroVid.loop=true; heroVid.muted=true;
-    setTimeout(()=>{ heroVid.src=vid; heroVid.play().catch(()=>{}); heroVid.style.opacity=1; },200);
+    setTimeout(()=>{ if(myGen!==paintGen) return; heroVid.src=vid; heroVid.play().catch(()=>{}); heroVid.style.opacity=1; },200);
     playBadge.innerHTML='<span class="dot"></span>Real footage, VTV, 25 Jun 2026';
     playBadge.style.display='flex';
   } else if(current && current.type==='mp4'){
     heroVid.controls=true; heroVid.loop=false; heroVid.muted=true;
     if(!continuingSameVideo){
       heroVid.dataset.playingSrc=current.src;
-      setTimeout(()=>{ heroVid.src=current.src; heroVid.play().catch(()=>{}); heroVid.style.opacity=1; },200);
+      setTimeout(()=>{ if(myGen!==paintGen) return; heroVid.src=current.src; heroVid.play().catch(()=>{}); heroVid.style.opacity=1; },200);
     } else {
       heroVid.style.opacity=1;
     }
@@ -806,7 +816,7 @@ function paintChapter(sec,imgIdx){
     // fit/position/filter/transform/src, so the outgoing photo is fully invisible before any
     // of that changes — otherwise a mid-fade style change (e.g. blur toggling) flashes visibly.
     setTimeout(()=>{
-      if(imgs[imgIdx||0]!==current) return;
+      if(myGen!==paintGen) return;
       heroImg.style.objectFit=fit; heroImg.style.objectPosition=pos; heroImg.style.filter='saturate(.92) contrast(1.03) blur('+blurAmt+')'; heroImg.style.transform=flipT;
       heroImg.src=targetSrc; heroImg.style.opacity=1;
     },500);
