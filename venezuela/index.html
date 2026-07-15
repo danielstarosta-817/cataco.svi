@@ -296,6 +296,19 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
       </div>
     </section>
 
+    <section class="ch" data-lat="10.480" data-lng="-66.904" data-zoom="12" data-radius="15000" data-color="gold" data-yr="'67–'82"
+      data-imgs='[
+        {"src":"caracas_eternal_spring_1960s70s.mp4","type":"mp4","start":4,"caption":"Caracas, 1960s-70s, archival footage"}
+      ]'>
+      <p class="eyebrow">Chapter 1½ — 1967–1982: writing the rules after the fact</p>
+      <h2 class="chapter-title serif">Provisional, permanently.</h2>
+      <p class="body-text">Within months of the 1967 earthquake, Venezuela had a new seismic code on paper. The Ministry of Public Works issued the Norma Provisional para Construcciones Antisísmicas that same year, replacing 1939-era building rules that hadn't accounted for earthquakes at all. It was provisional by name, and it stayed that way for a decade and a half.</p>
+      <p class="body-text">In November 1971, four years after the quake, the government created FUNVISIS, giving Venezuela its first dedicated body for seismological research and monitoring. On paper, it was exactly the long-horizon institution an earthquake country needs, something that keeps working on hazard whether or not politicians are paying attention that year.</p>
+      <p class="body-text">For most of the golden years covered in the next chapter, that's largely what FUNVISIS did: research, much of it good, running mostly in the background while the oil money went toward scholarships, orchestras, and steel mills. Turning that research into an actual, enforceable update to the 1967 provisional code took until 1982, when the country finally adopted its first fully modern seismic-resistant building standard.</p>
+      <p class="body-text">The new code landed one year before the 1983 currency devaluation that hastened the country's economic freefall. Between the earthquake that justified it and the code that finally answered it, an entire generation of Caracas kept getting built up under building standards everyone in the field already knew were barely provisional.</p>
+      <p class="body-text">Nearly six decades later, when the 2026 earthquakes hit the same fault lines, investigators found the same basic pattern repeating: many of the structures that collapsed or were severely damaged had gone up in the periods before whichever seismic code applied to them, or simply hadn't been built to code at all. A seismic code, it turned out, was never a one-time fix. It was upkeep the country kept deferring, decade after decade, long after 1982.</p>
+    </section>
+
     <section class="ch" data-lat="10.480" data-lng="-66.904" data-zoom="12" data-radius="15000" data-color="gold" data-yr="'50–'86"
       data-imgs='[
         {"src":"https://static01.nyt.com/images/2026/01/09/multimedia/09xp-oil-timeline-wkcp/09xp-oil-timeline-wkcp-articleLarge.jpg?quality=75&auto=webp&disable=upscale"},
@@ -782,7 +795,18 @@ function paintChapter(sec,imgIdx){
     heroVid.controls=true; heroVid.loop=false; heroVid.muted=true;
     if(!continuingSameVideo){
       heroVid.dataset.playingSrc=current.src;
-      setTimeout(()=>{ if(myGen!==paintGen) return; heroVid.src=current.src; heroVid.play().catch(()=>{}); heroVid.style.opacity=1; },200);
+      setTimeout(()=>{
+        if(myGen!==paintGen) return;
+        heroVid.src=current.src;
+        if(current.start){
+          heroVid.addEventListener('loadedmetadata', function onMeta(){
+            heroVid.currentTime=current.start;
+            heroVid.removeEventListener('loadedmetadata', onMeta);
+          });
+        }
+        heroVid.play().catch(()=>{});
+        heroVid.style.opacity=1;
+      },200);
     } else {
       heroVid.style.opacity=1;
     }
