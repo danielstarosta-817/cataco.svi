@@ -205,9 +205,10 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
 .lang-toggle a:hover{opacity:1}
 .lang-toggle a.active{opacity:1;filter:none;background:rgba(217,164,65,.18);box-shadow:0 0 0 1px rgba(217,164,65,.4) inset;cursor:default}
 @media (max-width:1000px){ .lang-toggle{display:none} }
-.back-home{position:fixed;top:16px;left:16px;z-index:300;display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:rgba(11,10,8,.55);border:1px solid rgba(242,237,228,.25);color:var(--ink);backdrop-filter:blur(4px);text-decoration:none;opacity:.75;transition:opacity .2s ease,background .2s ease}
-.back-home:hover{opacity:1}
+.back-home{position:fixed;top:16px;left:16px;z-index:300;display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:rgba(94,234,212,.14);border:1px solid rgba(94,234,212,.4);color:#5EEAD4;backdrop-filter:blur(4px);text-decoration:none;opacity:.85;transition:opacity .2s ease,background .2s ease}
+.back-home:hover{opacity:1;background:rgba(94,234,212,.28)}
 .back-home svg{width:16px;height:16px;display:block}
+.back-home.bh-hidden{opacity:0;pointer-events:none}
 </style>
 </head>
 <body>
@@ -886,6 +887,20 @@ function onScroll(){
 }
 window.addEventListener('scroll',onScroll,{passive:true});
 onScroll();
+
+// Hide the back-to-home button once the reader scrolls past the cover.
+(function(){
+  var backBtn=document.querySelector('.back-home');
+  var cover=document.getElementById('cover');
+  if(backBtn && cover && 'IntersectionObserver' in window){
+    var backIo=new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        backBtn.classList.toggle('bh-hidden', !entry.isIntersecting);
+      });
+    }, {threshold:0});
+    backIo.observe(cover);
+  }
+})();
 </script>
 
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>

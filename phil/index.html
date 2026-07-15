@@ -114,8 +114,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 /* Left panel */
 #leftpanel{grid-column:1/3;grid-row:1;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;z-index:1000}
 #lp-header{height:52px;display:flex;align-items:center;padding:0 14px;gap:10px;border-bottom:1px solid var(--border2);flex-shrink:0}
-#lp-logo{width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-#lp-logo img{width:100%;height:100%;object-fit:contain}
+#lp-logo{width:28px;height:28px;background:linear-gradient(135deg,var(--vol),#FF9458);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
 #lp-title{font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;transition:opacity .2s .1s}
 #app.lp-open #lp-title{opacity:1}
 #lp-toggle{margin-left:auto;background:none;border:1px solid var(--border2);color:var(--text-dim);width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
@@ -738,11 +737,11 @@ canvas:focus,canvas:focus-visible{outline:none}
 </head>
 <body>
 <a href="../index.html" class="bh-back" title="Back to Brackish Projects" aria-label="Back to home">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
 </a>
 <style>
-.bh-back{position:fixed;top:14px;left:14px;z-index:100000;display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(8,12,24,.7);border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.65);backdrop-filter:blur(6px);text-decoration:none;opacity:.6;transition:opacity .2s ease,background .2s ease,transform .2s ease}
-.bh-back:hover{opacity:1;background:rgba(8,12,24,.9);transform:translateX(-1px)}
+.bh-back{position:fixed;top:14px;left:14px;z-index:100000;display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:rgba(94,234,212,.14);border:1px solid rgba(94,234,212,.4);color:#5EEAD4;text-decoration:none;flex-shrink:0;transition:background .2s ease,transform .2s ease}
+.bh-back:hover{background:rgba(94,234,212,.28);transform:translateX(-1px)}
 .bh-back svg{width:15px;height:15px;display:block}
 </style>
 <!-- ── TOUR OVERLAY ─────────────────────────────────────────────────────── -->
@@ -941,7 +940,7 @@ canvas:focus,canvas:focus-visible{outline:none}
   <div id="leftpanel" style="position:relative">
   <div id="lp-drag-handle" class="drag-handle" title="Drag to resize panel"></div>
     <div id="lp-header">
-      <div id="lp-logo" onclick="toggleLpPanel()" style="cursor:pointer" title="Toggle panel"><img src="../assets/brackish-waves.png" alt=""></div>
+      <div id="lp-logo" onclick="toggleLpPanel()" style="cursor:pointer" title="Toggle panel">&#127755;</div>
       <div id="lp-title">Albay &middot; Philippines</div>
       <button id="lp-toggle" onclick="toggleLpPanel()" title="Collapse panel">&#8249;</button>
     </div>
