@@ -779,6 +779,8 @@ function paintChapter(sec,imgIdx){
   var imgs=getImgs(sec);
   var current=imgs[imgIdx||0];
   var continuingSameVideo=!!(current && current.type==='mp4' && heroVid.dataset.playingSrc===current.src && !heroVid.paused);
+  var continuingSameImage=!!(current && current.src && !current.type && heroImg.dataset.currentSrc===current.src && heroImg.style.opacity==='1');
+  if(continuingSameImage) return;
   heroImg.style.opacity=0; heroPlaceholder.style.opacity=0; playBadge.style.display='none';
   heroEmbed.style.opacity=0; heroEmbed.innerHTML='';
   if(!continuingSameVideo){ heroVid.pause(); heroVid.style.opacity=0; heroVid.dataset.playingSrc=''; }
@@ -842,7 +844,7 @@ function paintChapter(sec,imgIdx){
     setTimeout(()=>{
       if(myGen!==paintGen) return;
       heroImg.style.objectFit=fit; heroImg.style.objectPosition=pos; heroImg.style.filter='saturate(.92) contrast(1.03) blur('+blurAmt+')'; heroImg.style.transform=flipT;
-      heroImg.src=targetSrc; heroImg.style.opacity=1;
+      heroImg.src=targetSrc; heroImg.dataset.currentSrc=targetSrc; heroImg.style.opacity=1;
     },500);
   } else {
     heroPlaceholder.style.opacity=1;
