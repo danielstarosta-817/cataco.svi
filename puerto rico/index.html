@@ -1759,15 +1759,17 @@ input[type=range].sim-range::-webkit-slider-thumb:hover{transform:scale(1.2)}
 </style>
 </head>
 <body>
-<a href="../index.html" class="bh-back" title="Back to Brackish Projects" aria-label="Back to home">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-</a>
 <style>
 .bh-back{position:fixed;top:9px;left:12px;z-index:100000;display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:rgba(94,234,212,.14);border:1px solid rgba(94,234,212,.4);color:#5EEAD4;text-decoration:none;flex-shrink:0;transition:background .2s ease,transform .2s ease}
 .bh-back:hover{background:rgba(94,234,212,.28);transform:translateX(-1px)}
 .bh-back svg{width:14px;height:14px;display:block}
+.tb-brand .bh-back{position:static;width:22px;height:22px}
+.tb-brand .bh-back svg{width:12px;height:12px}
 </style>
 <div id="landing">
+  <a href="../index.html" class="bh-back" title="Back to Brackish Projects" aria-label="Back to home">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+  </a>
   <div id="landing-inner">
 
     <div id="landing-text">
@@ -1973,7 +1975,7 @@ input[type=range].sim-range::-webkit-slider-thumb:hover{transform:scale(1.2)}
 
 <div id="app">
 <div id="topbar">
-  <div class="tb-brand">Puerto Rico</div>
+  <div class="tb-brand" style="display:flex;align-items:center;gap:8px"><a href="../index.html" class="bh-back" title="Back to Brackish Projects" aria-label="Back to home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></a>Puerto Rico</div>
   <div class="tb-sep"></div>
   <button id="fq-btn" data-i18n="tb.fieldkit" onclick="toggleFieldKit()">&#128300; Field Kit</button>
   <button id="tour-replay-btn" onclick="launchTour()" title="Replay the intro tour">&#9654; Tour</button>
