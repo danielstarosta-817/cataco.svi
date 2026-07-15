@@ -205,10 +205,16 @@ footer{padding:6vh 8vw;color:var(--ink-faint);font-size:12px;text-align:center;b
 .lang-toggle a:hover{opacity:1}
 .lang-toggle a.active{opacity:1;filter:none;background:rgba(217,164,65,.18);box-shadow:0 0 0 1px rgba(217,164,65,.4) inset;cursor:default}
 @media (max-width:1000px){ .lang-toggle{display:none} }
+.back-home{position:fixed;top:16px;left:16px;z-index:300;display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:rgba(11,10,8,.55);border:1px solid rgba(242,237,228,.25);color:var(--ink);backdrop-filter:blur(4px);text-decoration:none;opacity:.75;transition:opacity .2s ease,background .2s ease}
+.back-home:hover{opacity:1}
+.back-home svg{width:16px;height:16px;display:block}
 </style>
 </head>
 <body>
 
+<a href="../index.html" class="back-home" title="Back to Brackish Projects" aria-label="Back to home">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+</a>
 <div class="lang-toggle">
   <a href="index.html" class="active" title="English" onclick="return false;">🇬🇧</a>
   <a href="es.html" title="Español">🇪🇸</a>
