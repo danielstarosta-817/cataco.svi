@@ -161,9 +161,16 @@
   @media(max-width:520px){.feature-grid{grid-template-columns:1fr}}
 
   /* ── tools ───────────────────────────────────────────────────────── */
-  .tools{padding:88px 0 100px}
+  .tools{padding:88px 0 100px;border-bottom:1px solid var(--border)}
   .tool-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
   @media(max-width:900px){.tool-grid{grid-template-columns:1fr}}
+
+  /* ── contact ─────────────────────────────────────────────────────── */
+  .contact{padding:88px 0 100px}
+  .contact-card{display:flex;flex-direction:column;gap:6px}
+  .contact-name{font-size:15px;font-weight:800;letter-spacing:-.01em}
+  .contact-email{font-size:15px;font-weight:700;color:var(--accent);text-decoration:none;transition:opacity .15s}
+  .contact-email:hover{opacity:.75;text-decoration:underline}
 
   .tool-card{
     background:var(--bg-panel);
@@ -375,7 +382,8 @@
     <nav class="nav-links">
       <a href="#framework">Framework</a>
       <a href="#features">Features</a>
-      <a href="#tools">Regions</a>
+      <a href="#tools">Active Projects</a>
+      <a href="#contact">Contact</a>
     </nav>
   </div>
 </header>
@@ -483,6 +491,20 @@
       <p>Each tool is a self-contained experience, built for its region's specific hazards, geography, history, and communities. Choose one below to learn more.</p>
     </div>
     <div class="tool-grid" id="tool-grid"></div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-eyebrow">Get in touch</div>
+      <h2>Let's talk.</h2>
+      <p>If you're interested in hearing more about the projects, have ideas for where it can go next, or you're interested in collaborating, reach out.</p>
+    </div>
+    <div class="contact-card">
+      <div class="contact-name">Daniel Starosta</div>
+      <a class="contact-email" href="mailto:starostad@gmail.com">starostad@gmail.com</a>
+    </div>
   </div>
 </section>
 
