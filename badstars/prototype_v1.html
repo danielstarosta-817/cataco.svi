@@ -245,10 +245,15 @@
     background:color-mix(in srgb, var(--gc) 6%, transparent);
     border-left:2px solid var(--gc);
   }
-  .rail-group-label{display:flex;align-items:baseline;gap:7px;padding:0 8px 8px;}
+  .rail-group-label{display:flex;align-items:baseline;gap:7px;padding:6px 8px;margin:0 0 2px;background:none;border:none;
+    width:100%;text-align:left;cursor:pointer;border-radius:6px;transition:background .15s ease;}
+  .rail-group-label:hover{background:color-mix(in srgb, var(--gc) 10%, transparent);}
+  .rail-group-label.active{background:color-mix(in srgb, var(--gc) 14%, transparent);}
   .rail-group-label .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
   .rail-group-label b{font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:12.5px;color:var(--text);}
   .rail-group-sub{font-size:10.5px;font-style:italic;color:var(--text-faint);}
+  .rail-group-hint{margin-left:auto;font-size:9.5px;color:var(--text-faint);opacity:0;transition:opacity .15s ease;flex-shrink:0;}
+  .rail-group-label:hover .rail-group-hint{opacity:1;}
 
   .rail-view-toggle{
     display:flex;align-items:center;gap:6px;width:100%;background:none;border:none;padding:10px 8px 4px;
@@ -329,6 +334,10 @@
     letter-spacing:.1em;color:var(--text-faint);border:1px solid var(--line);padding:3px 9px;border-radius:20px;
   }
   .story-img-placeholder span{position:relative;font-family:'Fraunces',Georgia,serif;font-size:13px;color:var(--text-faint);line-height:1.5;font-style:italic;}
+
+  .story-img{border-radius:10px;overflow:hidden;margin:20px 0 22px;border:1px solid var(--line);max-width:38em;background:var(--bg-panel);}
+  .story-img img{display:block;width:100%;height:auto;}
+  .story-img figcaption{font-family:'Fraunces',Georgia,serif;font-size:12.5px;font-style:italic;color:var(--text-faint);padding:10px 16px;line-height:1.5;border-top:1px solid var(--line);}
 
   .story-quote{
     font-family:'Fraunces',Georgia,serif;border-left:3px solid var(--case-color,var(--accent));padding:2px 0 2px 20px;
@@ -634,6 +643,56 @@ const STAGE_META = {
   degradation:{label:'Degradation', sub:'Losing the thread', color:'var(--stage-degradation)'},
 };
 
+/* Chapter-opening material from the thesis itself, used when a phase
+   title is clicked in thematic mode. Quotes are the actual epigraphs
+   from each chapter; body copy paraphrases the chapter's framing. */
+const STAGE_INTRO = {
+  formulation:{
+    roman:'Chapter I',
+    quotes:[
+      {text:"The force that through the green fuse drives the flower\nDrives my green age, that blasts the roots of trees\nIs my destroyer", cite:'Dylan Thomas'},
+      {text:'PROPERTY FOR SALE,\nMAY BE WATERFRONT SOON', cite:'message on plywood over a Port Lavaca, Texas home, ahead of Hurricane Rita, 2005'}
+    ],
+    body:[
+      "Formulation is where a disaster stops feeling like an aberration and starts becoming a known quantity. It is a community developing a shared language for a hazard, rather than treating it as bad luck that struck once and might not come again. That shift, from anomaly to expected condition, is what everything else in this framework depends on. You cannot strengthen or operationalize a story that does not exist yet.",
+      "The risk sits on the other side of the same coin. Without a shared vocabulary, a hazard is easy to file away as remote or unlikely, something to think about later, if at all. That is how a coastal town ends up posting a sign reading, half joke and half something closer to denial, on a house about to face a hurricane. Naming a danger honestly, in a community's own words, is the first and hardest step toward doing anything about it."
+    ]
+  },
+  strengthening:{
+    roman:'Chapter II',
+    quotes:[
+      {text:'The world breaks everyone and afterward many are strong at the broken places.', cite:'Ernest Hemingway, A Farewell to Arms, set during WWI'},
+      {text:"Of course he wasn't dead. He could never be dead until she herself had finished feeling and thinking.", cite:"Zora Neale Hurston, Their Eyes Were Watching God, set against the Okeechobee Hurricane of 1929"}
+    ],
+    body:[
+      "If formulation gives a community the words for a hazard, strengthening is what keeps those words alive long enough to matter. It is the difference between a story that fades out within a generation and one a place still tells, close to its original form, by the time the next disaster arrives.",
+      "That is a harder task than it sounds. A community does not hold onto what it has learned automatically. The story has to get folded into identity itself, a song, a warning passed hand to hand, a phrase every child on an island learns before they can read, so that remembering stops being a special effort anyone has to make and becomes just part of who a place is."
+    ]
+  },
+  operationalizing:{
+    roman:'Chapter III',
+    quotes:[
+      {text:"We're born with that obligation as Aboriginal people, of caring for country, it's that strong cultural identity. The health of our country is also intrinsically linked with the health of our people.", cite:'Gail Reynolds-Adamson, chair of the Esperance Tjaltjraak Corporation, Western Australia'},
+      {text:"If you get there and the Waffle House is closed? That's really bad.", cite:'Craig Fugate, former head of FEMA, Joplin, Missouri, 2011'}
+    ],
+    body:[
+      "Operationalizing is what happens when a community stops merely remembering a hazard and starts building that memory into how things actually run. A story or a song is one thing. A levee, an evacuation drill, a land-management practice revived and formally funded, is another. This stage asks whether a culture's hard-won knowledge about a hazard has actually been put back to work, not just preserved somewhere safe.",
+      "That handoff rarely goes cleanly. Turning something organic and communal into a formal institution can flatten it, strip out the local nuance that made it useful in the first place, or hand control to people who never lived through the disaster it grew out of. Done well, operationalizing multiplies what strengthening built. Done carelessly, it can undo it."
+    ]
+  },
+  degradation:{
+    roman:'Chapter IV',
+    quotes:[
+      {text:"What was it like then,\nwhen the tsunami came to shore?\nI look down and wonder –\nBelow me spreads the blue sea\nQuiet and perfectly still.", cite:"Emperor Akihito, New Year's Poem, 2012"},
+      {text:"Instead of letting sharks rain down on people, we're going to get in that chopper and throw bombs into the tornados!", cite:'Sharknado, 2013 film'}
+    ],
+    body:[
+      "Degradation is not a single collapse. It is the slow, uneven process by which a hazard stops being something a community actively remembers and starts becoming something it simply used to know. It rarely disappears all at once. More often it thins out, generation by generation, until a warning stone reads like decoration instead of an instruction.",
+      "The forgetting is not always accidental. It can come from disruption, colonization breaking apart the institutions that used to carry a story forward, or from something as ordinary as a hazard turning into a punchline instead of a shared memory. Either way, the same warning applies whether the danger is a tsunami line carved in stone a century ago or a nuclear waste site that needs to stay legible for ten thousand years. A system nobody is actively tending can vanish a lot faster than anyone expects."
+    ]
+  }
+};
+
 const CASES = [
   {
     id:'namazu',
@@ -649,8 +708,10 @@ const CASES = [
         <div class="story-quote">What, well? If I shake like this you will have to give up everything. Now, the money hoarded so far, none of that may be left. Spit out every bit of it. In that way the masses will have pleasure out of it!<cite>Namazu the Earthshaker speaking to businessmen, 1855 print, anonymous artist</cite></div>
         <p>Japanese folklore held that a giant catfish, Namazu, lived buried in the mud beneath Honshu, restrained by the thunder god Kashima. When Namazu wriggled free, the ground shook. The myth was already centuries old by 1855.</p>
         <p>After that year's Edo earthquake, thousands of woodblock prints, namazu-e, flooded the city. They used Namazu as a stand-in for whatever the print wanted to say: a villain crushing the city while its guardian deity slept on the job, a figure being punished by an angry crowd, or a benevolent force redistributing wealth as gold coins rained down during rebuilding. The prints let people voice things about government negligence and inequality that might have been risky to say outright, folded into a story everyone already knew.</p>
-        <div class="story-img-placeholder">[ image: community attacking Namazu, following the Edo earthquake &middot; awaiting upload ]</div>
+        <figure class="story-img"><img src="Namazu-e.jpg" alt="1855 namazu-e woodblock print showing a crowd attacking the giant catfish, Edo"><figcaption>A crowd sets on Namazu, the giant catfish, in a namazu-e print from the weeks after the 1855 Edo earthquake.</figcaption></figure>
+        <figure class="story-img"><img src="Namazu-e_-_Kashima_absent-minded.jpg" alt="Namazu-e print showing the thunder god Kashima asleep while Namazu causes fires below"><figcaption>Kashima, the god meant to keep Namazu pinned down, shown asleep on the restraining stone while the catfish sets Edo on fire.</figcaption></figure>
         <p>It became, briefly, a shared public vernacular for grief, anger, satire, and rebuilding. But the print tradition itself faded rather than turning into an ongoing institution. Namazu shows up on some Japanese earthquake-preparedness signage today, more as a mascot than an active practice.</p>
+        <figure class="story-img"><img src="emergency-road-sign.jpg" alt="Tokyo emergency road sign for earthquakes, featuring a cartoon catfish mascot"><figcaption>A present-day Tokyo road sign, closed to traffic after a major earthquake, still uses a cartoon namazu as its mascot.</figcaption></figure>
       </div>
       <details class="sources">
         <summary>Sources for this section</summary>
@@ -677,7 +738,9 @@ const CASES = [
         <h3>Quick to forget</h3>
         <div class="story-quote">High dwellings are the peace and harmony of our descendants. Remember the calamity of the great tsunamis. Do not build any homes below this point.<cite>Memorial stone, Aneyoshi village</cite></div>
         <p>That warning is carved into a stone marker in the small village of Aneyoshi, erected after the 1896 Meiji Sanriku tsunami, whose height came within three feet of the one that struck in 2011. Some of these stones, scattered along Japan's coast, have stood for more than 600 years.</p>
-        <div class="story-img-placeholder">[ image: flood markers in Vicksburg, Mississippi; Aneyoshi, Japan; and Rome, Italy &middot; awaiting upload ]</div>
+        <figure class="story-img"><img src="vicksburg-flood-marks.jpg" alt="Flood mark tower in Vicksburg, Mississippi, showing flood heights back to 1927"><figcaption>Flood marks on a Vicksburg, Mississippi, gage tower, running back to 1927.</figcaption></figure>
+        <figure class="story-img"><img src="aneyoshi-tsunami-stone.jpg" alt="Stone tsunami marker in Aneyoshi, Japan"><figcaption>The tsunami warning stone at Aneyoshi, Japan, still standing in the forest above the village.</figcaption></figure>
+        <figure class="story-img"><img src="rome-flood-plaque.png" alt="Marble flood plaque on a Rome church commemorating the 1557 flood"><figcaption>A marble plaque on a Rome church marking the flood level of 1557.</figcaption></figure>
         <p>Aneyoshi's stone held its population above the line for a while. Then, within a generation or two, people started building new houses further down the hill again, closer to the harbor where the fishing actually happens. Some villages elsewhere came to see their own warning stones as relics of a superstitious past and built past them anyway; a few had the stones themselves washed away by earlier tsunamis. No myth needed here, no institutional failure. Just ordinary time passing, and a convenience winning out over a warning nobody living had personally needed yet.</p>
       </div>
       <details class="sources">
@@ -879,6 +942,7 @@ Thunderlight is your lamp<cite>Smong poem, Simeulue</cite></div>
       <div class="story-section">
         <h3>Building around the rule, not into it</h3>
         <p>Coastal fishing families in Tacloban still needed to work the water the no-build zone was meant to clear them from. The result: fishermen began building purposefully ramshackle, easy-to-disown structures inside the restricted zone, built to avoid drawing police attention, so they could keep working without technically defying the rule.</p>
+        <figure class="story-img"><img src="tacloban-no-build-sign.jpg" alt="No Build Zone sign posted along the shoreline in a Philippine coastal community"><figcaption>A "No Build Zone" notice posted along a Philippine shoreline, in one of the coastal communities the policy was meant to clear.</figcaption></figure>
         <p>At the same time, many of those same families were living in NGO-provided housing whose strict rules clashed with residents' own informal norms around expanding and adapting a home over time, pushing that construction directly into the street instead.</p>
       </div>
       <div class="story-section">
@@ -934,7 +998,7 @@ Thunderlight is your lamp<cite>Smong poem, Simeulue</cite></div>
       <div class="story-section">
         <h3>Divergent paths</h3>
         <p>The Yellow River does not lack cultural memory. Ma Yuan was painting its floods in the 12th century; records of its breaches go back nearly 2,000 years. An 1887 flood killed close to a million people and left two million homeless; a 1931 flood killed as many as two million more. Floods have kept coming since, in 1949, 1958, 1976, 1996, 2019, and 2020.</p>
-        <div class="story-img-placeholder">[ image: Ma Yuan studies on the Yellow River floods, 12th century China &middot; awaiting upload ]</div>
+        <figure class="story-img"><img src="ma-yuan-yellow-river-1.jpg" alt="Ma Yuan, Water Album, The Yellow River Breaches its Course, 12th century ink painting"><figcaption>Ma Yuan, "The Yellow River Breaches its Course," from his 12th-century Water Album.</figcaption></figure>
         <p>None of that history is missing. What is missing is a flood strategy built at the scale of a community rather than the scale of a mega-project. China's flood infrastructure has centered on enormous engineering like the Three Gorges Dam, built on a belief that human ingenuity has no real ceiling, rather than the kind of localized, adaptive design landscape architect Kongjian Yu has spent his career arguing for, under the banner of learning to "make friends with the flood" instead of trying to beat it outright.</p>
         <p>This is degradation of a different kind than forgetting or commodification. The story never disappeared. It just lost the argument to a different priority, at the level where it actually would have mattered.</p>
       </div>
@@ -964,7 +1028,8 @@ Thunderlight is your lamp<cite>Smong poem, Simeulue</cite></div>
         <h3>Turning over the land</h3>
         <p>After generations of active suppression, Australia has spent the last thirty years handing wildfire and land management on huge stretches of country back to Aboriginal and Torres Strait Islander rangers, the communities whose relationship to that land goes back millennia and who never stopped seeing environmental care and cultural practice as the same thing.</p>
         <p>Today, Indigenous Protected Areas cover more than 74 million hectares, nearly half of all of Australia's protected land, run by more than 130 separate Indigenous ranger teams. Practices like cultural burning, controlled fire management that indigenous communities used for millennia before decades of blanket fire suppression pushed it out, are being taken seriously again as wildfire risk grows.</p>
-        <div class="story-img-placeholder">[ image: map of current Indigenous Protected Areas and related programs in Australia &middot; awaiting upload ]</div>
+        <figure class="story-img"><img src="aboriginal-ranger-burn.png" alt="Indigenous ranger conducting a controlled burn in northern Australia"><figcaption>An Indigenous ranger conducting a controlled burn. Photo: Country Needs People.</figcaption></figure>
+        <figure class="story-img"><img src="australia-ipa-map.jpg" alt="Map of Indigenous Protected Areas and ranger groups across Australia, 2021"><figcaption>Dedicated and proposed Indigenous Protected Areas and ranger groups across Australia, 2021. Commonwealth of Australia, National Indigenous Australians Agency.</figcaption></figure>
         <p>It works both ways: elders get to return to country they may not otherwise access, younger people get to learn it from them directly, and the state gets a wildfire strategy grounded in something more durable than a five-year plan. The real caution here: done carelessly, this kind of program can flatten into narrow, traditional roles for traditional communities, rather than the full range of options a thriving future actually requires.</p>
       </div>
       <details class="sources">
@@ -1008,6 +1073,8 @@ Thunderlight is your lamp<cite>Smong poem, Simeulue</cite></div>
         <h3>Everyone's invited</h3>
         <p>South Florida's relationship with hurricanes shows up less as fear and more as a running joke everyone is already in on. The University of Miami named its teams the Hurricanes on purpose, after the Great Miami Hurricane of 1926 derailed the football program's very first game. When officials later worried the name reinforced Miami's reputation as disaster-prone, the players refused to let it change.</p>
         <p>Nearly 400 tropical or subtropical cyclones have hit Florida since 1900, often enough that storms function as timestamps in local memory: things happened "before Andrew," or "between Charlie and Ivan." A Florida high school newspaper once described local hurricane culture as more nonchalant than anywhere else, precisely because it is something every Floridian has grown up with, hurricane parties included.</p>
+        <figure class="story-img"><img src="hurricane-plywood-ivan.jpg" alt="Plywood storefront reading WE ARE OPEN IVAN, show me what you got, in Panama City Beach, Florida"><figcaption>A boarded-up storefront in Panama City Beach, Florida, ahead of Hurricane Ivan, 2004.</figcaption></figure>
+        <figure class="story-img"><img src="hurricane-plywood-irma.jpg" alt="Plywood storefront reading WE'RE OPEN with a smiley face, ahead of Hurricane Irma"><figcaption>A bar owner boards up and paints "We're open" ahead of Hurricane Irma, 2017.</figcaption></figure>
         <p>That same nonchalance cuts both ways. Most people living in South Florida in 1992, when Hurricane Andrew hit, had never actually experienced a hurricane themselves; the last major one had struck in 1964. Barely anyone knew what to do. It was Andrew, not decades of folklore, that actually changed building codes and preparedness planning. Key West carries its own, more stubborn version of the same instinct: a long history of residents refusing to evacuate no matter the warning.</p>
         <p>The region's closest thing to a shared visual language shows up in odd corners. Plywood shutters get graffitied with a running joke, the same board recoated and relabeled storm after storm, once reading "We're open, Wilma," later painted over with "We're open, Irma." The Carolina Hurricanes, a professional hockey team eight states north of any hurricane party, use a double red flag hurricane-warning symbol as an alternate logo, about as close as North American sports gets to Japan's catfish icon. Miami's own "O, Miami" poetry festival has leaned into the same instinct on purpose, building a yearly, city-scale platform for exactly the kind of narrative work this tool keeps returning to.</p>
       </div>
@@ -1044,6 +1111,8 @@ Thunderlight is your lamp<cite>Smong poem, Simeulue</cite></div>
         <h3>Merging the formal and the informal</h3>
         <div class="story-quote">Good morning from Vidor, where the traffic lights are off but the Waffle House is on #HurricaneLaura<cite>@sarahesmith23, Vidor, Texas, 2020</cite></div>
         <p>Waffle House's own operating philosophy, first to open, last to close, turned an unremarkable diner chain into an accidental hurricane-severity index. The logic is blunt: if your local Waffle House is closed, leave immediately. It got informal enough, and accurate enough, that FEMA started treating it as a real indicator starting in 2011, and Waffle House built its own internal storm response team, using an internal "Index Red" designation, to match.</p>
+        <figure class="story-img"><img src="waffle-house-index-graphic.png" alt="News graphic explaining the green, yellow, and red Waffle House Index"><figcaption>The green, yellow, and red Waffle House Index, as explained on a local news broadcast.</figcaption></figure>
+        <figure class="story-img"><img src="waffle-house-storm-sign.png" alt="Waffle House sign missing letters after Hurricane Delta, still standing"><figcaption>A Crowley, Louisiana Waffle House sign, down a few letters but still standing, after Hurricane Delta, 2020.</figcaption></figure>
       </div>
       <div class="story-section">
         <h3>A supply chain that already knew what to do</h3>
@@ -1150,7 +1219,7 @@ Told me leave my baby and my happy home<cite>Kansas Joe McCoy, "When the Levee B
       <div class="story-section">
         <h3>Reel life, real life</h3>
         <p>Somewhere on the spectrum from "When the Levee Breaks" to total detachment sits Sharknado: a made-for-television movie about a hurricane that flings sharks into Los Angeles, played almost entirely for laughs, that became a genuine cultural phenomenon.</p>
-        <div class="story-img-placeholder">[ image: movie posters from the contemporary disaster film trope &middot; awaiting upload ]</div>
+        <figure class="story-img"><img src="sharknado-poster.jpg" alt="Sharknado movie poster, Syfy, 2013"><figcaption>The poster for Sharknado (2013), played almost entirely for laughs.</figcaption></figure>
         <p>Disaster researchers draw a line between "reel life" disaster media, patiently produced, plotted around victims who rise to the occasion, and the messier "real life" version communities actually live through. That line matters because films like Sharknado, and San Andreas, and the wider disaster-blockbuster genre, can make it harder to have a straight conversation about real risk. If the cultural image of a hazard becomes a joke, treating the whole subject as inherently unserious is its own kind of forgetting, just dressed up as entertainment instead of neglect.</p>
       </div>
       <details class="sources">
@@ -1206,7 +1275,7 @@ Told me leave my baby and my happy home<cite>Kansas Joe McCoy, "When the Levee B
       <div class="story-section">
         <h3>The flood that moved a capital</h3>
         <p>The Great Sacramento Flood of 1861-62 cut off telegraph contact with the East Coast, swamped the state's brand-new capital, and put as much as 15 feet of water over the entire Central Valley. The governor reached his own inauguration by rowboat, and the state capital was briefly moved to San Francisco. Roughly 4,000 people died, about 1% of California's population at the time. One home in eight in the flood's path was destroyed outright or carried away entirely.</p>
-        <div class="story-img-placeholder">[ image: 1862 flood on J Street and K Street, Sacramento &middot; awaiting upload ]</div>
+        <figure class="story-img"><img src="sacramento-1862-flood.jpg" alt="1862 lithograph of K Street, Sacramento, flooded, titled Inundation of the State Capitol"><figcaption>"K Street, from the Levee," an 1862 lithograph of the flooded Sacramento capitol, published by A. Rosenfield, San Francisco.</figcaption></figure>
       </div>
       <div class="story-section">
         <h3>The people who saw it coming</h3>
@@ -1268,6 +1337,52 @@ Told me leave my baby and my happy home<cite>Kansas Joe McCoy, "When the Levee B
     `
   },
   {
+    id:'maui',
+    name:'Lahaina, Hawaii, USA', hazard:'2023 wildfire',
+    coords:[20.8783,-156.6825], stage:'degradation',
+    tag:'Degradation, and what filled the vacuum',
+    why:"Lahaina was a wetland town of streams, fishponds, and taro fields for centuries, watered by a system that sugar planters started diverting in the 1860s and that nobody replaced once the plantations closed. The dried-out grassland left behind is a large part of why an ordinary wind event turned into the deadliest US wildfire in more than a century.",
+    program:"The clearest failure here isn't a warning system that didn't sound. It's a landscape that sustained people for centuries under a working water system, then was left to dry into kindling once the system built to replace it moved on and nothing came after.",
+    dek:"Lahaina was once a wetland town of streams and taro fields, watered by a system diverted for sugar starting in the 1860s and never restored once the plantations left. On August 8, 2023, the dried-out grassland that replaced it burned, killing 102 people.",
+    storyTag:'Lahaina, Hawaii, USA · Degradation, and what filled the vacuum',
+    story:`
+      <div class="story-section">
+        <h3>A town built on water</h3>
+        <p>Long before it was known for a fire, Lahaina was known for water. As the seat of the Kingdom of Hawaii in the early 19th century, it sat on a wetland landscape of streams, springs, fishponds, and loʻi taro fields, fed by an ahupuaʻa system that channeled fresh water from the mountains down to the coast. In 1873, residents planted a banyan tree in the town square to mark the fiftieth anniversary of the first American Protestant mission's arrival. It grew from an eight-foot sapling into a canopy covering nearly two acres, sixteen trunks wide, and stood as Lahaina's most recognizable landmark for the century and a half that followed.</p>
+        <div class="story-img-placeholder">[ image: Lahaina's banyan tree before the 2023 fire &middot; awaiting upload ]</div>
+      </div>
+      <div class="story-section">
+        <h3>Drained, then abandoned</h3>
+        <p>That water system started coming apart within a generation of the banyan tree going into the ground. Sugar planters, led by Pioneer Mill, began diverting Lahaina's streams in the 1860s to irrigate cane fields, and by 1867, only six years after the mill's founding, a formal commission was already tracing a local famine directly back to those diversions and the loss of the wetland landscape underneath them. The diversions continued for over a century, first for sugar, later for pineapple, later still for resorts and golf courses, long after the taro fields and fishponds they replaced had gone dry.</p>
+        <p>When the plantations themselves eventually closed, nothing came in to replace what they had displaced. The irrigated cane fields were left fallow, and the land dried into open, invasive, fast-burning grassland instead of returning to anything like its original wetland state. A landscape that had sustained a town for centuries under active management became, once that management stopped, a fuel load waiting on the wind.</p>
+      </div>
+      <div class="story-section">
+        <h3>August 8, 2023</h3>
+        <div class="story-stats">
+          <div class="story-stat"><b>102</b><span>Confirmed deaths</span></div>
+          <div class="story-stat"><b>2,200+</b><span>Structures destroyed</span></div>
+          <div class="story-stat"><b>~$5.5B</b><span>Estimated damage</span></div>
+        </div>
+        <p>Fanned by high winds from a passing hurricane, a wildfire tore through the dried grassland surrounding Lahaina and into the town itself, becoming the deadliest wildfire in the United States in more than a century. The banyan tree was badly scorched, roughly half its canopy burned away, but it survived, and has spent the years since slowly regreening from its remaining root system.</p>
+      </div>
+      <div class="story-section">
+        <h3>What filled the vacuum</h3>
+        <div class="story-quote">I recently did relief work in Maui after the devastating August 2023 wildfires. I was blown away by how organized the West Maui community was. They built massive community-led distribution and support networks within days. It was stunning, but unfortunately, it was largely because they assumed no institutional help was coming for them.<cite>Daniel Starosta, "Raised Under Bad Stars" conversation transcript</cite></div>
+        <p>For the first days after the fire, official aid was slow to arrive and National Guard checkpoints blocked some supply deliveries into Lahaina entirely. Residents organized their own response instead, running boats and jet skis loaded with food and water into the harbor daily, and setting up community-run supply hubs and kitchens, a mutual-aid network built less out of goodwill in the abstract than out of a specific, historically grounded expectation that formal institutions would not show up in time. In the months after, some of the same interests that had diverted Lahaina's water for a century asked the state to suspend its instream flow standards, citing the emergency, so they could keep diverting more of what little water remained.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul>
+          <li>American Bar Association, Center for Racial and Social Justice, "The Story of Why Lahaina Burned," 2024</li>
+          <li>Smithsonian Magazine, "One Year After a Devastating Fire, Lahaina's 151-Year-Old Banyan Tree Is Healing," 2024</li>
+          <li>Hawai'i Public Radio, "Lahaina Fires Reveal Ongoing Power Struggle for West Maui Water Rights," 2023</li>
+          <li>NBC News, "Survivors of Maui Fires Set Up Their Own Aid Network as Trust in Government Falters," 2023</li>
+          <li>Revkin, A. and Starosta, D., "Raised Under Bad Stars" conversation transcript</li>
+        </ul>
+      </details>
+    `
+  },
+  {
     id:'nuclear-semiotics',
     name:'Carlsbad, New Mexico, USA', hazard:'Long-term nuclear waste warning design',
     coords:[32.37,-103.79], stage:'formulation',
@@ -1285,7 +1400,7 @@ Told me leave my baby and my happy home<cite>Kansas Joe McCoy, "When the Levee B
       <div class="story-section">
         <h3>Building a myth on purpose</h3>
         <p>The field that grew out of this problem is called nuclear semiotics. Researchers, working through the Nuclear Energy Agency's initiative on the Preservation of Records, Knowledge and Memory Across Generations, have had to ask questions no other case in this tool has to face: what if a thumbs-up comes to mean thumbs-down by then? What if a smiling face has come to mean total destruction? One researcher's proposed fix is essentially a standing institution, a lab that would "bring together musicians, archaeologists, writers, economists, artists, biologists and poets of each new generation to work on the markers needed to transmit the memory to the next."</p>
-        <div class="story-img-placeholder">[ image: proposed marker design for the Yucca Mountain nuclear waste repository &middot; awaiting upload ]</div>
+        <figure class="story-img"><img src="nuclear-marker-thorns.png" alt="Landscape of Thorns concept design, a proposed nuclear waste warning marker"><figcaption>"Landscape of Thorns," one of the concept designs proposed for marking long-term nuclear waste sites.</figcaption></figure>
       </div>
       <div class="story-section">
         <h3>Every other case in this tool got this for free</h3>
@@ -1463,8 +1578,9 @@ What will be of my Puerto Rico when the storm arrives?<cite>Puerto Rican plena s
       </div>
       <div class="story-section">
         <h3>Camps that were supposed to be temporary</h3>
-        <div class="story-img-placeholder">[ image: one of the five remaining temporary displacement camps for the 1985 Mexico City earthquake, slated to be closed in 2015 &middot; awaiting upload ]</div>
+        <figure class="story-img"><img src="mexico-city-camp-resident.jpg" alt="Resident of one of the temporary camps for 1985 Mexico City earthquake survivors"><figcaption>A resident of one of the temporary camps built for people displaced by the 1985 earthquake, still standing decades later.</figcaption></figure>
         <p>Even as memorial projects for the 2017 earthquake go up, hundreds of people displaced by 1985 were, as of a few years ago, still living in government camps built to be temporary. Commemoration and abandonment, happening in the same city, at the same time. A memorial cannot substitute for shelter, no matter how sincerely it is meant.</p>
+        <figure class="story-img"><img src="mexico-city-mural-protest.jpg" alt="Mural reading Monumentos NO reconstruccion, painted by residents protesting a 2017 earthquake memorial"><figcaption>"Monuments, not reconstruction": a mural painted by residents protesting a 2017 memorial project, photo via Sergio Beltrán.</figcaption></figure>
       </div>
       <details class="sources">
         <summary>Sources for this section</summary>
@@ -1565,10 +1681,6 @@ What will be of my Puerto Rico when the storm arrives?<cite>Puerto Rican plena s
     name:'San Francisco, USA', hazard:'1906 earthquake and fire',
   },
   {
-    id:'maui', thin:true,
-    name:'Lahaina, Hawaii', hazard:'2023 wildfires',
-  },
-  {
     id:'netherlands', thin:true,
     name:'Netherlands', hazard:'Flood engineering tradition',
   },
@@ -1584,6 +1696,7 @@ What will be of my Puerto Rico when the storm arrives?<cite>Puerto Rican plena s
    ============================================================ */
 const railList = document.getElementById('rail-list');
 let railViewMode = 'geo';
+let currentStage = null;
 const STAGE_ORDER = ['formulation','strengthening','operationalizing','degradation'];
 
 function makeRailItem(c){
@@ -1616,9 +1729,10 @@ function renderRailList(){
       const wrap = document.createElement('div');
       wrap.className = 'rail-group';
       wrap.style.setProperty('--gc', meta.color);
-      const label = document.createElement('div');
-      label.className = 'rail-group-label';
-      label.innerHTML = `<span class="dot" style="background:${meta.color}"></span><b>${meta.label}</b><span class="rail-group-sub">${meta.sub}</span>`;
+      const label = document.createElement('button');
+      label.className = 'rail-group-label' + (currentStage===stage ? ' active' : '');
+      label.innerHTML = `<span class="dot" style="background:${meta.color}"></span><b>${meta.label}</b><span class="rail-group-sub">${meta.sub}</span><span class="rail-group-hint">Read the chapter &rarr;</span>`;
+      label.onclick = ()=>selectStage(stage);
       wrap.appendChild(label);
       group.forEach(c=> wrap.appendChild(makeRailItem(c)));
       railList.appendChild(wrap);
@@ -1677,6 +1791,8 @@ function selectCase(id){
   const c = CASES.find(x=>x.id===id);
   if(!c) return;
   currentId = id;
+  currentStage = null;
+  document.querySelectorAll('.rail-group-label').forEach(el=>el.classList.remove('active'));
 
   document.querySelectorAll('.rail-item').forEach(el=>el.classList.remove('active'));
   const navEl = document.getElementById('nav-'+id);
@@ -1704,6 +1820,39 @@ function selectCase(id){
     map.flyTo(c.coords, 5, {duration:0.6});
     if(markers[id]) markers[id].openPopup();
   }
+}
+
+function selectStage(stage){
+  const meta = STAGE_META[stage];
+  const intro = STAGE_INTRO[stage];
+  if(!meta || !intro) return;
+  currentId = null;
+  currentStage = stage;
+
+  document.querySelectorAll('.rail-item').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.rail-group-label').forEach(el=>el.classList.remove('active'));
+  const labels = Array.from(document.querySelectorAll('.rail-group-label'));
+  const activeLabel = labels.find(el=>el.textContent.trim().startsWith(meta.label));
+  if(activeLabel) activeLabel.classList.add('active');
+
+  const color = meta.color.startsWith('var(') ? getComputedStyle(document.getElementById('app')).getPropertyValue(meta.color.slice(4,-1)).trim() : meta.color;
+  document.documentElement.style.setProperty('--case-color', color);
+
+  document.getElementById('story-hero-eyebrow').textContent = `The Framework · ${intro.roman}`;
+  document.getElementById('story-hero-title').textContent = meta.label;
+  document.getElementById('story-hero-dek').textContent = meta.sub;
+
+  const quotesHtml = intro.quotes.map(q=>`<div class="story-quote">${q.text}<cite>${q.cite}</cite></div>`).join('');
+  const bodyHtml = intro.body.map(p=>`<p>${p}</p>`).join('');
+  document.getElementById('story-inner').innerHTML = `
+    <div class="story-section">
+      <h3>${meta.label}</h3>
+      ${quotesHtml}
+      ${bodyHtml}
+    </div>
+  `;
+  document.getElementById('story-col').scrollTop = 0;
+  fitStoryTitle();
 }
 
 function toggleDrawer(){

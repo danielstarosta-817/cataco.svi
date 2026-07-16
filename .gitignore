@@ -41,3 +41,7 @@ venezuela/*
 !venezuela/bolivar_origami_money_wide.webp
 !venezuela/caracas_shopping_street_1970s.jpeg
 !venezuela/caracas_eternal_spring_1960s70s.mp4
+
+# Raw badstars research material (PDFs, docx, alt image sets) — not referenced
+# by prototype_v1.html, not needed in the deployed site.
+badstars/Thesis/
