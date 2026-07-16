@@ -1,0 +1,1781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Raised Under Bad Stars · Brackish Projects (prototype)</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFFFFF;
+    --bg-panel:#F7F7F5;
+    --bg-panel-hover:#EFEEEA;
+    --bg-card:#FFFFFF;
+    --accent:#EA580C;
+    --accent-dim:rgba(234,88,12,.09);
+    --accent-border:rgba(234,88,12,.4);
+    --aqua:#0D9488;
+    --aqua-dim:rgba(13,148,136,.09);
+    --gold:#CA8A04;
+    --gold-dim:rgba(202,138,4,.09);
+    --purple:#9333EA;
+    --purple-dim:rgba(147,51,234,.09);
+    --text:#181818;
+    --text-dim:#54524C;
+    --text-faint:#96938A;
+    --line:rgba(24,24,24,.11);
+
+    --stage-formulation:var(--accent);
+    --stage-strengthening:var(--aqua);
+    --stage-operationalizing:var(--gold);
+    --stage-degradation:var(--purple);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;height:100%;}
+  a{color:inherit;}
+  .eyebrow{
+    font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--accent);display:flex;align-items:center;gap:8px;margin-bottom:10px;
+  }
+  .eyebrow::before{content:'';width:20px;height:2px;background:var(--accent);border-radius:1px;flex-shrink:0;}
+
+  /* ---------- back-to-home icon (matches site convention) ---------- */
+  .bh-back{position:fixed;top:9px;left:12px;z-index:100000;display:flex;align-items:center;justify-content:center;
+    width:26px;height:26px;border-radius:50%;background:rgba(13,148,136,.10);border:1px solid rgba(13,148,136,.4);
+    color:#0D9488;text-decoration:none;flex-shrink:0;transition:background .2s ease,transform .2s ease;}
+  .bh-back:hover{background:rgba(13,148,136,.2);transform:translateX(-1px);}
+  .bh-back svg{width:14px;height:14px;display:block;}
+
+  /* ============================================================
+     LANDING PAGE
+     ============================================================ */
+  #landing{
+    min-height:100vh;display:flex;position:relative;
+  }
+  #landing.hidden{display:none;}
+  #landing-inner{flex:1;display:flex;align-items:center;justify-content:center;padding:80px 5vw;min-width:0;}
+  #landing-text{max-width:620px;width:100%;}
+  #landing-image{width:38vw;min-width:320px;flex-shrink:0;height:100vh;position:sticky;top:0;overflow:hidden;}
+  #landing-image img{width:100%;height:100%;object-fit:cover;display:block;}
+  @media (max-width:900px){
+    #landing{flex-direction:column;}
+    #landing-image{display:none;}
+    #landing-inner{padding:60px 24px;}
+  }
+  #landing h1{font-family:'Fraunces',Georgia,serif;font-size:46px;line-height:1.16;margin:0 0 22px;font-weight:400;letter-spacing:-.01em;}
+  #landing h1 em{font-style:normal;color:var(--accent);}
+  #landing p.lede{font-family:'Fraunces',Georgia,serif;font-weight:300;font-size:17px;line-height:1.75;color:var(--text-dim);margin:0 0 20px;}
+  #landing p.lede strong{color:var(--text);font-weight:700;}
+  #landing .stage-strip{
+    display:flex;gap:22px;margin:12px 0 36px;flex-wrap:wrap;padding:18px 0;
+    border-top:2px dotted var(--line);border-bottom:2px dotted var(--line);
+  }
+  .stage-chip{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+    font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--text-dim);display:flex;align-items:center;gap:7px;
+  }
+  .stage-chip .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  #enter-btn{
+    display:inline-flex;align-items:center;gap:10px;background:var(--text);color:var(--bg);
+    font-weight:700;font-size:13px;letter-spacing:.04em;text-transform:uppercase;padding:15px 26px;
+    border-radius:3px;border:none;cursor:pointer;text-decoration:none;transition:background .15s ease;
+  }
+  #enter-btn:hover{background:var(--accent);}
+  #enter-btn svg{width:15px;height:15px;}
+
+  /* -------- easter egg: disaster etymology -------- */
+  #egg-btn{
+    display:flex;align-items:center;gap:7px;background:none;border:none;padding:0;cursor:pointer;
+    font-family:'Fraunces',Georgia,serif;font-style:italic;font-weight:400;font-size:13.5px;
+    color:var(--text-faint);margin-top:22px;text-align:left;transition:color .15s ease;
+  }
+  #egg-btn:hover{color:var(--accent);}
+  #egg-btn svg{width:13px;height:13px;flex-shrink:0;color:var(--accent);opacity:.8;}
+
+  #egg-modal{
+    display:none;position:fixed;inset:0;z-index:2000;align-items:center;justify-content:center;
+    background:rgba(24,24,24,.5);padding:24px;
+  }
+  #egg-modal.open{display:flex;}
+  #egg-panel{
+    position:relative;background:var(--bg);border-radius:6px;max-width:480px;width:100%;
+    padding:40px 38px 32px;box-shadow:0 30px 70px rgba(24,24,24,.28);
+  }
+  #egg-close{
+    position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:50%;
+    border:1px solid var(--line);background:none;color:var(--text-faint);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;transition:color .15s ease,border-color .15s ease;
+  }
+  #egg-close:hover{color:var(--text);border-color:var(--text-faint);}
+  #egg-close svg{width:13px;height:13px;}
+  #egg-star{width:26px;height:26px;color:var(--accent);margin-bottom:14px;}
+  #egg-panel .eyebrow{margin-bottom:10px;}
+  #egg-panel h3{font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:24px;margin:0 0 14px;}
+  #egg-panel p{font-family:'Fraunces',Georgia,serif;font-weight:300;font-size:15px;line-height:1.72;color:var(--text-dim);margin:0 0 14px;}
+  #egg-panel p em{font-style:italic;color:var(--text);}
+  #egg-panel p:last-of-type{margin-bottom:0;}
+  .egg-screen{display:none;}
+  .egg-screen.active{display:block;}
+  .egg-next{
+    display:flex;align-items:center;gap:7px;background:none;border:none;padding:0;cursor:pointer;
+    font-family:'Fraunces',Georgia,serif;font-style:italic;font-weight:400;font-size:13.5px;
+    color:var(--text-faint);margin-top:20px;text-align:left;transition:color .15s ease;
+  }
+  .egg-next:hover{color:var(--accent);}
+  .egg-next svg{width:13px;height:13px;flex-shrink:0;color:var(--accent);opacity:.8;}
+  .egg-dots{display:flex;justify-content:center;gap:8px;margin-top:26px;}
+  .egg-dot{width:6px;height:6px;padding:0;border-radius:50%;border:none;background:var(--line);cursor:pointer;}
+  .egg-dot.active{background:var(--accent);}
+  .egg-source{font-size:11.5px;font-style:italic;color:var(--text-faint);margin-top:18px;padding-top:14px;border-top:2px dotted var(--line);}
+  .egg-source em{font-style:italic;}
+
+  /* -------- timeline: why disaster memory matters -------- */
+  #timeline-modal{
+    display:none;position:fixed;inset:0;z-index:2000;align-items:center;justify-content:center;
+    background:rgba(24,24,24,.5);padding:24px;
+  }
+  #timeline-modal.open{display:flex;}
+  #timeline-panel{
+    position:relative;background:var(--bg);border-radius:6px;max-width:760px;width:100%;
+    max-height:86vh;overflow-y:auto;padding:40px 42px 34px;box-shadow:0 30px 70px rgba(24,24,24,.28);
+  }
+  #timeline-close{
+    position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:50%;
+    border:1px solid var(--line);background:var(--bg);color:var(--text-faint);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;transition:color .15s ease,border-color .15s ease;
+  }
+  #timeline-close:hover{color:var(--text);border-color:var(--text-faint);}
+  #timeline-close svg{width:13px;height:13px;}
+  #timeline-panel h3{font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:24px;margin:0 0 14px;}
+  .tl-intro{font-family:'Fraunces',Georgia,serif;font-weight:300;font-size:14.5px;line-height:1.68;color:var(--text-dim);margin:0 0 22px;max-width:62ch;}
+  .tl-legend{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:20px;padding-bottom:16px;border-bottom:2px dotted var(--line);}
+  .tl-legend span{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-dim);}
+  .tl-legend i{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .tl-row{display:flex;gap:16px;padding:14px 0;border-bottom:1px solid var(--line);}
+  .tl-row:last-of-type{border-bottom:none;padding-bottom:6px;}
+  .tl-hazard{width:84px;flex-shrink:0;font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:14.5px;color:var(--text);padding-top:8px;}
+  .tl-track{flex:1;min-width:0;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+  .tl-stage{position:relative;padding:10px 4px 0;border-top:3px solid var(--c);}
+  .tl-ex{display:block;font-size:11.5px;line-height:1.5;color:var(--text-dim);}
+  @media (max-width:640px){
+    .tl-row{flex-direction:column;gap:8px;}
+    .tl-hazard{width:auto;padding-top:0;}
+    .tl-track{grid-template-columns:repeat(2,1fr);}
+  }
+
+  /* ============================================================
+     TOOL SHELL
+     ============================================================ */
+  #app{display:none;height:100vh;width:100%;}
+  #app.active{display:flex;}
+
+  /* -------- far-left sticky nav rail -------- */
+  #nav-rail{
+    width:290px;flex-shrink:0;background:var(--bg-panel);border-right:1px solid var(--line);
+    display:flex;flex-direction:column;transition:width .22s ease;overflow:hidden;position:relative;
+  }
+  #nav-rail.collapsed{width:54px;}
+  #nav-rail.collapsed .rail-body{opacity:0;pointer-events:none;}
+  #nav-rail.collapsed .rail-brand{display:none;}
+  #rail-toggle{
+    position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:7px;border:1px solid var(--line);
+    background:var(--bg-card);color:var(--text-dim);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5;
+  }
+  #nav-rail.collapsed #rail-toggle{right:auto;left:14px;}
+  #rail-toggle svg{width:13px;height:13px;transition:transform .2s ease;}
+  #nav-rail.collapsed #rail-toggle svg{transform:rotate(180deg);}
+
+  .rail-brand{padding:16px 46px 14px 18px;border-bottom:1px solid var(--line);flex-shrink:0;}
+  .rail-brand-row{display:flex;align-items:center;gap:8px;font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:15.5px;}
+  .rail-brand-sub{font-size:11.5px;color:var(--text-faint);margin-top:3px;font-style:italic;}
+  #timeline-btn{
+    display:flex;align-items:center;justify-content:flex-end;gap:5px;width:100%;
+    background:none;border:none;padding:0;cursor:pointer;margin-top:8px;text-align:right;
+    font-family:'Fraunces',Georgia,serif;font-style:italic;font-weight:400;font-size:11px;
+    color:var(--text-faint);transition:color .15s ease;
+  }
+  #timeline-btn:hover{color:var(--accent);}
+  #timeline-btn svg{width:11px;height:11px;flex-shrink:0;color:var(--accent);opacity:.8;}
+
+  .rail-body{flex:1;display:flex;flex-direction:column;min-height:0;transition:opacity .15s ease;}
+
+  .rail-accordion{border-bottom:1px solid var(--line);flex-shrink:0;}
+  .accordion-header{
+    width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;
+    font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:14.5px;color:var(--text);
+    background:transparent;border:none;cursor:pointer;text-align:left;padding:14px 18px;
+  }
+  .accordion-header:hover{color:var(--accent);}
+  .accordion-header.open{color:var(--accent);}
+  .accordion-chevron{width:14px;height:14px;flex-shrink:0;color:var(--text-faint);transition:transform .22s ease;}
+  .accordion-header.open .accordion-chevron{transform:rotate(180deg);color:var(--accent);}
+  .accordion-body{max-height:0;overflow:hidden;transition:max-height .28s ease;}
+  .accordion-body.open{max-height:44vh;overflow-y:auto;}
+  .accordion-body-inner{padding:0 18px 18px;font-size:13px;line-height:1.65;color:var(--text-dim);}
+  .accordion-body-inner h4{color:var(--text);font-size:13px;margin:14px 0 5px;}
+  .accordion-body-inner h4:first-child{margin-top:2px;}
+  .stage-card{border:1.5px solid; border-radius:10px; padding:10px 14px;margin-bottom:10px;}
+  .stage-card b{color:var(--text);display:block;font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:14px;margin-bottom:3px;}
+
+  .rail-list-label{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);
+    padding:14px 18px 6px;flex-shrink:0;}
+  .rail-list{flex:1;overflow-y:auto;padding:0 10px 14px;}
+  .rail-item{
+    display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:transparent;border:none;
+    color:var(--text-dim);padding:8px 8px;border-radius:8px;cursor:pointer;font-size:12.5px;font-family:inherit;
+  }
+  .rail-item:hover{background:var(--bg-panel-hover);}
+  .rail-item.active{background:var(--bg-panel-hover);color:var(--text);font-weight:700;}
+  .rail-item .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .rail-item .place{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .rail-item.thin{opacity:.42;cursor:default;}
+  .rail-item.thin:hover{background:transparent;}
+  .rail-item.thin .place{font-style:italic;}
+  .rail-more{margin:10px 8px 0;padding:10px 10px;border:1px dashed var(--line);border-radius:8px;font-size:11.5px;
+    color:var(--text-faint);line-height:1.5;}
+  .rail-more b{color:var(--text-dim);}
+
+  .rail-group{
+    margin:0 0 14px;padding:10px 8px 6px;border-radius:9px;
+    background:color-mix(in srgb, var(--gc) 6%, transparent);
+    border-left:2px solid var(--gc);
+  }
+  .rail-group-label{display:flex;align-items:baseline;gap:7px;padding:0 8px 8px;}
+  .rail-group-label .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+  .rail-group-label b{font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:12.5px;color:var(--text);}
+  .rail-group-sub{font-size:10.5px;font-style:italic;color:var(--text-faint);}
+
+  .rail-view-toggle{
+    display:flex;align-items:center;gap:6px;width:100%;background:none;border:none;padding:10px 8px 4px;
+    cursor:pointer;text-align:left;font-family:'Fraunces',Georgia,serif;font-style:italic;font-weight:400;
+    font-size:12px;color:var(--text-faint);transition:color .15s ease;
+  }
+  .rail-view-toggle:hover{color:var(--accent);}
+  .rail-view-toggle svg{width:11px;height:11px;flex-shrink:0;color:var(--accent);opacity:.8;}
+
+  /* -------- middle column: map, with a collapsible drawer instead of a separate scrolling panel -------- */
+  #mid-col{flex:1 1 0;min-width:0;display:flex;flex-direction:column;border-right:1px solid var(--line);}
+  #map-wrap{flex:1 1 0;min-height:0;position:relative;background:#EAE6DA;}
+  #map{position:absolute;inset:0;}
+
+  #map-drawer{
+    position:absolute;left:0;right:0;bottom:0;z-index:400;background:rgba(251,249,243,.97);
+    border-top:1px solid var(--line);backdrop-filter:blur(6px);box-shadow:0 -8px 26px rgba(29,27,22,.10);
+  }
+  #map-drawer-tab{
+    width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;
+    background:none;border:none;cursor:pointer;padding:18px 30px;text-align:left;font-family:inherit;
+  }
+  .drawer-tab-main .stage-badge{
+    display:inline-flex;align-items:center;gap:7px;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;
+  }
+  .drawer-tab-main .stage-badge .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+  .drawer-tab-main h2{font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:22px;margin:0 0 3px;color:var(--text);letter-spacing:-.005em;}
+  .drawer-tab-main .sub{font-size:12.5px;color:var(--text-dim);}
+  #drawer-chevron{width:18px;height:18px;color:var(--text-faint);flex-shrink:0;transition:transform .25s ease;transform:rotate(180deg);}
+  #map-drawer.open #drawer-chevron{transform:rotate(0deg);}
+  #map-drawer-body{max-height:0;overflow:hidden;transition:max-height .28s ease;padding:0 30px;}
+  #map-drawer.open #map-drawer-body{max-height:240px;padding:0 30px 24px;overflow-y:auto;}
+  #map-drawer-body h4{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:0 0 6px;}
+  #map-drawer-body h4:not(:first-child){margin-top:16px;}
+  #map-drawer-body p{font-family:'Fraunces',Georgia,serif;font-weight:300;font-size:14.5px;line-height:1.6;color:var(--text-dim);margin:0;max-width:60ch;}
+
+  /* -------- right column: narrative storymap, visual-journalism style -------- */
+  #story-col{width:46%;max-width:680px;flex-shrink:0;overflow-y:auto;background:var(--bg);}
+  #story-col .eyebrow{color:var(--case-color,var(--accent));}
+  #story-col .eyebrow::before{background:var(--case-color,var(--accent));}
+
+  .story-hero{
+    position:relative;padding:44px 40px 28px;
+    background:
+      radial-gradient(140% 120% at 25% 0%, color-mix(in srgb, var(--case-color, var(--accent)) 16%, transparent) 0%, rgba(255,255,255,0) 55%),
+      var(--bg-panel);
+    border-bottom:2px dotted var(--line);overflow:hidden;transition:background .3s ease;
+  }
+  .story-hero::before{
+    content:'';position:absolute;inset:0;opacity:.5;
+    background-image:repeating-linear-gradient(135deg, rgba(24,24,24,.025) 0px, rgba(24,24,24,.025) 1px, transparent 1px, transparent 28px);
+  }
+  .story-hero .hero-content{position:relative;}
+  .story-hero h1{font-family:'Anton',Impact,'Arial Narrow',sans-serif;font-weight:400;font-size:clamp(30px,3.6vw,44px);
+    line-height:0.98;letter-spacing:.002em;text-transform:uppercase;white-space:nowrap;
+    max-width:100%;overflow:hidden;margin:0;color:var(--text);}
+  .story-hero #story-hero-dek{font-family:'Fraunces',Georgia,serif;font-weight:300;font-style:italic;
+    font-size:15.5px;line-height:1.5;color:var(--text-dim);margin:14px 0 0;max-width:44ch;}
+
+  #story-inner{padding:38px 40px 90px;}
+  .field-notes{border:1px solid var(--line);border-radius:12px;padding:20px 24px;margin-bottom:40px;}
+  .field-notes h4{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--case-color,var(--accent));margin:0 0 8px;}
+  .field-notes h4:not(:first-child){margin-top:16px;}
+  .field-notes p{font-family:'Fraunces',Georgia,serif;font-style:italic;font-weight:400;font-size:15px;line-height:1.65;color:var(--text-dim);margin:0;}
+
+  .story-section{margin-bottom:40px;}
+  .story-section:last-of-type{margin-bottom:8px;}
+  .story-section h3{font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:24px;margin:0 0 14px;letter-spacing:-.005em;line-height:1.28;color:var(--text);}
+  .story-section p{font-family:'Fraunces',Georgia,serif;font-weight:300;font-size:16px;line-height:1.75;color:var(--text-dim);margin:0 0 16px;max-width:38em;}
+
+  .story-img-placeholder{
+    position:relative;border-radius:10px;overflow:hidden;margin:20px 0 22px;min-height:190px;
+    background:radial-gradient(120% 100% at 30% 15%, rgba(24,24,24,.035) 0%, rgba(24,24,24,0) 60%), var(--bg-panel);
+    border:1px solid var(--line);display:flex;align-items:flex-end;padding:18px 20px;
+  }
+  .story-img-placeholder::before{
+    content:'AWAITING IMAGE';position:absolute;top:14px;left:18px;font-size:9px;font-weight:700;
+    letter-spacing:.1em;color:var(--text-faint);border:1px solid var(--line);padding:3px 9px;border-radius:20px;
+  }
+  .story-img-placeholder span{position:relative;font-family:'Fraunces',Georgia,serif;font-size:13px;color:var(--text-faint);line-height:1.5;font-style:italic;}
+
+  .story-quote{
+    font-family:'Fraunces',Georgia,serif;border-left:3px solid var(--case-color,var(--accent));padding:2px 0 2px 20px;
+    margin:24px 0;font-size:18px;line-height:1.5;font-weight:400;font-style:italic;color:var(--text);white-space:pre-line;max-width:36em;
+  }
+  .story-quote cite{
+    display:block;font-style:normal;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;
+    font-size:11.5px;color:var(--text-faint);margin-top:10px;letter-spacing:.02em;
+  }
+
+  .story-stats{display:flex;gap:0;margin:22px 0 26px;flex-wrap:wrap;border-top:2px dotted var(--line);padding-top:18px;max-width:40em;}
+  .story-stat{padding:0 24px 0 0;min-width:120px;}
+  .story-stat b{display:block;font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:25px;color:var(--case-color,var(--accent));}
+  .story-stat span{font-size:10.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--text-faint);}
+
+  .crossref-btn{
+    display:flex;align-items:center;gap:9px;background:transparent;border:none;border-bottom:1px solid var(--line);
+    color:var(--text-dim);font-family:'Fraunces',Georgia,serif;font-style:italic;font-size:15px;font-weight:500;
+    padding:12px 0;cursor:pointer;margin:6px 0;text-align:left;width:100%;max-width:36em;
+  }
+  .crossref-btn:hover{color:var(--case-color,var(--accent));border-color:var(--case-color,var(--accent));}
+  .crossref-btn svg{width:12px;height:12px;flex-shrink:0;}
+
+  details.sources{margin-top:38px;border-top:2px dotted var(--line);padding-top:18px;max-width:40em;}
+  details.sources summary{cursor:pointer;font-size:11px;font-weight:700;color:var(--text-faint);text-transform:uppercase;letter-spacing:.08em;}
+  details.sources ul{margin:12px 0 0;padding-left:18px;font-size:12px;color:var(--text-faint);line-height:1.9;}
+  .placeholder-story{color:var(--text-faint);font-size:13.5px;line-height:1.8;padding:20px 0;}
+  .needs-review-tag{display:inline-block;font-size:10px;font-weight:700;color:var(--purple);background:var(--purple-dim);
+    padding:3px 9px;border-radius:100px;margin-bottom:14px;letter-spacing:.03em;}
+
+  ::-webkit-scrollbar{width:9px;height:9px;}
+  ::-webkit-scrollbar-thumb{background:rgba(24,24,24,.16);border-radius:5px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+
+  .leaflet-popup-content-wrapper{background:var(--bg-card);color:var(--text);border-radius:8px;}
+  .leaflet-popup-tip{background:var(--bg-card);}
+  .leaflet-container a.leaflet-popup-close-button{color:var(--text-dim);}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     LANDING PAGE
+     ============================================================ -->
+<div id="landing">
+  <a href="../index.html" class="bh-back" title="Back to Brackish Projects" aria-label="Back to home">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+  </a>
+  <div id="landing-inner">
+  <div id="landing-text">
+    <div class="eyebrow">CULTURE AS INFRASTRUCTURE</div>
+    <h1>What survivors make of disaster, and what it can teach the rest of us</h1>
+    <p class="lede">Every disaster leaves behind more than damage. It leaves songs, warning stones, folk tales, throwaway jokes, and arguments about whose fault it was. <strong>This tool puts those responses in conversation with each other</strong>, place by place, to understand how different communities actually cope, and to take seriously the idea that culture itself works like infrastructure: something that can be built up, relied on, and just as easily left to fall apart.</p>
+    <p class="lede">It is built around one idea in particular: the music, literature, and art that comes out of a disaster is not just aftermath. It is data about what a place has decided the hazard means, whether it is named and understood or something people would rather not talk about. Listening to that, seriously, is where designing programs <em style="font-style:normal;color:var(--text)">with</em> a community instead of <em style="font-style:normal;color:var(--text)">for</em> it should start.</p>
+    <!-- STAGE STRIP, removed from landing page for now per user request, keep for possible reuse later.
+    <div class="eyebrow" style="margin-top:26px;margin-bottom:0">Stages of developing disaster adaptive culture</div>
+    <div class="stage-strip">
+      <div class="stage-chip"><span class="dot" style="background:var(--stage-formulation)"></span>Giving it a name</div>
+      <div class="stage-chip"><span class="dot" style="background:var(--stage-strengthening)"></span>Making it stick</div>
+      <div class="stage-chip"><span class="dot" style="background:var(--stage-operationalizing)"></span>Building it in</div>
+      <div class="stage-chip"><span class="dot" style="background:var(--stage-degradation)"></span>Losing the thread</div>
+    </div>
+    -->
+    <button id="enter-btn" onclick="enterTool()">Explore the stories
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+    <button id="egg-btn" onclick="openEgg()">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.25 5.68 6.1.5-4.65 4 1.4 5.94L12 15.6l-5.1 3.02 1.4-5.94-4.65-4 6.1-.5z"/></svg>
+      Do you know where the word disaster comes from?
+    </button>
+  </div>
+  </div>
+  <div id="landing-image">
+    <img src="namazu-e-left-half.jpg" alt="Namazu-e woodblock print showing crowds attacking the giant catfish, Edo, 1855">
+  </div>
+</div>
+
+<div id="egg-modal" onclick="if(event.target===this) closeEgg()">
+  <div id="egg-panel">
+    <button id="egg-close" onclick="closeEgg()" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <svg id="egg-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.25 5.68 6.1.5-4.65 4 1.4 5.94L12 15.6l-5.1 3.02 1.4-5.94-4.65-4 6.1-.5z"/></svg>
+
+    <div class="egg-screen active" data-screen="1">
+      <div class="eyebrow">We were raised under bad stars</div>
+      <h3>Un-starred</h3>
+      <p><em>Disaster</em> comes from the Latin <em>dis-</em> (apart, away) and <em>astro</em> (star). To be dis-astered is to be un-starred, to have lost the protective star that was supposed to watch over your passage through life.</p>
+      <p>For most of human history, that was the whole explanation. A flood, a famine, a plague. None of it was yours to prevent, because none of it was ever yours to control. Your lucky stars had simply stopped looking out for you, and whatever came next was cosmic bad luck, not a failure of planning, memory, or preparation.</p>
+      <p>Or even worse, you'd done something to deserve it! Disasters only happen to the wicked, after all.</p>
+      <p>This tool exists because that stopped being good enough a long time ago. The stories collected here are, in a way, the record of people arguing back. Refusing to leave disaster to the stars, and building something, a song, a stone, a habit, a name, that might catch them next time instead.</p>
+      <button class="egg-next" onclick="eggGo(2)">Want to know even more disaster-word etymology?
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+
+    <div class="egg-screen" data-screen="2">
+      <div class="eyebrow">More words for the same fear</div>
+      <h3>Harbor waves and evil winds</h3>
+      <p><em>Tsunami</em> is a Japanese word, born out of the country's long history with them. In direct translation it means nothing more than harbor wave, a plain, almost bureaucratic description that only picked up its dread over time.</p>
+      <p>Hawaiian has no single word for a tsunami at all. Instead it breaks the event into stages: <em>kai ho'e'e</em>, the rising sea, <em>kai mimiki</em>, the receding sea, and <em>kai e'e</em>, the climbing sea, what English flattens into "tidal wave." <em>Kai a Pele</em>, the sea of Pele, names the wave after the goddess of volcanoes and fire, rather than packaging the whole disaster into one word at all.</p>
+      <p><em>Hurricane</em> tells a different story. It comes from <em>Huricán</em>, a word from the Taino peoples of the Caribbean, meaning god of the storm, or god of the evil wind. Where tsunami and the Hawaiian sea-words describe a process, hurricane names a will behind it, something with intent.</p>
+      <button class="egg-next" onclick="eggGo(3)">What about thinking about disasters as monsters?
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+
+    <div class="egg-screen" data-screen="3">
+      <div class="eyebrow">Freak of nature</div>
+      <h3>Roaring dragons, and worse</h3>
+      <p>Long before disaster meant losing your star, plenty of cultures just called it a monster outright. Earthquakes turn up in old writing as roaring dragons. Tornadoes get cast as devils, floods as ghouls. English still carries the same instinct in one everyday phrase: freak of nature.</p>
+      <p>Western tradition leaned hard into the freak half of that phrase. Biblical theology tended to treat disaster as a singular, one-off event, in part because the Middle East's flood-prone history wasn't the West's own lived experience. Southeast Asian cosmologies took the opposite path. Japan and Indonesia developed alongside a constant, unbroken relationship with typhoons and tsunamis. As one scholar put it, Shinto might be the perfect religion for natural disaster: not an exception to normal life, just a known and permanent part of it.</p>
+      <p>Calling something an amorphous monster, unknowable and otherworldly, is a tidy way to avoid doing anything about it. It's the same trap as being un-starred. If disaster is a force from outside the world entirely, nobody has to ask what could have been done differently.</p>
+    </div>
+
+    <div class="egg-dots">
+      <button class="egg-dot active" data-dot="1" onclick="eggGo(1)" aria-label="Screen 1"></button>
+      <button class="egg-dot" data-dot="2" onclick="eggGo(2)" aria-label="Screen 2"></button>
+      <button class="egg-dot" data-dot="3" onclick="eggGo(3)" aria-label="Screen 3"></button>
+    </div>
+  </div>
+</div>
+
+<div id="timeline-modal" onclick="if(event.target===this) closeTimeline()">
+  <div id="timeline-panel">
+    <button id="timeline-close" onclick="closeTimeline()" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="eyebrow">Why disaster memory matters</div>
+    <h3>What each generation forgets</h3>
+    <p class="tl-intro">Every generation a place goes without living through its worst hazard again, the memory of it loses a little vividness, and gets a little easier to set aside or disregard entirely. Laid out on paper, hazard by hazard, the distance between when somewhere first names a risk and when it finally lets the story go stops being an abstraction. This is adapted from a chart in the original thesis, organized by hazard rather than by place.</p>
+
+    <div class="tl-legend">
+      <span><i style="background:var(--stage-formulation)"></i>Formulation</span>
+      <span><i style="background:var(--stage-strengthening)"></i>Strengthening</span>
+      <span><i style="background:var(--stage-operationalizing)"></i>Operationalizing</span>
+      <span><i style="background:var(--stage-degradation)"></i>Loss / Degradation</span>
+    </div>
+
+    <div class="tl-row">
+      <div class="tl-hazard">Hurricane</div>
+      <div class="tl-track">
+        <div class="tl-stage" style="--c:var(--stage-formulation)"><span class="tl-ex">South Florida, SE USA</span></div>
+        <div class="tl-stage" style="--c:var(--stage-strengthening)"><span class="tl-ex">Katrina, Maria</span></div>
+        <div class="tl-stage" style="--c:var(--stage-operationalizing)"><span class="tl-ex">Key West building codes, Puerto Rico activism since 2017</span></div>
+        <div class="tl-stage" style="--c:var(--stage-degradation)"><span class="tl-ex">1929 Okeechobee, 1932 San Felipe, Haiyan no-build zones</span></div>
+      </div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-hazard">Tsunami</div>
+      <div class="tl-track">
+        <div class="tl-stage" style="--c:var(--stage-formulation)"><span class="tl-ex">Japan, SE Asia</span></div>
+        <div class="tl-stage" style="--c:var(--stage-strengthening)"><span class="tl-ex">Boxing Day 2004, Solomon Islands, Simeulue</span></div>
+        <div class="tl-stage" style="--c:var(--stage-operationalizing)"><span class="tl-ex">1907 Simeulue, Krakatoa</span></div>
+        <div class="tl-stage" style="--c:var(--stage-degradation)"><span class="tl-ex">Indonesia no-build zones, Aceh's military focus</span></div>
+      </div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-hazard">Wildfire</div>
+      <div class="tl-track">
+        <div class="tl-stage" style="--c:var(--stage-formulation)"><span class="tl-ex">Paradise, CA, Australia</span></div>
+        <div class="tl-stage" style="--c:var(--stage-strengthening)"><span class="tl-ex">Aus &amp; Torres Strait islander traditions</span></div>
+        <div class="tl-stage" style="--c:var(--stage-operationalizing)"><span class="tl-ex">1991 Oakland Firestorm, Australia wildfire art therapy</span></div>
+        <div class="tl-stage" style="--c:var(--stage-degradation)"><span class="tl-ex">Paradise, CA voting down defensible space, 1923 Berkeley Fire</span></div>
+      </div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-hazard">Earthquake</div>
+      <div class="tl-track">
+        <div class="tl-stage" style="--c:var(--stage-formulation)"><span class="tl-ex">1906 San Francisco Fire, Namazu-e</span></div>
+        <div class="tl-stage" style="--c:var(--stage-strengthening)"><span class="tl-ex">Pacific Islander oral history, Fukushima's original plan</span></div>
+        <div class="tl-stage" style="--c:var(--stage-operationalizing)"><span class="tl-ex">2011 Tohoku, 1977 Chile, 1985 Mexico City building codes, Loma Prieta poetry</span></div>
+        <div class="tl-stage" style="--c:var(--stage-degradation)"><span class="tl-ex">1755 Lisbon, Haiti's 2010 response, Haiti built for storms instead</span></div>
+      </div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-hazard">Flood</div>
+      <div class="tl-track">
+        <div class="tl-stage" style="--c:var(--stage-formulation)"><span class="tl-ex">Nile floods, Yellow River floods</span></div>
+        <div class="tl-stage" style="--c:var(--stage-strengthening)"><span class="tl-ex">Great flood myths worldwide, Sacramento delta</span></div>
+        <div class="tl-stage" style="--c:var(--stage-operationalizing)"><span class="tl-ex">Netherlands, broadly</span></div>
+        <div class="tl-stage" style="--c:var(--stage-degradation)"><span class="tl-ex">Three Gorges Dam, the 1862 Sacramento Flood</span></div>
+      </div>
+    </div>
+
+    <div class="egg-source">Adapted from "Framework Presented By Type of Natural Disaster," a chart from the author's own thesis.</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     TOOL SHELL
+     ============================================================ -->
+<div id="app">
+
+  <!-- ---------- far-left nav rail ---------- -->
+  <div id="nav-rail">
+    <button id="rail-toggle" onclick="toggleRail()" title="Collapse">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div class="rail-brand">
+      <div class="rail-brand-row"><a href="../index.html" class="bh-back" style="position:static;width:20px;height:20px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></a><span class="rail-brand-text">Raised Under Bad Stars</span></div>
+      <div class="rail-brand-sub">Disaster memory, culture &amp; identity</div>
+      <button id="timeline-btn" onclick="openTimeline()">Why is disaster memory important?
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+
+    <div class="rail-body">
+      <div class="rail-accordion">
+        <button class="accordion-header open" id="acc-idea-btn" onclick="toggleAccordion('idea')">
+          <span>Culture as infrastructure</span>
+          <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="accordion-body open" id="acc-idea">
+          <div class="accordion-body-inner">
+            <p>Music, literature, and art made in the wake of disaster are not just aftermath. They are the clearest record we have of what a place has decided a hazard actually means.</p>
+            <p>If we are serious about listening to the communities we say we want to help, this is where that listening should start: not only what did the hazard do, but what did the people living through it make of it, in their own words and their own art, and what that tells us about designing programs with them instead of for them.</p>
+            <p>Every case here is placed somewhere in a community's relationship to its hazard, sometimes generous, sometimes a cautionary tale, occasionally both at once.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="rail-accordion">
+        <button class="accordion-header" id="acc-stages-btn" onclick="toggleAccordion('stages')">
+          <span>The cycle of development</span>
+          <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="accordion-body" id="acc-stages">
+          <div class="accordion-body-inner">
+            <p style="margin-top:0">This is not a checklist and it is not a straight line. A place can be doing more than one of these at once, or sliding backward, depending on what its story is doing for it right now.</p>
+            <div class="stage-card" style="border-color:var(--stage-formulation)">
+              <b>Formulation &middot; giving it a name</b>
+              A hazard stops feeling random the moment a community builds a shared way to talk about it: a word, a myth, a joke, a ritual. That vocabulary is what makes a threat feel explainable instead of just terrifying.
+            </div>
+            <div class="stage-card" style="border-color:var(--stage-strengthening)">
+              <b>Strengthening &middot; making it stick</b>
+              A story only matters if it outlives the people who lived it. This is memory embedded on purpose: retold, sung, rehearsed, drilled, until the next generation is not just aware of the hazard but ready for it.
+            </div>
+            <div class="stage-card" style="border-color:var(--stage-operationalizing)">
+              <b>Operationalizing &middot; building it in</b>
+              Eventually, culture can turn into policy: land management, building codes, evacuation plans, habits that hold even when nobody is telling the story out loud anymore.
+            </div>
+            <div class="stage-card" style="border-color:var(--stage-degradation)">
+              <b>Degradation &middot; losing the thread</b>
+              None of this is permanent. A story can fade from plain neglect, get flattened into a joke until nobody takes it seriously, or get pushed aside because the people in charge are pointed at a different priority entirely. It shows up three ways: forgetting, commodification, or divergence.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rail-list-label">Places &amp; stories</div>
+      <div class="rail-list" id="rail-list"></div>
+    </div>
+  </div>
+
+  <!-- ---------- middle column: map with a collapsible drawer ---------- -->
+  <div id="mid-col">
+    <div id="map-wrap">
+      <div id="map"></div>
+      <div id="map-drawer">
+        <button id="map-drawer-tab" onclick="toggleDrawer()">
+          <div class="drawer-tab-main">
+            <div class="stage-badge" id="drawer-stage-badge"></div>
+            <h2 id="drawer-name"></h2>
+            <div class="sub" id="drawer-hazard"></div>
+          </div>
+          <svg id="drawer-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div id="map-drawer-body">
+          <h4>Why here</h4><p id="drawer-why"></p>
+          <h4>What it suggests</h4><p id="drawer-program"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------- right column: narrative, visual-journalism style ---------- -->
+  <div id="story-col">
+    <div class="story-hero" id="story-hero">
+      <div class="hero-content">
+        <div class="eyebrow" id="story-hero-eyebrow"></div>
+        <h1 id="story-hero-title"></h1>
+        <p id="story-hero-dek"></p>
+      </div>
+    </div>
+    <div id="story-inner"></div>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   DATA
+   All case content is paraphrased from Daniel Starosta's thesis
+   "Raised Under Bad Stars" (UC Berkeley, 2022) and its condensed
+   article (IJDRM, 2023). Sources are listed per case, stripped of
+   inline citation formatting per house style.
+   ============================================================ */
+const STAGE_META = {
+  formulation:{label:'Formulation', sub:'Giving it a name', color:'var(--stage-formulation)'},
+  strengthening:{label:'Strengthening', sub:'Making it stick', color:'var(--stage-strengthening)'},
+  operationalizing:{label:'Operationalizing', sub:'Building it in', color:'var(--stage-operationalizing)'},
+  degradation:{label:'Degradation', sub:'Losing the thread', color:'var(--stage-degradation)'},
+};
+
+const CASES = [
+  {
+    id:'namazu',
+    name:'Edo (Tokyo), Japan', hazard:'1855 Ansei Edo earthquake',
+    coords:[35.68,139.69], stage:'formulation',
+    why:"A folk myth that already existed for centuries got rapidly repurposed into a shared, anonymous vernacular for grief, satire, and political commentary right after the disaster.",
+    program:"Formulation like this is powerful for processing a moment. It is worth watching whether it fades (as this one did) or gets carried forward into something longer-lasting.",
+    dek:"A major earthquake struck Edo, now Tokyo, in 1855, killing thousands and leveling much of the city. Within weeks, an old folk myth about a giant catfish became the city's shared language for grief and blame.",
+    storyTag:'Edo (Tokyo), Japan · Formulation',
+    story:`
+      <div class="story-section">
+        <h3>Speaking in catfish</h3>
+        <div class="story-quote">What, well? If I shake like this you will have to give up everything. Now, the money hoarded so far, none of that may be left. Spit out every bit of it. In that way the masses will have pleasure out of it!<cite>Namazu the Earthshaker speaking to businessmen, 1855 print, anonymous artist</cite></div>
+        <p>Japanese folklore held that a giant catfish, Namazu, lived buried in the mud beneath Honshu, restrained by the thunder god Kashima. When Namazu wriggled free, the ground shook. The myth was already centuries old by 1855.</p>
+        <p>After that year's Edo earthquake, thousands of woodblock prints, namazu-e, flooded the city. They used Namazu as a stand-in for whatever the print wanted to say: a villain crushing the city while its guardian deity slept on the job, a figure being punished by an angry crowd, or a benevolent force redistributing wealth as gold coins rained down during rebuilding. The prints let people voice things about government negligence and inequality that might have been risky to say outright, folded into a story everyone already knew.</p>
+        <div class="story-img-placeholder">[ image: community attacking Namazu, following the Edo earthquake &middot; awaiting upload ]</div>
+        <p>It became, briefly, a shared public vernacular for grief, anger, satire, and rebuilding. But the print tradition itself faded rather than turning into an ongoing institution. Namazu shows up on some Japanese earthquake-preparedness signage today, more as a mascot than an active practice.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul>
+          <li>Smits, G., 2006</li>
+          <li>Kennedy, A., 2016</li>
+          <li>Hoffman, S. and Oliver-Smith, A., 2002</li>
+          <li>Jones, L., 2018</li>
+        </ul>
+      </details>
+    `
+  },
+  {
+    id:'aneyoshi',
+    name:'Aneyoshi, Japan', hazard:'Tsunami memorial stones',
+    coords:[39.6,141.9], stage:'degradation',
+    why:"A warning literally carved in stone still lost the argument to convenience within two generations.",
+    program:"The simplest, least dramatic version of degradation in the whole set: no myth needed, no institutional failure, just ordinary time passing.",
+    tag:'Degradation via forgetting',
+    dek:"Japan's Sanriku coast has been hit by devastating tsunamis for centuries, most recently in 2011. In one village, a warning literally carved in stone kept people safe for generations, until it didn't.",
+    storyTag:'Aneyoshi, Japan · Degradation, via forgetting',
+    story:`
+      <div class="story-section">
+        <h3>Quick to forget</h3>
+        <div class="story-quote">High dwellings are the peace and harmony of our descendants. Remember the calamity of the great tsunamis. Do not build any homes below this point.<cite>Memorial stone, Aneyoshi village</cite></div>
+        <p>That warning is carved into a stone marker in the small village of Aneyoshi, erected after the 1896 Meiji Sanriku tsunami, whose height came within three feet of the one that struck in 2011. Some of these stones, scattered along Japan's coast, have stood for more than 600 years.</p>
+        <div class="story-img-placeholder">[ image: flood markers in Vicksburg, Mississippi; Aneyoshi, Japan; and Rome, Italy &middot; awaiting upload ]</div>
+        <p>Aneyoshi's stone held its population above the line for a while. Then, within a generation or two, people started building new houses further down the hill again, closer to the harbor where the fishing actually happens. Some villages elsewhere came to see their own warning stones as relics of a superstitious past and built past them anyway; a few had the stones themselves washed away by earlier tsunamis. No myth needed here, no institutional failure. Just ordinary time passing, and a convenience winning out over a warning nobody living had personally needed yet.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul><li>Hamblyn, R., 2014</li></ul>
+      </details>
+    `
+  },
+  {
+    id:'simeulue', flagship:true,
+    name:'Simeulue Island, Indonesia', hazard:'2004 Indian Ocean tsunami',
+    coords:[2.6,96.08], stage:'strengthening',
+    why:"Simeulue's smong story was not just known, it was actively rehearsed: told generationally, reinforced with annual drills, ready to trigger the exact right response the moment the ground shook.",
+    program:"Cultural transmission this strong is worth cataloging and integrating into standard disaster risk reduction practice, not treated as a curiosity or fetishized as automatically superior to modern methods.",
+    dek:"The 2004 Indian Ocean tsunami killed over 230,000 people region-wide. On this island off Sumatra, a century-old warning song helped nearly the entire population survive.",
+    storyTag:'Simeulue Island, Indonesia · Strengthening',
+    story:`
+      <div class="story-section">
+        <h3>Smong is your bath</h3>
+        <p>On Simeulue, an island off the western coast of Sumatra, there is an old song parents still sing to children. It does not sound like a warning. It sounds like a lullaby.</p>
+        <div class="story-quote">Please always remember
+the message and instruction
+Smong is your bath
+Earthquakes is your swing bed
+Thunderstorm is your music
+Thunderlight is your lamp<cite>Smong poem, Simeulue</cite></div>
+        <p>In the local Devayan language, <em>smong</em> just means tsunami. On Simeulue it is more than a word. It is an instruction, wrapped in something soft enough to survive a hundred years of retelling.</p>
+      </div>
+
+      <div class="story-section">
+        <div class="eyebrow">26 DECEMBER 2004</div>
+        <h3>The morning everyone ran</h3>
+        <div class="story-quote">I was a child. I really did not understand what was happening. I just recall everybody shouting: Smong! Smong! And run. So I also ran.<cite>Simeuluean motor-taxi driver, Aceh Airport, 2014</cite></div>
+        <p>Islanders hold annual practice drills built around exactly this story, and when the earthquake hit, they fled to the inland hills before the wave ever arrived. The result: a mere 7 deaths for a population of over 80,000.</p>
+        <div class="story-stats">
+          <div class="story-stat"><b>7</b><span>Deaths on Simeulue</span></div>
+          <div class="story-stat"><b>80,000+</b><span>Simeulue's population</span></div>
+        </div>
+      </div>
+
+      <div class="story-section">
+        <h3>Where the story came from</h3>
+        <p>In 1907, an earthquake just a few miles off Simeulue's coast set off a tsunami that killed roughly 2,000 people. That event became part of the island's oral tradition ever since, a mix of resilience and trauma passed down generationally, embedded so deeply that the word smong itself functions as an automatic early warning trigger whenever the ground starts shaking.</p>
+        <p>Elsewhere in Aceh and Sumatra, similar oral literature, poems and songs about past tsunamis existed too. The difference on Simeulue is not that the knowledge existed. It is that the community actually recognized and used it.</p>
+        <div class="story-img-placeholder">[ image: song lyrics from the Smong tradition, Simeulue &middot; awaiting upload ]</div>
+      </div>
+
+      <div class="story-section">
+        <h3>A few hours away, a different story</h3>
+        <p>More than 60% of Banda Aceh's buildings were destroyed. More than 150,000 people were killed. Aid agencies estimated 90,000 housing units would need replacing; along a single stretch of coast, some 70 square kilometers were left barren.</p>
+        <p>It is tempting to read that gap as Simeulue simply knowing something Aceh did not. The truth is messier. Aceh's 35-year civil war had already stripped its mangrove coasts, coral reefs and seagrass buffers, natural defenses Simeulue's coastline still had intact. Land tenure records were destroyed along with the physical boundary markers, trees and footpaths, that used to define them. And Aceh's own capacity for building a shared narrative around risk had been pointed somewhere else entirely: toward a separatist movement and a conservative religious identity, not toward the sea.</p>
+        <p>Same tsunami, same region, and two communities that had each, in their own way, successfully built a strong cultural identity. One just was not about the hazard.</p>
+        <button class="crossref-btn" onclick="selectCase('aceh')">This is only half of Aceh's story <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+
+      <div class="story-section">
+        <h3>Not the only ones listening to the sea</h3>
+        <p>Off the coast of Myanmar, the Moken, a seafaring community sometimes called sea-nomads, carried their own version of the same instinct: the story of the laboon, the "seventh wave," passed down for generations through a people who spend so much of their lives on the water.</p>
+        <button class="crossref-btn" onclick="selectCase('moken')">Read the Moken's full story <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+
+      <div class="story-section">
+        <h3>What this actually tells us</h3>
+        <p>It is easy to romanticize Simeulue's story as proof that indigenous knowledge is simply better. The more useful reading is narrower and more actionable: this kind of knowledge needs to be recognized, cataloged and integrated into the standard disaster-management canon, not treated as a curiosity or, worse, left invisible because nobody thought to ask.</p>
+        <p>There is a real generational risk even in success stories like this one. Elders can lack a receptive audience; children who live through a disaster can lack the cultural tools to process it. And death toll reporting that lumps everyone into a single number, Aceh and Simeulue treated as one bloc, or the Solomon Islands' Melanesian and Gilbertese populations counted together after a 2007 tsunami where the two groups' outcomes were wildly different, hides exactly the variation that matters most.</p>
+        <p>A story has to be pointed at the hazard to protect against it. And even then, on its own, it has a ceiling, which is exactly why the next stage exists.</p>
+      </div>
+
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul>
+          <li>McAdoo, B. et al., 2006, 2009</li>
+          <li>Athukorala, P., 2006</li>
+          <li>Vale, L., 2014</li>
+          <li>Down to Earth (DTE), 2000</li>
+          <li>Kathiresan, K., 2005</li>
+          <li>Hannah, C., 2021</li>
+          <li>Dahdouh-Guebas, F., 2005</li>
+          <li>Rahman, A. et al., 2017</li>
+          <li>Syafwina, 2014</li>
+          <li>Suppasri, A., 2015</li>
+          <li>Fletcher, S. et al., 2005</li>
+          <li>Gadeng, A. N. et al., 2018</li>
+          <li>Chandramohan, 2017</li>
+          <li>Hiwasaki, L., 2014</li>
+          <li>Mutch, C., 2014</li>
+          <li>Country Needs People, 2021</li>
+        </ul>
+      </details>
+    `
+  },
+  {
+    id:'aceh',
+    name:'Banda Aceh, Indonesia', hazard:'Post-2004 tsunami rebuilding',
+    coords:[5.55,95.32], stage:'operationalizing',
+    why:"Aceh's government built real infrastructure, tsunami towers and a no-build coastal zone, in direct response to the disaster. It counts as an attempt at operationalizing. It just was not built with the community's own norms, memory, or trust.",
+    program:"Infrastructure built to fix a systemic flaw does not automatically account for fear, confusion, or self-interest. Without a collective memory that already explains what to do, no number of new protocols will be enough on their own.",
+    tag:'Cross-referenced from Simeulue',
+    dek:"The same 2004 tsunami devastated Banda Aceh, killing over 150,000 people in the city and its surroundings. The government's rebuilt warning towers went largely unused when the next major earthquake hit.",
+    storyTag:'Banda Aceh, Indonesia · Operationalizing, and what went wrong',
+    story:`
+      <div class="story-section">
+        <button class="crossref-btn" onclick="selectCase('simeulue')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transform:scaleX(-1)"><path d="M5 12h14M13 6l6 6-6 6"/></svg> This picks up after Simeulue's story</button>
+        <h3>Building the tower nobody ran to</h3>
+        <p>Following the tsunami, Aceh's government enacted a no-build zone along the coastline and constructed tsunami towers meant to give people somewhere safe to go. It was built in good faith, and with community safety in mind.</p>
+        <p>The Acehnese community was not especially receptive to any of it, not to the sudden involvement of the wider world, and certainly not to the Indonesian government's involvement, given the 35-year civil war that had defined the region right up until the disaster.</p>
+      </div>
+      <div class="story-section">
+        <h3>The test that failed</h3>
+        <p>In 2012, an 8.6 magnitude earthquake tested the new system. According to Dr. Ella Meilianda of the Tsunami and Disaster Mitigation Research Center, people ran straight past the escape buildings, apparently preferring a horizontal evacuation to a vertical one. Some traumatized residents were not responsive at all; others ran frantically in every direction; still others seemed unfamiliar with the evacuation protocols entirely. Roughly 60% of Banda Aceh's residents live inland, and were confused about why they would need to run toward the city, meaning toward the sea, just to reach an escape building.</p>
+        <p>An official from the Aceh Disaster Management Agency described "complete panic" in the streets. Parents rushed to their children's schools because they did not trust teachers to evacuate them. People grabbed their own cars, causing gridlock.</p>
+        <p>Recognizing a systemic flaw and building a large program to fix it turns out not to account for human fear, confusion, or self-interest. Without a collective memory that compartmentalizes and explains all of this in advance, in the way Simeulue's smong story does automatically, no number of new protocols will be enough on their own. A nearly identical version of this same story played out afterward in Tacloban, the Philippines, following Typhoon Haiyan's own no-build zone.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul>
+          <li>Athukorala, P., 2012</li>
+          <li>Vale, L., 2014</li>
+        </ul>
+      </details>
+    `
+  },
+  {
+    id:'moken',
+    name:'Myeik Archipelago, Myanmar', hazard:'2004 Indian Ocean tsunami',
+    coords:[11.5,98.3], stage:'strengthening',
+    why:"The Moken's laboon story functions almost identically to Simeulue's smong: a piece of oral culture, carried for generations, that converts directly into the correct physical response the moment warning signs appear.",
+    program:"Cultural revival and disaster preparedness can reinforce each other. The caution is not to treat this connection to the sea as mystical rather than what it actually is: collective memory, accumulated and passed down.",
+    tag:'Cross-referenced from Simeulue',
+    dek:"The 2004 tsunami also struck this archipelago off Myanmar's coast. The Moken, a seafaring community, read the warning signs in the water itself and lost almost no one.",
+    storyTag:'Myeik Archipelago, Myanmar · Strengthening',
+    story:`
+      <div class="story-section">
+        <button class="crossref-btn" onclick="selectCase('simeulue')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transform:scaleX(-1)"><path d="M5 12h14M13 6l6 6-6 6"/></svg> Part of the same story as Simeulue</button>
+        <h3>The seventh wave</h3>
+        <p>The Moken, a seafaring community off the Burmese coast sometimes called sea-nomads, carry a story about the laboon, "the seventh wave," described as an ancient thing that has swallowed whole islands before. It has been passed down for generations through people who spend so much of their lives on the ocean that some can reportedly focus their eyes underwater.</p>
+        <p>The lesson embedded in the story is simple: when it comes, go to the mountains, or head to deep water. As one account put it, there were as many versions of the laboon story in Moken oral culture as there were people to tell them.</p>
+      </div>
+      <div class="story-section">
+        <h3>What the water told them</h3>
+        <p>On the day of the 2004 tsunami, fishers noticed deep-sea fish appearing at the surface. Divers saw large numbers of dolphins heading for deeper water. Those still out at sea followed the dolphins outward; those on land fled uphill. In the aftermath, communities reported a new-found pride in, and renewal of, Moken culture and identity.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul><li>Smillie, I., 2014</li></ul>
+      </details>
+    `
+  },
+  {
+    id:'solomon',
+    name:'Solomon Islands', hazard:'2007 tsunami',
+    coords:[-9.6,160.2], stage:'strengthening',
+    why:"Indigenous knowledge saved lives here too, but only for the group that already carried it. Immigrant Gilbertese communities without that same inherited memory died at far higher rates, in the exact same tsunami, on the exact same coastline.",
+    program:"Strengthening only protects whoever already holds the memory. The next piece of that work is the active exchange of local knowledge between communities living side by side, not just reinforcing what one group already has.",
+    tag:'Cross-referenced from Simeulue',
+    dek:"A 2007 tsunami struck the Solomon Islands three years after the Indian Ocean disaster. Indigenous Melanesian communities who recognized the warning signs survived at far higher rates than immigrant neighbors who did not.",
+    storyTag:'Solomon Islands · Strengthening, unevenly shared',
+    story:`
+      <div class="story-section">
+        <button class="crossref-btn" onclick="selectCase('moken')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transform:scaleX(-1)"><path d="M5 12h14M13 6l6 6-6 6"/></svg> A variation on the Moken and Simeulue stories</button>
+        <h3>A tsunami that only some people recognized</h3>
+        <p>Three years after the 2004 Indian Ocean tsunami, a 2007 tsunami hit the Solomon Islands. The physical conditions were, if anything, favorable: researchers described the local coastline as having a "beneficial physiography" that should have limited casualties broadly.</p>
+        <p>It didn't work out that way for everyone. Immigrant Gilbertese populations died at disproportionately high rates in areas that suffered comparable physical damage, because they did not recognize the signs of the coming wave. Researchers were direct about the cause: "the interaction of the tsunami with the physical landscape was not consistent with the disproportionate rates that the Gilbertese immigrants died when compared to their indigenous Melanesian counterparts."</p>
+      </div>
+      <div class="story-section">
+        <h3>Same tsunami, two different memories</h3>
+        <p>The gap in outcomes traced back to inherited knowledge, not geography. Indigenous Melanesian communities responded properly in large part because of "generations accustomed to living on an active subduction zone," the same kind of accumulated, transmitted memory that protected Simeulue in 2004. Gilbertese immigrant communities simply hadn't had generations on that same coastline to build it.</p>
+        <p>As with Aceh and Simeulue, official death tolls here were reported as single totals, collapsing exactly the distinction that would explain what happened and to whom.</p>
+      </div>
+      <div class="story-section">
+        <h3>What's missing isn't knowledge. It's exchange.</h3>
+        <p>This case sits in a gray area between strengthening and operationalizing: real cultural knowledge existed and worked, but it wasn't shared across the different communities living on the same stretch of coast. A fuller version of strengthening may need to include the active exchange of local knowledge between neighboring communities, not just the reinforcement of whatever one group already happens to hold.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul>
+          <li>McAdoo, B., Moore, A. et al., 2009</li>
+          <li>Chandramohan, 2017</li>
+        </ul>
+      </details>
+    `
+  },
+  {
+    id:'tacloban',
+    name:'Tacloban, Philippines', hazard:'Typhoon Haiyan, 2013',
+    coords:[11.24,125.0], stage:'operationalizing',
+    why:"Like Aceh, the Philippine government built a formal no-build zone in Tacloban with real community safety in mind after Typhoon Haiyan. Like Aceh, it clashed hard with how people actually needed to live and work.",
+    program:"A no-build zone that ignores how a fishing community actually earns its living will get worked around, quietly and predictably, no matter how sound the underlying safety logic is.",
+    tag:'Cross-referenced from Aceh',
+    dek:"Typhoon Haiyan struck the Philippines in 2013, one of the strongest storms ever recorded at landfall. In Tacloban, a coastal no-build zone meant to keep people safe ran headlong into how fishing families actually needed to live.",
+    storyTag:'Tacloban, Philippines · Operationalizing, and the same mistake twice',
+    story:`
+      <div class="story-section">
+        <button class="crossref-btn" onclick="selectCase('aceh')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transform:scaleX(-1)"><path d="M5 12h14M13 6l6 6-6 6"/></svg> The same policy, a different coastline</button>
+        <h3>A familiar plan, an ocean away</h3>
+        <p>Typhoon Haiyan devastated the Philippines in 2013, and Tacloban, on Leyte, was among the hardest hit. In its aftermath, the government put a no-build zone into place along the coast, developed in good faith and built around the same basic logic Aceh had used after the 2004 tsunami: keep people out of the most exposed ground.</p>
+        <p>It ran into the same kind of trouble too. Several key holes in the plan were revealed almost immediately, and the pressure to restore some normal footing quickly clashed with the slower work of building anything more resilient.</p>
+      </div>
+      <div class="story-section">
+        <h3>Building around the rule, not into it</h3>
+        <p>Coastal fishing families in Tacloban still needed to work the water the no-build zone was meant to clear them from. The result: fishermen began building purposefully ramshackle, easy-to-disown structures inside the restricted zone, built to avoid drawing police attention, so they could keep working without technically defying the rule.</p>
+        <p>At the same time, many of those same families were living in NGO-provided housing whose strict rules clashed with residents' own informal norms around expanding and adapting a home over time, pushing that construction directly into the street instead.</p>
+      </div>
+      <div class="story-section">
+        <h3>Right house, right way, wrong place</h3>
+        <p>The pattern amounts to the wrong houses being built in the right way in the wrong place, and it cost the government something real: each visible workaround chipped further away at community faith in whatever official system came next. As in Aceh, a policy built with good intentions but without reference to how a community actually lives ends up doing less than the paperwork suggests, and sometimes actively works against the people it was meant to protect.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul>
+          <li>Fitzpatrick, D. and Compton, C., 2019</li>
+          <li>Mangada, L., 2021</li>
+          <li>Mortensen, S. and Johnson, K., SEI</li>
+        </ul>
+      </details>
+    `
+  },
+  {
+    id:'thailand',
+    name:'Thailand', hazard:'2004 tsunami and 2011 floods',
+    coords:[13.75,100.49], stage:'strengthening',
+    why:"A British schoolgirl on vacation recognized the warning signs of the 2004 tsunami from a geography lesson and helped clear a beach in time. Seven years later, when catastrophic floods hit central Thailand, a folk theater program began repurposing an existing fisherman's tale to teach that same kind of pattern recognition on purpose.",
+    program:"Sometimes cultural transmission of hazard knowledge is a lucky accident, like a girl remembering a school lesson at exactly the right moment. Programs like Kinnari Eco Theater try to make that transmission deliberate instead of hoping it happens by chance.",
+    dek:"In 2004, a British schoolgirl on holiday in Thailand recognized the warning signs of an incoming tsunami from a geography class. In 2011, catastrophic floods hit central Thailand, and a folk theater project began retooling an old fisherman's tale to teach that same hazard literacy on purpose.",
+    storyTag:'Thailand · Strengthening, one lucky and one deliberate',
+    story:`
+      <div class="story-section">
+        <h3>What a ten-year-old noticed</h3>
+        <p>In 2004, a British grade-schooler visiting Thailand had just learned about tsunamis in a geography class back home. Watching the tide rush unusually far out to sea, she recognized the warning sign from her lesson and raised the alarm in time to help clear a beach before the wave arrived.</p>
+      </div>
+      <div class="story-section">
+        <h3>Turning a fisherman's tale into a flood lesson</h3>
+        <p>Southeast Asia's Kinnari Ecological Theater Project takes a different, more deliberate approach to the same problem. It stages Pla Boo Thong, a popular Thai fisherman's tale, with a modern twist: added elements about rubbish clogging water channels, the exact kind of blockage that worsened flood damage in low-lying communities during Thailand's catastrophic 2011 floods. Rather than inventing a new warning story from nothing, the project folds a current hazard directly into a folk tale audiences already know and trust.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul>
+          <li>Gregg, C. et al., 2006</li>
+          <li>Kinnari, 2019</li>
+        </ul>
+      </details>
+    `
+  },
+  {
+    id:'yellow-river',
+    name:'Yellow River, China', hazard:'Four thousand years of flooding',
+    coords:[34.8,114.3], stage:'degradation',
+    why:"The story never disappeared here. It lost the argument to a different priority, at exactly the level where it would have mattered most.",
+    program:"A caution about scale: technological confidence at the mega-project level can crowd out community-scale, adaptive design, even where cultural memory of the hazard runs deep.",
+    tag:'Degradation via divergence',
+    dek:"The Yellow River has flooded catastrophically for thousands of years, killing millions within the last two centuries alone. China's response has leaned on mega-engineering at the expense of the community-scale adaptation its own history might suggest.",
+    storyTag:'Yellow River, China · Degradation, via divergence',
+    story:`
+      <div class="story-section">
+        <h3>Divergent paths</h3>
+        <p>The Yellow River does not lack cultural memory. Ma Yuan was painting its floods in the 12th century; records of its breaches go back nearly 2,000 years. An 1887 flood killed close to a million people and left two million homeless; a 1931 flood killed as many as two million more. Floods have kept coming since, in 1949, 1958, 1976, 1996, 2019, and 2020.</p>
+        <div class="story-img-placeholder">[ image: Ma Yuan studies on the Yellow River floods, 12th century China &middot; awaiting upload ]</div>
+        <p>None of that history is missing. What is missing is a flood strategy built at the scale of a community rather than the scale of a mega-project. China's flood infrastructure has centered on enormous engineering like the Three Gorges Dam, built on a belief that human ingenuity has no real ceiling, rather than the kind of localized, adaptive design landscape architect Kongjian Yu has spent his career arguing for, under the banner of learning to "make friends with the flood" instead of trying to beat it outright.</p>
+        <p>This is degradation of a different kind than forgetting or commodification. The story never disappeared. It just lost the argument to a different priority, at the level where it actually would have mattered.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul>
+          <li>Krier, J. and Gillette, C., 1985</li>
+          <li>Basiago, A., 1994</li>
+          <li>Little, S., 2000</li>
+          <li>Lienhard, J., 2001</li>
+          <li>Courtney, C., 2018</li>
+          <li>Yu, K., 2006</li>
+        </ul>
+      </details>
+    `
+  },
+  {
+    id:'aboriginal-land',
+    name:'Northern Australia', hazard:'Bushfire and land management',
+    coords:[-12.5,133.0], stage:'operationalizing',
+    why:"Cultural burning and land stewardship, practiced for millennia, have been handed back to the communities that originated them and turned into an actual government-supported land management infrastructure.",
+    program:"A rare case of a government handing over the reins rather than just consulting. The caution: done carelessly, this can flatten into narrow roles rather than full agency over a community's own future.",
+    dek:"Northern Australia faces some of the country's most severe wildfire risk, worsened by decades of fire suppression after Aboriginal land practices were pushed out. Governments have since begun handing that land, and its fire management, back to the communities that stewarded it for millennia.",
+    storyTag:'Northern Australia · Operationalizing',
+    story:`
+      <div class="story-section">
+        <h3>Turning over the land</h3>
+        <p>After generations of active suppression, Australia has spent the last thirty years handing wildfire and land management on huge stretches of country back to Aboriginal and Torres Strait Islander rangers, the communities whose relationship to that land goes back millennia and who never stopped seeing environmental care and cultural practice as the same thing.</p>
+        <p>Today, Indigenous Protected Areas cover more than 74 million hectares, nearly half of all of Australia's protected land, run by more than 130 separate Indigenous ranger teams. Practices like cultural burning, controlled fire management that indigenous communities used for millennia before decades of blanket fire suppression pushed it out, are being taken seriously again as wildfire risk grows.</p>
+        <div class="story-img-placeholder">[ image: map of current Indigenous Protected Areas and related programs in Australia &middot; awaiting upload ]</div>
+        <p>It works both ways: elders get to return to country they may not otherwise access, younger people get to learn it from them directly, and the state gets a wildfire strategy grounded in something more durable than a five-year plan. The real caution here: done carelessly, this kind of program can flatten into narrow, traditional roles for traditional communities, rather than the full range of options a thriving future actually requires.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul><li>Country Needs People, 2021</li></ul>
+      </details>
+    `
+  },
+  {
+    id:'peregian',
+    name:'Peregian, Queensland, Australia', hazard:'2019 bushfires',
+    coords:[-26.48,153.09], stage:'strengthening',
+    tag:'Cross-referenced from New Orleans',
+    why:"After the 2019 Queensland bushfires, primary school art sessions gave children who could not yet put their fear into words a different way to process what they had just lived through.",
+    program:"Art therapy does not require a clinical framework built specifically for wildfire trauma. It just requires giving children a medium that is not language, and letting them use it.",
+    dek:"The 2019 Queensland bushfires left children in towns like Peregian dealing with nightmares and fear they did not yet have the words for. Primary school art sessions gave them swirling patterns and colored scarves instead.",
+    storyTag:'Peregian, Queensland, Australia · Strengthening, through children’s art',
+    story:`
+      <div class="story-section">
+        <button class="crossref-btn" onclick="selectCase('creative-arts')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transform:scaleX(-1)"><path d="M5 12h14M13 6l6 6-6 6"/></svg> Another version of New Orleans' creative-arts response</button>
+        <h3>Drawing what they couldn't say</h3>
+        <div class="story-quote">Many of the children experienced nightmares after the fires, and art sessions were a catalyst for conversations that might not otherwise have happened.<cite>Elementary school teacher, Peregian, Queensland, 2019</cite></div>
+        <p>Children used "swirly patterns" to represent the wildfire itself and colorful scarves to represent the different stages of how they felt, in sessions that gave them a shared space to process trauma without needing to put it into words first.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul><li>Bartholomew, 2020</li></ul>
+      </details>
+    `
+  },
+  {
+    id:'hurricane-culture',
+    name:'South Florida, USA', hazard:'Hurricane season',
+    coords:[25.76,-80.19], stage:'formulation',
+    why:"South Florida built a shared, self-deprecating vocabulary for hurricanes long before it built the preparedness culture to match. The nonchalance is real, and it cuts both ways.",
+    program:"A community can normalize a hazard into its identity while its actual preparedness lags behind. Worth checking whether the joke has outpaced the plan.",
+    dek:"South Florida sits in the path of the Atlantic's most active hurricane corridor. Long before the region built real preparedness infrastructure, it built a running joke about living there anyway.",
+    storyTag:'South Florida, USA · Formulation',
+    story:`
+      <div class="story-section">
+        <h3>Everyone's invited</h3>
+        <p>South Florida's relationship with hurricanes shows up less as fear and more as a running joke everyone is already in on. The University of Miami named its teams the Hurricanes on purpose, after the Great Miami Hurricane of 1926 derailed the football program's very first game. When officials later worried the name reinforced Miami's reputation as disaster-prone, the players refused to let it change.</p>
+        <p>Nearly 400 tropical or subtropical cyclones have hit Florida since 1900, often enough that storms function as timestamps in local memory: things happened "before Andrew," or "between Charlie and Ivan." A Florida high school newspaper once described local hurricane culture as more nonchalant than anywhere else, precisely because it is something every Floridian has grown up with, hurricane parties included.</p>
+        <p>That same nonchalance cuts both ways. Most people living in South Florida in 1992, when Hurricane Andrew hit, had never actually experienced a hurricane themselves; the last major one had struck in 1964. Barely anyone knew what to do. It was Andrew, not decades of folklore, that actually changed building codes and preparedness planning. Key West carries its own, more stubborn version of the same instinct: a long history of residents refusing to evacuate no matter the warning.</p>
+        <p>The region's closest thing to a shared visual language shows up in odd corners. Plywood shutters get graffitied with a running joke, the same board recoated and relabeled storm after storm, once reading "We're open, Wilma," later painted over with "We're open, Irma." The Carolina Hurricanes, a professional hockey team eight states north of any hurricane party, use a double red flag hurricane-warning symbol as an alternate logo, about as close as North American sports gets to Japan's catfish icon. Miami's own "O, Miami" poetry festival has leaned into the same instinct on purpose, building a yearly, city-scale platform for exactly the kind of narrative work this tool keeps returning to.</p>
+      </div>
+      <div class="story-section">
+        <h3>Not everyone gets to be nonchalant about it</h3>
+        <p>Nonchalance is easiest to afford when there is actually something behind it. In the mostly low-income Liberty City, ahead of 2017's Hurricane Irma, an informal survey of homes found only about one in five boarded up or otherwise storm-protected. In wealthier Miami Beach, nearly every property had sandbags, shutters, and hurricane-resistant glass.</p>
+        <div class="story-quote">Nobody is leaving Liberty City because there's nowhere for them to go.<cite>Liberty City resident, ahead of Hurricane Irma, 2017</cite></div>
+        <p>For a resident with few resources and short notice, preparedness can shrink down to almost nothing: "We got what we got. If the windows start smashing, I'm going to put my mattress up against them and if that don't work, I'm going to hide in the bathroom." The same shutter graffiti and hurricane-party ethos found across wealthier parts of South Florida shows up here too, but underneath it sits a much thinner safety net, one that hurricane culture alone was never going to fix.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul>
+          <li>Barry, D., 2016</li>
+          <li>Provenzo, E. and Fradd, S., 2002</li>
+          <li>Licari, A. et al., 2018</li>
+          <li>Rappaport, E. and Fernandez-Partagas, J., 1995</li>
+          <li>Pilkington, E., 2017</li>
+          <li>O, Miami, 2022</li>
+        </ul>
+      </details>
+    `
+  },
+  {
+    id:'waffle-house',
+    name:'Gulf Coast, USA', hazard:'Hurricane season',
+    coords:[30.13,-93.99], stage:'operationalizing',
+    why:"An ordinary diner chain's operating habits happened to track disaster severity closely enough that FEMA started using it as an actual reference point, and Waffle House leaned into the role on purpose.",
+    program:"Sometimes the thing worth formalizing into policy is already sitting there, doing its job, waiting to be noticed, rather than something that needs to be built from scratch.",
+    dek:"The Gulf Coast's hurricane season is frequent and severe enough that federal agencies need real-time signals of how bad a storm actually is. One ordinary diner chain's stay-open policy turned out to be more reliable than most official indexes.",
+    storyTag:'Gulf Coast, USA · Operationalizing',
+    story:`
+      <div class="story-section">
+        <div class="story-quote">If you get there and the Waffle House is closed? That's really bad.<cite>Craig Fugate, former head of FEMA, Joplin, Missouri, 2011</cite></div>
+        <h3>Merging the formal and the informal</h3>
+        <div class="story-quote">Good morning from Vidor, where the traffic lights are off but the Waffle House is on #HurricaneLaura<cite>@sarahesmith23, Vidor, Texas, 2020</cite></div>
+        <p>Waffle House's own operating philosophy, first to open, last to close, turned an unremarkable diner chain into an accidental hurricane-severity index. The logic is blunt: if your local Waffle House is closed, leave immediately. It got informal enough, and accurate enough, that FEMA started treating it as a real indicator starting in 2011, and Waffle House built its own internal storm response team, using an internal "Index Red" designation, to match.</p>
+      </div>
+      <div class="story-section">
+        <h3>A supply chain that already knew what to do</h3>
+        <div class="story-quote">They know immediately which stores are going to be affected and they call their employees to know who can show up and who cannot. They have temporary warehouses where they can store food, and most importantly, they know they can operate without a full menu. This is a great example of a company that has learned from the past and developed an excellent emergency plan.<cite>Panos Kouvelis, supply chain researcher, Washington University in St. Louis</cite></div>
+        <p>None of it was designed as infrastructure. It became infrastructure because a company's ordinary habits happened to track disaster severity closely enough to be useful, and because local culture had already made it a trusted, half-joking reference point long before any agency noticed. As one tweet put it, "Waffle House is a hurricane shelter that happens to serve breakfast."</p>
+      </div>
+      <div class="story-section">
+        <h3>A best case, not a universal one</h3>
+        <p>Waffle House represents something close to a best case for this kind of organic operationalizing: informal cultural practice generated usable, actionable data, and the institutional relationship between the company and FEMA held up and grew from there. The risk cuts the other way too. Not every piece of local culture that looks like preparedness actually functions as data. Treating something like a hurricane party as equivalent, informal infrastructure could put people at risk rather than protect them. The lesson isn't that any local quirk deserves formal status. It's that the ones which already work deserve to be noticed and taken seriously, wherever they show up.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul>
+          <li>Accuweather, 2020</li>
+          <li>Morris, D., 2020</li>
+          <li>McKenna, M., 2016</li>
+        </ul>
+      </details>
+    `
+  },
+  {
+    id:'creative-arts',
+    name:'New Orleans, USA', hazard:'Aftermath of Hurricane Katrina',
+    coords:[29.95,-90.07], stage:'strengthening',
+    why:"Creative arts therapy works because it meets people where their own cultural vocabulary already lives, rather than importing a clinical language that may not translate across how a community actually expresses grief.",
+    program:"Community cohesion right after a disaster (the honeymoon phase) can collapse fast. Locally rooted cultural practice can do work in that gap that a generic treatment protocol cannot.",
+    dek:"Hurricane Katrina displaced over a million people from New Orleans in 2005 and left psychological damage that outlasted the physical rebuild. Years later, the city turned to its own musical and artistic traditions to help process what standard treatment couldn't reach.",
+    storyTag:'New Orleans, USA · Strengthening',
+    story:`
+      <div class="story-section">
+        <h3>Finding a voice</h3>
+        <div class="story-quote">Waiting
+waiting cautiously
+for the rest of your life<cite>from Fault Lines: Children's Earthquake Poetry</cite></div>
+        <p>Katrina's psychological toll did not peak on landfall, it kept climbing for years. PTSD rates in affected regions rose from 15% a few months after the storm to 21% a year later; reported suicidal ideation more than doubled. A study of low-income single mothers in New Orleans found one in five still had elevated anxiety and depression four years on. Twelve years later, roughly one in six residents still showed symptoms consistent with probable PTSD.</p>
+        <p>Disaster mental health has leaned increasingly on creative arts therapy, music and art-based treatment, precisely because it can meet people where their own cultural vocabulary already is, instead of importing a clinical language that may not translate across emotional expression, shame, power distance, collectivism, and spiritual belief. The community cohesion people feel right after a disaster can collapse fast, and it is in that gap that locally rooted cultural practice can do work a generic protocol cannot.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul>
+          <li>Reardon, S., 2015</li>
+          <li>Rhodes, J. et al., 2012</li>
+          <li>Raker, E. et al., 2019</li>
+          <li>Hechanova, R. et al., 2017</li>
+          <li>US Dept of Health and Human Services, 2003</li>
+        </ul>
+      </details>
+    `
+  },
+  {
+    id:'levee-breaks',
+    name:'Mississippi Delta, USA', hazard:'Great Flood of 1927',
+    coords:[34.2,-90.57], stage:'degradation',
+    why:"The song survived. What survived attached to it did not: its authorship, its authors, and the specific grief it was written to hold.",
+    program:"A caution about recontextualization: a cover version does not erase a story on its own, but once it becomes the default, the original can quietly stop being the reference point at all.",
+    tag:'Degradation via commodification',
+    dek:"The Great Mississippi Flood of 1927 devastated Black communities along the river and inspired a blues standard written to hold that specific grief. Decades later, a British rock cover became the version most people now know.",
+    storyTag:'Mississippi Delta, USA · Degradation, via commodification',
+    story:`
+      <div class="story-section">
+        <h3>When the Levee Breaks</h3>
+        <div class="story-quote">I worked on the levee, mama, both night and day
+I ain't got nobody to keep the water away
+Mean old levee taught me to weep and moan
+Told me leave my baby and my happy home<cite>Kansas Joe McCoy, "When the Levee Breaks," 1929</cite></div>
+        <p>Memphis Minnie and Kansas Joe McCoy, both born in the flood's path, wrote "When the Levee Breaks" in 1929 as a direct account of the Great Mississippi Flood of 1927 and what it did to Black communities along the river. For decades it stood as exactly that: a blues record tightly bound to a specific place, a specific flood, a specific grief.</p>
+        <p>In 1971, four English rock musicians who loved the blues recorded their own version. Covering a song does not automatically erase where it came from. But today, a search for "When the Levee Breaks" returns Led Zeppelin's version first, decisively. A native Mississippian born in the last fifty years is now arguably more likely to associate the song with London or New York than with the river it was written about. Nothing about the flood changed. What changed is which version of the story gets to be the default one.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul><li>Original song attribution: Memphis Minnie and Kansas Joe McCoy, 1929</li></ul>
+      </details>
+    `
+  },
+  {
+    id:'vicksburg',
+    name:'Vicksburg, Mississippi, USA', hazard:'20th-century flood markers',
+    coords:[32.35,-90.88], stage:'degradation',
+    tag:'Cross-referenced from Aneyoshi',
+    dek:"The seawall in Vicksburg, Mississippi carries flood-height markers spanning a century of the river's worst moments, one of several places around the world that chose to carve its flood history directly into a wall.",
+    storyTag:'Vicksburg, Mississippi, USA · Degradation, the same risk as Aneyoshi',
+    story:`
+      <div class="story-section">
+        <button class="crossref-btn" onclick="selectCase('aneyoshi')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transform:scaleX(-1)"><path d="M5 12h14M13 6l6 6-6 6"/></svg> The same question this tool asks about Aneyoshi</button>
+        <h3>A seawall that remembers</h3>
+        <p>The seawall along the Mississippi in Vicksburg carries flood-height markers spanning the last hundred years, one of several places, alongside Rome's 1557 marker and Aneyoshi's tsunami stone, that chose to carve its worst flood directly into a physical structure. Whether a marker like this keeps functioning as a warning, or quietly turns into scenery nobody reads anymore, depends entirely on whether anyone still stops to read it.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul><li>Hamblyn, R., 2014</li></ul>
+      </details>
+    `
+  },
+  {
+    id:'sharknado',
+    name:'Los Angeles / global streaming', hazard:'Disaster film genre',
+    coords:[34.05,-118.24], stage:'degradation',
+    why:"When the cultural image of a hazard becomes an outright joke, having a straight conversation about the actual risk gets harder, not easier.",
+    program:"Entertainment is not inherently a threat to preparedness culture, but it is worth noticing when it becomes the primary lens through which a hazard gets imagined.",
+    tag:'Degradation via commodification',
+    dek:"Hurricanes, wildfires, and earthquakes are all real, recurring threats to American cities. The disaster-movie genre, from Sharknado to San Andreas, has increasingly turned all three into punchlines.",
+    storyTag:'Los Angeles / global streaming · Degradation, via commodification',
+    story:`
+      <div class="story-section">
+        <h3>Reel life, real life</h3>
+        <p>Somewhere on the spectrum from "When the Levee Breaks" to total detachment sits Sharknado: a made-for-television movie about a hurricane that flings sharks into Los Angeles, played almost entirely for laughs, that became a genuine cultural phenomenon.</p>
+        <div class="story-img-placeholder">[ image: movie posters from the contemporary disaster film trope &middot; awaiting upload ]</div>
+        <p>Disaster researchers draw a line between "reel life" disaster media, patiently produced, plotted around victims who rise to the occasion, and the messier "real life" version communities actually live through. That line matters because films like Sharknado, and San Andreas, and the wider disaster-blockbuster genre, can make it harder to have a straight conversation about real risk. If the cultural image of a hazard becomes a joke, treating the whole subject as inherently unserious is its own kind of forgetting, just dressed up as entertainment instead of neglect.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul>
+          <li>Mitchell, J., 2000</li>
+          <li>Quarantelli, E. and Dynes, R., 2007</li>
+        </ul>
+      </details>
+    `
+  },
+  {
+    id:'santa-cruz',
+    name:'Santa Cruz, California, USA', hazard:'1989 Loma Prieta earthquake',
+    coords:[36.97,-122.03], stage:'strengthening',
+    tag:'Cross-referenced from New Orleans',
+    why:"After the 1989 Loma Prieta earthquake, a Bay Area poet ran weeks of poetry sessions with a shaken elementary school class that turned into a published collection, giving an entire group of ten-year-olds a shared, concrete way to process what they had just lived through.",
+    program:"Creative expression does not have to wait for a formal mental health protocol to show up. A weekly poetry hour, run by someone the kids already trusted, did real work here.",
+    dek:"The 1989 Loma Prieta earthquake shook Santa Cruz and the greater Bay Area hard enough to close schools for weeks. A local poet turned one shaken classroom into a published collection of children's earthquake poetry.",
+    storyTag:'Santa Cruz, California, USA · Strengthening, through children’s own words',
+    story:`
+      <div class="story-section">
+        <button class="crossref-btn" onclick="selectCase('creative-arts')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transform:scaleX(-1)"><path d="M5 12h14M13 6l6 6-6 6"/></svg> Another version of New Orleans' creative-arts response</button>
+        <h3>Fault Lines</h3>
+        <div class="story-quote">It really messed us up. I was diving under desks at loud sounds for weeks, and we didn't have school for a month.<cite>Gault school student, Santa Cruz, on the Loma Prieta earthquake</cite></div>
+        <p>Following the 1989 Loma Prieta earthquake, Bay Area poet and educator Patrice Vecchione ran weeks of dedicated poetry-writing sessions with K-6 students at the Gault school in Santa Cruz. The project became a published collection, "Fault Lines: Children's Earthquake Poetry," and gave an entire class a concrete, shared way to describe what they had just been through.</p>
+        <p>Vecchione later described the project's real effect as much bigger than the writing itself: "writing the poems brought us together as a community, making the book brought us together as a community, and cleaning up what was left of the bookstore brought us together."</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul>
+          <li>Resneck, M., Fault Lines Book, 2022</li>
+          <li>Vecchione, P., 2022</li>
+        </ul>
+      </details>
+    `
+  },
+  {
+    id:'sacramento',
+    name:'Sacramento, California, USA', hazard:'1861-62 Great Flood',
+    coords:[38.58,-121.49], stage:'operationalizing',
+    why:"Sacramento's flood infrastructure ranks among the best in the country by FEMA's own standards. Local Indigenous communities also correctly predicted the region's worst flood on record, in detail, days in advance. Neither form of knowledge has fully made it into the region's popular memory.",
+    program:"A caution about decontextualized planning: excellent infrastructure and demonstrated local knowledge can both exist, and a community can still fail to build either one into its actual sense of who it is and what it faces.",
+    tag:'borders Degradation',
+    dek:"California's Central Valley has flooded catastrophically before, most famously in the winter of 1861-62. Sacramento's modern flood infrastructure is excellent by federal standards, but almost no one alive remembers why it needed to be.",
+    storyTag:'Sacramento, California, USA · Operationalizing, bordering Degradation',
+    story:`
+      <div class="story-section">
+        <div class="story-quote">I don't think the city will ever rise from the shock, I don't see how it can.<cite>William Brewer, Sacramento, 1862</cite></div>
+        <h3>A race against time</h3>
+        <p>Sacramento's flood planning is some of the most highly regarded in the country. Neighboring Roseville was the first city in the US to receive FEMA's top Class 1 rating for forward-looking flood preparedness. But that planning has mostly been built without reference to the region's own flood history.</p>
+      </div>
+      <div class="story-section">
+        <h3>The flood that moved a capital</h3>
+        <p>The Great Sacramento Flood of 1861-62 cut off telegraph contact with the East Coast, swamped the state's brand-new capital, and put as much as 15 feet of water over the entire Central Valley. The governor reached his own inauguration by rowboat, and the state capital was briefly moved to San Francisco. Roughly 4,000 people died, about 1% of California's population at the time. One home in eight in the flood's path was destroyed outright or carried away entirely.</p>
+        <div class="story-img-placeholder">[ image: 1862 flood on J Street and K Street, Sacramento &middot; awaiting upload ]</div>
+      </div>
+      <div class="story-section">
+        <h3>The people who saw it coming</h3>
+        <div class="story-quote">We are informed that the Indians living in the vicinity of Marysville left their abodes a week or more ago for the foothills predicting an unprecedented overflow. They told the whites that the water would be higher than it has been for thirty years, and pointed high up on the trees and houses where it would come.<cite>Nevada City Democrat, January 11, 1862</cite></div>
+        <p>At least some of the region's Indigenous population saw the flood coming and moved to the foothills in advance, warning white settlers of what was about to happen based on generations of watching the valley's weather and water. It went unheeded. This is the same story told in reverse: the knowledge existed, the warning was given, and it simply was not integrated into how the wider settler population understood its own risk.</p>
+      </div>
+      <div class="story-section">
+        <h3>What California forgot to be afraid of</h3>
+        <p>In the modern Californian imagination, earthquakes, wildfire, and drought sit much closer to the surface than flooding. The Haywired Scenario, a simulation of a major Hayward Fault earthquake, drew on a deep, broadly shared public understanding of earthquake risk. Flooding has no equivalent foothold in the state's collective narrative, even though the Central Valley, California's most productive farmland, is also one of the regions most exposed to future megafloods.</p>
+        <div class="story-quote">The levee situation was worse in Sacramento than New Orleans before Katrina. Now it's of course worse.<cite>Robert Verchick, environmental law professor, Loyola University New Orleans</cite></div>
+      </div>
+      <div class="story-section">
+        <h3>Not a thousand-year fluke</h3>
+        <p>The 1861-62 flood was long treated as a freak, thousand-year anomaly. Paleoclimate research says otherwise: comparable or larger floods have struck California roughly every 100 to 200 years, with likely events between 1235 and 1360, 1395 and 1410, 1555 and 1615, 1750 and 1770, and 1810 and 1820. Climate change is expected to make the next one more frequent, not less.</p>
+        <p>Sacramento's flood planning is an admirable case of operationalizing, and a fragile one. Infrastructure this good is expensive to keep funding once the disaster it was built for fades far enough into the past. California could do worse than to take a cue from Simeulue, finding its own existing cultural practices and folding a real, felt sense of flood risk into them, rather than leaving that risk to planners and historians alone.</p>
+        <button class="crossref-btn" onclick="selectCase('simeulue')">Compare with Simeulue, where the story didn't fade <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul>
+          <li>Zerkel, E., 2017</li>
+          <li>Schlosberg, A. et al., 2020</li>
+          <li>Philpott, T., 2020</li>
+          <li>Israel, B., 2014</li>
+          <li>USGS, Haywired Scenario, 2018</li>
+          <li>Jones, L., 2018</li>
+          <li>Roseville Today, 2022</li>
+        </ul>
+      </details>
+    `
+  },
+  {
+    id:'oakland-berkeley',
+    name:'Oakland/Berkeley, California, USA', hazard:'1991 firestorm, 1923 fire',
+    coords:[37.85,-122.24], stage:'degradation',
+    tag:'Degradation, via forgetting',
+    why:"The 1991 Oakland firestorm needed nearly the same fixes that survivors of the 1923 Berkeley fire had already called for, decades earlier. Each fire got treated as its own dividing line, with little memory of the one before it.",
+    program:"Naming a disaster as the line between who you were and who you are now can be a powerful way to process it personally. It can also erase the fact that a nearly identical disaster, with nearly identical lessons, already happened on the same hillside.",
+    dek:"The 1991 Oakland firestorm and the 1923 Berkeley fire burned through many of the same hillside neighborhoods, decades apart. Many of the fixes called for after 1991 were the same ones survivors of 1923 had already asked for.",
+    storyTag:'Oakland/Berkeley, California, USA · Degradation, via forgetting',
+    story:`
+      <div class="story-section">
+        <div class="story-quote">Disasters can be dividing lines, they tell me what I was then and who I am now.<cite>Oakland firestorm resident, 1991</cite></div>
+        <h3>A dividing line, over and over</h3>
+        <p>That kind of framing, a fire as the clean break between a before and an after, is powerful for making sense of a single disaster. It also has a way of erasing the fact that the same hills had already burned before. Before the 1991 Oakland firestorm came the 1923 Berkeley fire. Before 2017's Hurricane Maria came 1932's San Felipe III. Before 1992's Hurricane Andrew came the Great Okeechobee Hurricane of 1929. Each one caused a real overhaul in its own right, and each one still got treated, by the next generation, as the first of its kind.</p>
+      </div>
+      <div class="story-section">
+        <h3>The same fixes, a second time</h3>
+        <p>Many of the structural and fire-code recommendations made after 1991 were the same ones survivors of the 1923 Berkeley fire had already called for, decades earlier. Treating each fire as unprecedented meant relearning a lesson the community had already paid for once, rather than simply building on it.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul>
+          <li>Starrs, R., 2014</li>
+          <li>Burress, C., 1998</li>
+          <li>Ho, V., 2017</li>
+        </ul>
+      </details>
+    `
+  },
+  {
+    id:'nuclear-semiotics',
+    name:'Carlsbad, New Mexico, USA', hazard:'Long-term nuclear waste warning design',
+    coords:[32.37,-103.79], stage:'formulation',
+    why:"Every other case in this tool is a culture that formed naturally, after a disaster people actually lived through. Designing a warning for buried nuclear waste is the opposite problem: an attempt to manufacture a warning myth on purpose, for a danger no one alive will ever personally witness.",
+    program:"When there is no lived disaster to build a culture around, formulation has to be done deliberately, by design, and revisited by every generation. That is a very different, much harder problem than reinforcing a memory that already exists.",
+    tag:'Formulation, attempted without a disaster',
+    dek:"Nuclear waste buried at sites like New Mexico's Waste Isolation Pilot Plant will stay dangerous for roughly 10,000 years, longer than any language or nation-state has lasted. Governments have had to try to invent a warning culture built to survive that gap.",
+    storyTag:'Carlsbad, New Mexico, USA · Formulation, attempted without a disaster',
+    story:`
+      <div class="story-section">
+        <div class="story-quote">This place is not a place of honor. No highly esteemed dead is commemorated here. Nothing of value is here. What is here was dangerous and repulsive to us. This message is a warning about danger.<cite>Proposed marker text, long-term nuclear waste warning design</cite></div>
+        <h3>A warning that has to outlast language itself</h3>
+        <p>Nuclear waste buried at sites like the Waste Isolation Pilot Plant near Carlsbad, New Mexico, and proposed repositories like Yucca Mountain, has to stay marked as dangerous for roughly 10,000 years. No language, alphabet, or nation-state has lasted that long continuously. Nobody can say with any confidence what symbols, words, or even facial expressions will mean to whoever finds that site next.</p>
+      </div>
+      <div class="story-section">
+        <h3>Building a myth on purpose</h3>
+        <p>The field that grew out of this problem is called nuclear semiotics. Researchers, working through the Nuclear Energy Agency's initiative on the Preservation of Records, Knowledge and Memory Across Generations, have had to ask questions no other case in this tool has to face: what if a thumbs-up comes to mean thumbs-down by then? What if a smiling face has come to mean total destruction? One researcher's proposed fix is essentially a standing institution, a lab that would "bring together musicians, archaeologists, writers, economists, artists, biologists and poets of each new generation to work on the markers needed to transmit the memory to the next."</p>
+        <div class="story-img-placeholder">[ image: proposed marker design for the Yucca Mountain nuclear waste repository &middot; awaiting upload ]</div>
+      </div>
+      <div class="story-section">
+        <h3>Every other case in this tool got this for free</h3>
+        <p>A song, a stone, a habit: everywhere else in this tool, disaster culture forms because someone actually lived through something and needed to pass it on. Nuclear waste warning design doesn't get that. There is no survivor, no lullaby, no annual drill to build from, because nobody has ever experienced the disaster this is meant to prevent. It is disaster culture formulation attempted in a vacuum: by design, on a deadline of ten thousand years, with nothing to inherit and everything still to invent.</p>
+        <button class="crossref-btn" onclick="selectCase('aneyoshi')">Compare with Aneyoshi, where a warning stone didn't even last one century <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul>
+          <li>Piesing, M., 2020</li>
+          <li>Revkin, A. and Starosta, D., "Raised Under Bad Stars" conversation transcript</li>
+        </ul>
+      </details>
+    `
+  },
+  {
+    id:'chicago-heatwave',
+    name:'Chicago, Illinois, USA', hazard:'1995 heat wave',
+    coords:[41.88,-87.63], stage:'strengthening',
+    why:"Sociologist Eric Klinenberg found that physically similar Chicago blocks had wildly different death rates during the 1995 heat wave, depending only on how well neighbors actually knew and checked in on each other.",
+    program:"Social cohesion is not a soft variable. In Chicago's heat wave, knowing who was vulnerable on your own block functioned as literal, lifesaving infrastructure.",
+    dek:"In July 1995, a heat wave killed hundreds of people in Chicago within a single week. Neighborhoods with nearly identical housing had wildly different death tolls, depending only on how connected their residents were to each other.",
+    storyTag:'Chicago, Illinois, USA · Strengthening, as literal social infrastructure',
+    story:`
+      <div class="story-section">
+        <h3>Same heat, different blocks</h3>
+        <div class="story-quote">Blocks with higher social cohesion, where neighbors checked on elderly residents, had significantly lower mortality rates than identical blocks without that social fabric.<cite>On Eric Klinenberg's research into the 1995 Chicago heat wave</cite></div>
+        <p>Sociologist Eric Klinenberg's research on Chicago's 1995 heat wave, which killed hundreds of people in less than a week, found that the deciding factor between comparable blocks was rarely housing quality or access to air conditioning. It was whether neighbors actually knew who was elderly, who lived alone, and who needed someone to check in.</p>
+      </div>
+      <div class="story-section">
+        <h3>Infrastructure nobody built on purpose</h3>
+        <p>Nobody designed those social ties as emergency infrastructure. Neighbors checked in on each other for the usual reasons, out of habit, obligation, friendship, and it turned out to save lives anyway. Nobody had to build a program for that. It was already there, doing the work, long before anyone thought to measure it.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul>
+          <li>Klinenberg, E., Heat Wave: A Social Autopsy of Disaster in Chicago, University of Chicago Press, 2002</li>
+          <li>Revkin, A. and Starosta, D., "Raised Under Bad Stars" conversation transcript</li>
+        </ul>
+      </details>
+    `
+  },
+  {
+    id:'vermont',
+    name:'Vermont, USA', hazard:'1927 and 2023 flooding',
+    coords:[44.26,-72.58], stage:'degradation',
+    tag:'Degradation, via forgetting',
+    why:"Vermont's worst flood on record happened in 1927, killing the lieutenant governor along with dozens of people and tens of thousands of livestock. When record flooding hit again in 2023, most coverage called it unprecedented anyway.",
+    program:"Unprecedented is doing a lot of work in modern disaster coverage. The more useful question is almost always: unprecedented since when?",
+    dek:"Vermont's flood of November 1927 remains the worst in the state's record, killing the lieutenant governor and dozens of others. When catastrophic flooding hit again in 2023, most coverage described it as unprecedented anyway.",
+    storyTag:'Vermont, USA · Degradation, via forgetting',
+    story:`
+      <div class="story-section">
+        <h3>The flood that's still the record holder</h3>
+        <p>In November 1927, a flood killed Vermont's lieutenant governor, dozens of other people, and tens of thousands of cows. It remains the worst flood on record in the state, well before human-driven climate change entered the picture, and geological evidence shows floods of that scale recurring in the region for thousands of years.</p>
+      </div>
+      <div class="story-section">
+        <h3>Unprecedented, since when?</h3>
+        <p>When catastrophic flooding hit Vermont again in 2023, most news coverage described it as unprecedented, even though the 1927 flood still technically holds the record. The gap between those two floods is close to a century, long enough for direct memory of 1927 to fade out of the state's public conversation almost entirely before the next flood arrived to reopen it.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul><li>Revkin, A. and Starosta, D., "Raised Under Bad Stars" conversation transcript</li></ul>
+      </details>
+    `
+  },
+  {
+    id:'puerto-rico',
+    name:'Puerto Rico', hazard:'Hurricane season, since 1928',
+    coords:[18.2,-66.5], stage:'strengthening',
+    why:"Puerto Rico's plena and bomba traditions have turned specific hurricanes into shared, generational memory for nearly a century. The complication is what happens to that memory once the warnings never stop coming.",
+    program:"A culture can hold onto a hazard in song and story for generations and still run into warning fatigue once climate change turns a rare event into something closer to an annual one.",
+    tag:"From the author's own fieldwork",
+    dek:"Puerto Rico's hurricane history stretches back over a century, carried forward less through official records than through plena and bomba songs written about specific storms. The same culture that remembers so well is also running into warning fatigue.",
+    storyTag:'Puerto Rico · Strengthening, and its limits',
+    story:`
+      <div class="story-section">
+        <h3>The storm has its own song</h3>
+        <div class="story-quote">Temporal, temporal, allá viene el temporal
+Que sera de mi Borinken cuando llegue el temporal?
+
+The storm, the storm, here comes the storm
+What will be of my Puerto Rico when the storm arrives?<cite>Puerto Rican plena song, originally about the 1928 San Felipe hurricane</cite></div>
+        <p>Plena, a Puerto Rican musical form built for telling the news of the day, turned the 1928 San Felipe hurricane into a piece of shared vernacular that outlasted the storm itself by generations. It is one of several island musical traditions, bomba among them, that carry specific hurricanes forward as lived, sung memory rather than only as dates in an official record.</p>
+      </div>
+      <div class="story-section">
+        <h3>A superhero for the recovery</h3>
+        <p>That same instinct resurfaced after Hurricane Maria, in "RicanStruction," a comic anthology built around La Borinqueña, a superhero named for the island's Taino name, Borinken, standing alongside Superman, Batman, and Wonder Woman. A later Whitney Museum exhibition on Puerto Rican art after Maria borrowed its title from the same refusal to look away: "No existe un mundo poshuracán." There is no such thing as a post-hurricane world, only an ongoing one.</p>
+      </div>
+      <div class="story-section">
+        <h3>A song for Loíza too</h3>
+        <p>Bomba musicians Los Hermanos Ayala carry their own, more localized memory of 1989's Hurricane Hugo, centered on Loíza, the historic center of Afro-Caribbean culture on the island: "Cuando Hugo llegó hasta Loíza tembló, tiembla la tierra de la tempesta," when Hugo arrived, even Loíza shook, the ground shakes from the storm. Next to the island-wide weight of Maria, a memory this specific to one town risks getting lost entirely, even though it remains exactly as real locally as it ever was.</p>
+      </div>
+      <div class="story-section">
+        <h3>"Africa? This is Puerto Rico."</h3>
+        <div class="story-quote">They keep telling us that there's a storm near Africa that might turn into a crazy one. Africa! This is Puerto Rico!<cite>Puerto Rican resident, field research, 2021</cite></div>
+        <p>Before Hurricane Hugo in 1989, the last major hurricane to hit Puerto Rico had struck in 1932. People remembered Hugo as an unfamiliar shock precisely because so little time had passed with any comparable storm. In the years since Maria and Irma in 2017, that gap has essentially disappeared, and constant cataclysmic warnings have made it harder, not easier, for some residents to feel the weight of any one storm before it actually arrives.</p>
+        <p>The tool's own dedicated Puerto Rico map goes much deeper on the island's storm exposure, vulnerability, and post-Maria recovery infrastructure, block by block. This case is about something narrower: what happens to a strong cultural memory once the hazard it was built around stops being rare.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul>
+          <li>Starosta, D., Yerba Buena Nunca Muere, Protechos Puerto Rico, 2021</li>
+          <li>Plena song attribution: traditional, circa 1928</li>
+          <li>Dafoe, T., 2022</li>
+        </ul>
+      </details>
+    `
+  },
+  {
+    id:'port-royal',
+    name:'Port Royal, Jamaica', hazard:'1692 earthquake',
+    coords:[17.94,-76.84], stage:'strengthening',
+    why:"More than three hundred years after an earthquake sank most of Port Royal into the sea, local stories that its church bells can still be heard ringing underwater are still in circulation.",
+    program:"A ghost story can function as a memory-keeping device just as effectively as a stone marker or a museum plaque, and can last just as long, if not longer.",
+    dek:"A 17th-century earthquake sank most of Port Royal, once one of the busiest ports in the Caribbean, into the sea. More than 300 years later, locals still tell stories of hearing its church bells ring underwater.",
+    storyTag:'Port Royal, Jamaica · Strengthening, kept alive as folklore',
+    story:`
+      <div class="story-section">
+        <h3>The bells under the water</h3>
+        <p>A 1692 earthquake, and the destruction it triggered, sank a large part of Port Royal, once one of the busiest ports in the Caribbean, into Kingston Harbour. Stories that its church bells can still be heard ringing beneath the water have stayed in circulation for more than 300 years, a piece of folklore that has kept the disaster present in local memory long after any written record needed to.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul><li>Hamblyn, R., 2014</li></ul>
+      </details>
+    `
+  },
+  {
+    id:'haiti',
+    name:'Haiti', hazard:'2010 earthquake',
+    coords:[18.53,-72.34], stage:'formulation',
+    tag:'Formulation, aimed at the wrong hazard',
+    why:"Haiti's building culture adapted sensibly to two centuries of regular hurricanes, favoring wood construction that resists wind. That same adaptation left the country dangerously unprepared for the 2010 earthquake, the first of its scale in nearly 240 years.",
+    program:"A community can formulate a smart, hard-won response to the hazard it knows well, and that same response can become exactly the wrong choice for a hazard it hasn't seen in living memory.",
+    dek:"Haiti has weathered regular hurricanes for two centuries and adapted its building style accordingly. The catastrophic 2010 earthquake was the first of its scale in nearly 240 years, and the country's hurricane-adapted buildings were never built to survive it.",
+    storyTag:'Haiti · Formulation, aimed at the wrong hazard',
+    story:`
+      <div class="story-section">
+        <h3>Built for one hazard, hit by another</h3>
+        <p>After a major earthquake in 1770, local authorities in Haiti began requiring construction with wood and forbidding masonry, a sensible response that would have made buildings more resistant to future seismic activity. Over the following two centuries, though, frequent hurricanes and a growing scarcity of wood pushed homebuilding toward cinderblock instead, sometimes without enough cement in the mix to give it real strength.</p>
+      </div>
+      <div class="story-section">
+        <h3>240 years of quiet</h3>
+        <div class="story-quote">The beginning of a new cycle of large earthquakes on the local fault system after 240 years of seismic quiescence.<cite>Diaz, 2021</cite></div>
+        <p>Haiti's homes could withstand the hurricanes they were built for. The massive 2010 earthquake was a different problem entirely, and many of its deaths traced directly back to structural failure under stresses those same buildings were never designed to take. Haiti built a reasonable culture of preparedness. It simply formed around the wrong disaster, decades before the right one finally arrived.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul>
+          <li>Diaz, 2021</li>
+          <li>Peters, 2021</li>
+        </ul>
+      </details>
+    `
+  },
+  {
+    id:'mexico-city',
+    name:'Mexico City, Mexico', hazard:'1985 and 2017 earthquakes',
+    coords:[19.43,-99.13], stage:'degradation',
+    why:"Mexico City's 1985 earthquake changed its building codes for good and stayed lodged in its collective memory. More than 30 years later, some of the people that earthquake displaced are still living in the temporary camps it put them in, even as the city plans memorials for a newer one.",
+    program:"Commemoration is not support. A city can hold a disaster vividly in its public memory while still failing, in very material terms, the people that disaster actually displaced.",
+    tag:'Degradation, via neglect',
+    dek:"Mexico City has lived through major, deadly earthquakes in both 1985 and 2017. Its relationship to that history is a study in contrasts: a city that remembers vividly, and in some cases still hasn't finished responding.",
+    storyTag:'Mexico City, Mexico · Degradation, via neglect',
+    story:`
+      <div class="story-section">
+        <h3>A quake that changed the rules</h3>
+        <p>Mexico City's 1985 earthquake killed thousands and triggered a real, lasting overhaul of the city's structural building codes. Unlike many of the degradation cases here, the memory of 1985 has not simply faded. It shows up again in the aftermath of 2017's earthquake, when the city drew directly on what it had learned three decades earlier.</p>
+      </div>
+      <div class="story-section">
+        <h3>Too many small shocks</h3>
+        <div class="story-quote">Non-destructive earthquakes weakened the strength of the relationship between perceived consequences and skill preparedness intention.<cite>Sun, L. and Xue, L., 2020</cite></div>
+        <p>Frequent earthquakes are not an unambiguous good for preparedness, even in a place that clearly remembers its worst one. Research on Mexico City specifically found that smaller, non-destructive quakes actually dulled the connection between people believing an earthquake would be bad and actually preparing for it, even though people who rated the consequences highest were, on their own, more motivated to prepare. How that balance nets out in any one community varies enormously.</p>
+      </div>
+      <div class="story-section">
+        <h3>Camps that were supposed to be temporary</h3>
+        <div class="story-img-placeholder">[ image: one of the five remaining temporary displacement camps for the 1985 Mexico City earthquake, slated to be closed in 2015 &middot; awaiting upload ]</div>
+        <p>Even as memorial projects for the 2017 earthquake go up, hundreds of people displaced by 1985 were, as of a few years ago, still living in government camps built to be temporary. Commemoration and abandonment, happening in the same city, at the same time. A memorial cannot substitute for shelter, no matter how sincerely it is meant.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul>
+          <li>Sun, L. and Xue, L., 2020</li>
+          <li>Adler, D., 2015</li>
+          <li>Bonello, D., 2015</li>
+        </ul>
+      </details>
+    `
+  },
+  {
+    id:'rome',
+    name:'Rome, Italy', hazard:'1557 flood marker',
+    coords:[41.90,12.50], stage:'degradation',
+    tag:'Cross-referenced from Aneyoshi',
+    dek:"A marble panel on a Roman church still marks the height of a flood from 1557, another example of a community choosing to carve its worst flood directly into a building.",
+    storyTag:'Rome, Italy · Degradation, the same risk as Aneyoshi',
+    story:`
+      <div class="story-section">
+        <button class="crossref-btn" onclick="selectCase('aneyoshi')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transform:scaleX(-1)"><path d="M5 12h14M13 6l6 6-6 6"/></svg> The same question this tool asks about Aneyoshi</button>
+        <h3>A flood, marked in marble</h3>
+        <p>A marble panel on a church in Rome still records the height of a flood from 1557, more than 450 years of quiet physical commemoration in a city few visitors associate with flooding at all. It sits in the same category as Vicksburg's seawall and Aneyoshi's tsunami stone: a warning that only works for as long as someone still reads it as one.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul><li>Hamblyn, R., 2014</li></ul>
+      </details>
+    `
+  },
+  {
+    id:'lisbon',
+    name:'Lisbon, Portugal', hazard:'1755 earthquake',
+    coords:[38.72,-9.14], stage:'operationalizing',
+    tag:'borders Degradation',
+    why:"Lisbon rebuilt itself after 1755 with real earthquake engineering foresight, centuries ahead of most of the world. Because no comparable quake has tested the city since, nobody can really say whether that engineering mindset is still part of how Lisbon understands itself.",
+    program:"Good infrastructure built in direct response to catastrophe does not automatically stay legible as risk-awareness once the catastrophe itself passes out of living memory.",
+    dek:"The 1755 earthquake leveled Lisbon, which was rebuilt with unusually forward-thinking earthquake engineering for its time. No comparable quake has tested the city since, leaving an open question: is that engineering mindset still part of Lisbon's identity, or only its buildings?",
+    storyTag:'Lisbon, Portugal · Operationalizing, untested for centuries',
+    story:`
+      <div class="story-section">
+        <button class="crossref-btn" onclick="selectCase('sacramento')">Compare with Sacramento, asking the same question about floods <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <h3>Built well, tested once</h3>
+        <p>The 1755 earthquake destroyed Lisbon almost entirely, and the city was rebuilt with an unusual amount of earthquake-engineering forethought for its era, a genuine operationalizing success on paper. The trouble is that no comparable earthquake has come along since to test whether that mindset survived as living public awareness, or whether it simply got absorbed into the building stock, invisible and unremarked on, the way older infrastructure often is.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul><li>From the thesis's own comparative timeline analysis</li></ul>
+      </details>
+    `
+  },
+  {
+    id:'istanbul',
+    name:'Istanbul, Turkey', hazard:'Earthquake risk and urban growth',
+    coords:[41.01,28.98], stage:'operationalizing',
+    tag:'A caution, not yet resolved',
+    why:"Istanbul's population grew from under a million in 1950 to as many as 20 million today, almost all of it in a highly active earthquake zone. Much of that growth happened faster than the city's building stock or public preparedness could keep pace with.",
+    program:"Rapid urban growth in a hazard zone can outpace a community's ability to build either the physical or cultural infrastructure to match it, leaving exposure to quietly compound for decades before the disaster that finally reveals it.",
+    dek:"Istanbul grew from a city of under a million people in 1950 to a metropolitan area of roughly 15 to 20 million today, nearly all of it sitting on active fault lines. Much of that growth happened faster than the city's earthquake preparedness could keep up.",
+    storyTag:'Istanbul, Turkey · Operationalizing, racing against growth',
+    story:`
+      <div class="story-section">
+        <h3>A sleepy city, then twenty million people</h3>
+        <p>In 1950, Istanbul was a relatively quiet city of under a million people. Today its metropolitan area holds somewhere between 15 and 20 million, and much of that growth has happened on ground that is highly active seismically, with many structures still not built for real earthquake resilience. When the next major Istanbul earthquake arrives, the scale of exposure will be dramatically larger than anything the city's disaster history has previously had to reckon with, a gap between growth and preparedness that has been quietly compounding for decades.</p>
+      </div>
+      <details class="sources">
+        <summary>Sources for this section</summary>
+        <ul><li>Revkin, A. and Starosta, D., "Raised Under Bad Stars" conversation transcript</li></ul>
+      </details>
+    `
+  },
+  {
+    id:'krakatoa', thin:true,
+    name:'Krakatoa, Sunda Strait', hazard:'1883 eruption',
+  },
+  {
+    id:'tohoku', thin:true,
+    name:'Tohoku, Japan', hazard:'2011 tsunami, beyond Aneyoshi',
+  },
+  {
+    id:'bajau', thin:true,
+    name:'Bajau Laut communities', hazard:'Sea-nomad tsunami knowledge',
+  },
+  {
+    id:'sundarbans', thin:true,
+    name:'Indian Sundarbans', hazard:'Inherited mangrove planting knowledge',
+  },
+  {
+    id:'art-refs', thin:true,
+    name:'Hokusai / Frida Kahlo', hazard:'Disaster in visual art',
+  },
+  {
+    id:'marshall-islands', thin:true,
+    name:'Marshall Islands', hazard:'Stick chart wave-finding maps',
+  },
+  {
+    id:'sf-1906', thin:true,
+    name:'San Francisco, USA', hazard:'1906 earthquake and fire',
+  },
+  {
+    id:'maui', thin:true,
+    name:'Lahaina, Hawaii', hazard:'2023 wildfires',
+  },
+  {
+    id:'netherlands', thin:true,
+    name:'Netherlands', hazard:'Flood engineering tradition',
+  },
+];
+
+/* ============================================================
+   RENDER: nav rail list
+   (thin cases stay at the bottom, dimmed and unclickable,
+   regardless of view mode, since source material isn't there yet.
+   The real cases can be browsed geographically, the order CASES
+   is already authored in, or thematically, grouped by the same
+   four stages the book itself is organized into.)
+   ============================================================ */
+const railList = document.getElementById('rail-list');
+let railViewMode = 'geo';
+const STAGE_ORDER = ['formulation','strengthening','operationalizing','degradation'];
+
+function makeRailItem(c){
+  const btn = document.createElement('button');
+  btn.className = 'rail-item' + (c.thin ? ' thin' : '');
+  btn.id = 'nav-'+c.id;
+  if(c.thin){
+    btn.disabled = true;
+    btn.title = 'Not enough source material yet';
+  } else {
+    btn.onclick = ()=>selectCase(c.id);
+  }
+  const dotColor = c.thin ? 'var(--text-faint)' : STAGE_META[c.stage].color;
+  btn.innerHTML = `<span class="dot" style="background:${dotColor}"></span><span class="place">${c.name}</span>`;
+  return btn;
+}
+
+function renderRailList(){
+  railList.innerHTML = '';
+  const real = CASES.filter(c=>!c.thin);
+  const thin = CASES.filter(c=>c.thin);
+
+  if(railViewMode === 'geo'){
+    real.forEach(c=> railList.appendChild(makeRailItem(c)));
+  } else {
+    STAGE_ORDER.forEach(stage=>{
+      const group = real.filter(c=>c.stage===stage);
+      if(!group.length) return;
+      const meta = STAGE_META[stage];
+      const wrap = document.createElement('div');
+      wrap.className = 'rail-group';
+      wrap.style.setProperty('--gc', meta.color);
+      const label = document.createElement('div');
+      label.className = 'rail-group-label';
+      label.innerHTML = `<span class="dot" style="background:${meta.color}"></span><b>${meta.label}</b><span class="rail-group-sub">${meta.sub}</span>`;
+      wrap.appendChild(label);
+      group.forEach(c=> wrap.appendChild(makeRailItem(c)));
+      railList.appendChild(wrap);
+    });
+  }
+
+  const toggle = document.createElement('button');
+  toggle.className = 'rail-view-toggle';
+  toggle.innerHTML = railViewMode === 'geo'
+    ? `Want to explore thematically instead of geographically? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`
+    : `Want to explore geographically instead? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`;
+  toggle.onclick = ()=>{ railViewMode = (railViewMode==='geo' ? 'thematic' : 'geo'); renderRailList(); };
+  railList.appendChild(toggle);
+
+  thin.forEach(c=> railList.appendChild(makeRailItem(c)));
+}
+renderRailList();
+
+/* ============================================================
+   MAP
+   ============================================================ */
+let map, markers = {};
+function stageColor(stage){
+  return getComputedStyle(document.getElementById('app')).getPropertyValue(
+    stage==='formulation'?'--stage-formulation':
+    stage==='strengthening'?'--stage-strengthening':
+    stage==='operationalizing'?'--stage-operationalizing':'--stage-degradation'
+  ).trim();
+}
+function initMap(){
+  map = L.map('map', {zoomControl:true, worldCopyJump:true}).setView([15,60], 2);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution:'&copy; OpenStreetMap &copy; CARTO', subdomains:'abcd', maxZoom:19
+  }).addTo(map);
+
+  CASES.forEach(c=>{
+    if(c.thin) return;
+    const color = stageColor(c.stage);
+    const icon = L.divIcon({
+      className:'',
+      html:`<div style="width:14px;height:14px;border-radius:50%;background:${color};border:2px solid #fff;box-shadow:0 1px 4px rgba(29,27,22,.35), 0 0 0 3px ${color}33;"></div>`,
+      iconSize:[14,14], iconAnchor:[7,7]
+    });
+    const m = L.marker(c.coords, {icon}).addTo(map);
+    m.bindPopup(`<b>${c.name}</b><br>${c.hazard}`);
+    m.on('click', ()=>selectCase(c.id));
+    markers[c.id] = m;
+  });
+}
+
+/* ============================================================
+   SELECTION / RENDER LOGIC
+   ============================================================ */
+let currentId = null;
+function selectCase(id){
+  const c = CASES.find(x=>x.id===id);
+  if(!c) return;
+  currentId = id;
+
+  document.querySelectorAll('.rail-item').forEach(el=>el.classList.remove('active'));
+  const navEl = document.getElementById('nav-'+id);
+  if(navEl) navEl.classList.add('active');
+
+  const meta = STAGE_META[c.stage];
+  const color = stageColor(c.stage);
+  document.documentElement.style.setProperty('--case-color', color);
+
+  document.getElementById('drawer-stage-badge').innerHTML = `<span class="dot" style="background:${color}"></span><span style="color:${color}">${meta.label} &middot; ${meta.sub}</span>`;
+  document.getElementById('drawer-name').textContent = c.name;
+  document.getElementById('drawer-hazard').textContent = c.hazard;
+  document.getElementById('drawer-why').textContent = c.why;
+  document.getElementById('drawer-program').textContent = c.program;
+  document.getElementById('map-drawer').classList.remove('open');
+
+  document.getElementById('story-hero-eyebrow').textContent = `${c.hazard}${c.tag ? ' · '+c.tag : ''}`;
+  document.getElementById('story-hero-title').textContent = c.name;
+  document.getElementById('story-hero-dek').textContent = c.dek || '';
+  document.getElementById('story-inner').innerHTML = c.story;
+  document.getElementById('story-col').scrollTop = 0;
+  fitStoryTitle();
+
+  if(map){
+    map.flyTo(c.coords, 5, {duration:0.6});
+    if(markers[id]) markers[id].openPopup();
+  }
+}
+
+function toggleDrawer(){
+  document.getElementById('map-drawer').classList.toggle('open');
+}
+
+function fitStoryTitle(){
+  const el = document.getElementById('story-hero-title');
+  if(!el || !el.textContent) return;
+  el.style.whiteSpace = 'nowrap';
+  el.style.fontSize = '';
+  const maxWidth = el.parentElement.clientWidth;
+  const minSize = 20;
+  let size = parseFloat(getComputedStyle(el).fontSize);
+  while(el.scrollWidth > maxWidth && size > minSize){
+    size -= 1;
+    el.style.fontSize = size + 'px';
+  }
+  if(el.scrollWidth > maxWidth){
+    el.style.whiteSpace = 'normal';
+  }
+}
+window.addEventListener('resize', ()=>{ if(currentId) fitStoryTitle(); });
+
+/* ============================================================
+   NAV RAIL TABS + COLLAPSE
+   ============================================================ */
+function toggleAccordion(which){
+  document.getElementById('acc-'+which).classList.toggle('open');
+  document.getElementById('acc-'+which+'-btn').classList.toggle('open');
+}
+function toggleRail(){
+  document.getElementById('nav-rail').classList.toggle('collapsed');
+  setTimeout(()=>{ if(map) map.invalidateSize(); }, 230);
+}
+
+/* ============================================================
+   LANDING -> TOOL
+   ============================================================ */
+function enterTool(){
+  document.getElementById('landing').classList.add('hidden');
+  document.getElementById('app').classList.add('active');
+  if(!map){ initMap(); }
+  setTimeout(()=>{ if(map) map.invalidateSize(); selectCase('simeulue'); }, 60);
+}
+
+function openEgg(){
+  document.getElementById('egg-modal').classList.add('open');
+  eggGo(1);
+}
+function closeEgg(){
+  document.getElementById('egg-modal').classList.remove('open');
+}
+function eggGo(n){
+  document.querySelectorAll('.egg-screen').forEach(el=>{
+    el.classList.toggle('active', el.dataset.screen === String(n));
+  });
+  document.querySelectorAll('.egg-dot').forEach(el=>{
+    el.classList.toggle('active', el.dataset.dot === String(n));
+  });
+  document.getElementById('egg-panel').scrollTop = 0;
+}
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape'){ closeEgg(); closeTimeline(); }
+});
+
+function openTimeline(){
+  document.getElementById('timeline-modal').classList.add('open');
+}
+function closeTimeline(){
+  document.getElementById('timeline-modal').classList.remove('open');
+}
+</script>
+</body>
+</html>
