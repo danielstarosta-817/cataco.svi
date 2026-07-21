@@ -103,8 +103,9 @@
   }
   #egg-modal.open{display:flex;}
   #egg-panel{
-    position:relative;background:var(--bg);border-radius:6px;max-width:480px;width:100%;
+    position:relative;background:var(--bg);border-radius:6px;max-width:580px;width:100%;
     padding:40px 38px 32px;box-shadow:0 30px 70px rgba(24,24,24,.28);
+    max-height:calc(100vh - 48px);overflow-y:auto;
   }
   #egg-close{
     position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:50%;
@@ -167,6 +168,100 @@
     .tl-hazard{width:auto;padding-top:0;}
     .tl-track{grid-template-columns:repeat(2,1fr);}
   }
+
+  /* -------- atlas of disaster culture -------- */
+  #atlas-btn{
+    display:flex;align-items:center;justify-content:flex-end;gap:5px;width:100%;
+    background:none;border:none;padding:0;cursor:pointer;margin-top:6px;text-align:right;
+    font-family:'Fraunces',Georgia,serif;font-style:italic;font-weight:400;font-size:11px;
+    color:var(--text-faint);transition:color .15s ease;
+  }
+  #atlas-btn:hover{color:var(--accent);}
+  #atlas-btn svg{width:11px;height:11px;flex-shrink:0;color:var(--accent);opacity:.8;}
+  #atlas-modal{
+    display:none;position:fixed;inset:0;z-index:2500;align-items:center;justify-content:center;
+    background:rgba(24,24,24,.55);padding:24px;
+  }
+  #atlas-modal.open{display:flex;}
+  #atlas-panel{
+    position:relative;background:var(--bg);border-radius:6px;max-width:1060px;width:100%;
+    max-height:88vh;overflow-y:auto;padding:40px 42px 34px;box-shadow:0 30px 70px rgba(24,24,24,.28);
+  }
+  #atlas-close{
+    position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:50%;
+    border:1px solid var(--line);background:var(--bg);color:var(--text-faint);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;transition:color .15s ease,border-color .15s ease;
+  }
+  #atlas-close:hover{color:var(--text);border-color:var(--text-faint);}
+  #atlas-close svg{width:13px;height:13px;}
+  #atlas-panel h3{font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:24px;margin:0 0 14px;}
+  .atlas-intro{font-family:'Fraunces',Georgia,serif;font-weight:300;font-size:14.5px;line-height:1.68;color:var(--text-dim);margin:0 0 20px;max-width:68ch;}
+  #atlas-search{
+    width:100%;max-width:420px;padding:10px 14px;border:1px solid var(--line);border-radius:20px;
+    font-size:13px;font-family:inherit;color:var(--text);background:var(--bg-panel);margin-bottom:20px;
+  }
+  #atlas-search:focus{outline:none;border-color:var(--accent-border);}
+  .atlas-facet-group{margin-bottom:14px;}
+  .atlas-facet-label{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);margin-bottom:8px;}
+  .atlas-chip-row{display:flex;flex-wrap:wrap;gap:6px;}
+  .atlas-chip{
+    padding:5px 12px;border-radius:20px;border:1px solid var(--line);background:var(--bg);
+    color:var(--text-dim);font-size:11.5px;cursor:pointer;transition:all .15s ease;font-family:inherit;
+  }
+  .atlas-chip:hover{border-color:var(--accent-border);color:var(--text);}
+  .atlas-chip.active{background:var(--accent-dim);border-color:var(--accent-border);color:var(--accent);font-weight:700;}
+  .atlas-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
+    margin:18px 0 4px;padding-top:16px;border-top:2px dotted var(--line);}
+  #atlas-count{font-size:11.5px;color:var(--text-faint);}
+  .atlas-clear{background:none;border:none;color:var(--text-faint);font-size:11px;text-decoration:underline;
+    cursor:pointer;font-family:inherit;padding:0;}
+  .atlas-clear:hover{color:var(--accent);}
+  #atlas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-top:16px;}
+  .atlas-card{border:1px solid var(--line);border-radius:8px;padding:14px 16px;background:var(--bg-panel);}
+  .atlas-card h4{font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:14.5px;margin:0 0 7px;color:var(--text);}
+  .atlas-card p{font-size:12px;line-height:1.6;color:var(--text-dim);margin:0 0 10px;}
+  .atlas-card-tags{display:flex;flex-wrap:wrap;gap:5px;}
+  .atlas-tag{font-size:9px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--text-faint);
+    background:var(--bg-panel-hover);padding:2px 8px;border-radius:10px;}
+  .atlas-empty{grid-column:1/-1;text-align:center;color:var(--text-faint);font-size:13px;padding:30px 0;}
+
+  /* -------- guided tour (spotlight) -------- */
+  #tour-replay-btn{
+    position:fixed;bottom:16px;left:16px;z-index:1500;background:var(--bg);border:1px solid var(--line);
+    color:var(--text-faint);padding:6px 13px;border-radius:20px;font-size:10.5px;font-weight:600;cursor:pointer;
+    letter-spacing:.03em;box-shadow:0 4px 14px rgba(24,24,24,.1);transition:all .15s ease;display:none;
+  }
+  #app.active ~ #tour-replay-btn, #app.active #tour-replay-btn{display:inline-flex;align-items:center;gap:6px;}
+  #tour-replay-btn:hover{color:var(--accent);border-color:var(--accent-border);}
+  #tour-ov{position:fixed;inset:0;z-index:9000;pointer-events:all;transition:opacity .4s;}
+  #tour-ov.tour-hiding{opacity:0;pointer-events:none;}
+  #tour-dim{position:fixed;inset:0;z-index:9001;pointer-events:none;}
+  #tour-glow{position:fixed;z-index:9002;border-radius:10px;pointer-events:none;
+    box-shadow:0 0 0 3px var(--gc,var(--accent)), 0 0 24px 4px color-mix(in srgb, var(--gc,var(--accent)) 45%, transparent);
+    transition:all .45s cubic-bezier(.4,0,.2,1);outline:none;}
+  #tour-card{position:fixed;z-index:9003;width:440px;max-width:90vw;top:50%;left:50%;transform:translate(-50%,-50%);
+    background:var(--bg);border:1px solid var(--line);border-radius:12px;overflow:hidden;
+    box-shadow:0 24px 60px rgba(24,24,24,.24);transition:opacity .3s;pointer-events:all;}
+  #tour-card-inner{padding:22px 24px 16px;}
+  .t-badge{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;text-transform:uppercase;
+    letter-spacing:.09em;padding:3px 10px;border-radius:20px;margin-bottom:10px;}
+  #tour-ttl{font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:19px;line-height:1.35;color:var(--text);margin:0 0 9px;}
+  #tour-bod{font-family:'Fraunces',Georgia,serif;font-weight:300;font-size:13.5px;line-height:1.7;color:var(--text-dim);margin:0 0 12px;}
+  .t-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:2px;}
+  .t-pill{padding:3px 10px;border-radius:20px;border:1px solid var(--line);background:var(--bg-panel);
+    font-size:10px;color:var(--text-dim);white-space:nowrap;}
+  #tour-foot{padding:12px 24px 16px;display:flex;align-items:center;gap:10px;border-top:1px solid var(--line);}
+  .t-dots{display:flex;gap:5px;flex:1;align-items:center;}
+  .t-dot{width:6px;height:6px;border-radius:3px;background:var(--line);cursor:pointer;transition:all .3s;flex-shrink:0;border:none;padding:0;}
+  .t-dot.on{width:18px;background:var(--dc,var(--accent));}
+  #tour-skip{font-size:10.5px;color:var(--text-faint);cursor:pointer;text-decoration:underline;
+    text-underline-offset:3px;white-space:nowrap;transition:color .15s;}
+  #tour-skip:hover{color:var(--text-dim);}
+  .t-btn{background:var(--bg-panel);border:1px solid var(--line);color:var(--text-dim);padding:7px 16px;
+    border-radius:20px;font-size:11.5px;cursor:pointer;transition:all .15s;font-weight:600;white-space:nowrap;font-family:inherit;}
+  .t-btn:hover{background:var(--bg-panel-hover);}
+  .t-btn.prim{background:var(--bc,var(--accent));border-color:var(--bc,var(--accent));color:#fff;}
+  .t-btn.prim:hover{opacity:.88;}
 
   /* ============================================================
      TOOL SHELL
@@ -438,7 +533,7 @@
       <div class="eyebrow">More words for the same fear</div>
       <h3>Harbor waves and evil winds</h3>
       <p><em>Tsunami</em> is a Japanese word, born out of the country's long history with them. In direct translation it means nothing more than harbor wave, a plain, almost bureaucratic description that only picked up its dread over time.</p>
-      <p>Hawaiian doesn't compress a tsunami into one word, and that's not a gap, it's a level of fluency English doesn't have. The language carries dozens of words for the sea in its every mood, and the tsunami sequence draws straight from that same vocabulary: <em>kai a Pele</em>, the sea of Pele, names the condition itself after the goddess of volcanoes and fire, before <em>kai ho'e'e</em>, the rising sea, <em>kai mimiki</em>, the receding sea, and <em>kai e'e</em>, the climbing sea, what English flattens into "tidal wave," track it stage by stage. Only a culture of navigators who already read the ocean's every crease under sun and stars would need words precise enough to name each of those stages on its own.</p>
+      <p>Hawaiian doesn't compress a tsunami into one word. The language carries dozens of words for the sea in its every mood, and the tsunami sequence draws straight from that same vocabulary: <em>kai a Pele</em>, the sea of Pele, names the condition itself after the goddess of volcanoes and fire, before <em>kai ho'e'e</em>, the rising sea, <em>kai mimiki</em>, the receding sea, and <em>kai e'e</em>, the climbing sea, what English flattens into "tidal wave," track it stage by stage. Only a culture of navigators who already read the ocean's every crease under sun and stars would need words precise enough to name each of those stages on its own.</p>
       <p><em>Hurricane</em> tells the opposite story. It comes from <em>Huricán</em>, a word from the Taino peoples of the Caribbean, meaning god of the storm, or god of the evil wind. Tsunami and the Hawaiian sea-words come from a normalized relationship with the destructive power of nature, the vocabulary of people who had lived alongside a hazard long enough to develop real wisdom about it. Hurricane comes from someplace else: not a known force to be studied and lived with, but an active, malevolent will, something still feared rather than understood.</p>
       <button class="egg-next" onclick="eggGo(3)">What about thinking about disasters as monsters?
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
@@ -527,6 +622,24 @@
   </div>
 </div>
 
+<div id="atlas-modal" onclick="if(event.target===this) closeAtlas()">
+  <div id="atlas-panel">
+    <button id="atlas-close" onclick="closeAtlas()" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="eyebrow">The atlas of disaster culture</div>
+    <h3>Everything else this research turned up</h3>
+    <p class="atlas-intro">The map tells a tight, curated story built around four stages. This is the looser space behind it: every deity, monument, festival, song, and open research thread that didn't need to connect to anything else to earn its place here. Search it, or filter by format, hazard, region, era, or theme, to browse it the way it was actually researched, thematically, not narratively.</p>
+    <input type="text" id="atlas-search" placeholder="Search the atlas (try 'rain,' 'children,' 'suppressed')" oninput="setAtlasSearch(this.value)">
+    <div id="atlas-facets"></div>
+    <div class="atlas-toolbar">
+      <span id="atlas-count"></span>
+      <button class="atlas-clear" onclick="clearAtlasFilters()">Clear all filters</button>
+    </div>
+    <div id="atlas-grid"></div>
+  </div>
+</div>
+
 <!-- ============================================================
      TOOL SHELL
      ============================================================ -->
@@ -541,6 +654,9 @@
       <div class="rail-brand-row"><a href="../index.html" class="bh-back" style="position:static;width:20px;height:20px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></a><span class="rail-brand-text">Raised Under Bad Stars</span></div>
       <div class="rail-brand-sub">Disaster memory, culture &amp; identity</div>
       <button id="timeline-btn" onclick="openTimeline()">Why is disaster memory important?
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+      <button id="atlas-btn" onclick="openAtlas()">Browse the full atlas of disaster culture
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </button>
     </div>
@@ -627,6 +743,8 @@
   </div>
 
 </div>
+
+<button id="tour-replay-btn" onclick="launchTour()" title="Replay the intro tour">&#9654; Tour</button>
 
 <script>
 /* ============================================================
@@ -741,6 +859,7 @@ const CASES = [
         <figure class="story-img"><img src="vicksburg-flood-marks.jpg" alt="Flood mark tower in Vicksburg, Mississippi, showing flood heights back to 1927"><figcaption>Flood marks on a Vicksburg, Mississippi, gage tower, running back to 1927.</figcaption></figure>
         <figure class="story-img"><img src="aneyoshi-tsunami-stone.jpg" alt="Stone tsunami marker in Aneyoshi, Japan"><figcaption>The tsunami warning stone at Aneyoshi, Japan, still standing in the forest above the village.</figcaption></figure>
         <figure class="story-img"><img src="rome-flood-plaque.png" alt="Marble flood plaque on a Rome church commemorating the 1557 flood"><figcaption>A marble plaque on a Rome church marking the flood level of 1557.</figcaption></figure>
+        <p>The same idea keeps turning up, centuries apart, in places nobody would expect. A seawall in Vicksburg, Mississippi, carries a century of flood-height marks running back to 1927. A marble panel on a church in Rome, a city few visitors would ever associate with flooding, has quietly recorded a flood's height since 1557, more than 450 years of commemoration hiding in plain sight on an ordinary building. Different water, different centuries, different corners of the world, the same basic bet: carve a number into something solid and hope it outlasts the memory of why it's there.</p>
         <p>Aneyoshi's stone held its population above the line for a while. Then, within a generation or two, people started building new houses further down the hill again, closer to the harbor where the fishing actually happens. Some villages elsewhere came to see their own warning stones as relics of a superstitious past and built past them anyway; a few had the stones themselves washed away by earlier tsunamis. No myth needed here, no institutional failure. Just ordinary time passing, and a convenience winning out over a warning nobody living had personally needed yet.</p>
       </div>
       <details class="sources">
@@ -1193,25 +1312,6 @@ Told me leave my baby and my happy home<cite>Kansas Joe McCoy, "When the Levee B
     `
   },
   {
-    id:'vicksburg',
-    name:'Vicksburg, Mississippi, USA', hazard:'20th-century flood markers',
-    coords:[32.35,-90.88], stage:'degradation',
-    tag:'Cross-referenced from Aneyoshi',
-    dek:"The seawall in Vicksburg, Mississippi carries flood-height markers spanning a century of the river's worst moments, one of several places around the world that chose to carve its flood history directly into a wall.",
-    storyTag:'Vicksburg, Mississippi, USA · Degradation, the same risk as Aneyoshi',
-    story:`
-      <div class="story-section">
-        <button class="crossref-btn" onclick="selectCase('aneyoshi')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transform:scaleX(-1)"><path d="M5 12h14M13 6l6 6-6 6"/></svg> The same question this tool asks about Aneyoshi</button>
-        <h3>A seawall that remembers</h3>
-        <p>The seawall along the Mississippi in Vicksburg carries flood-height markers spanning the last hundred years, one of several places, alongside Rome's 1557 marker and Aneyoshi's tsunami stone, that chose to carve its worst flood directly into a physical structure. Whether a marker like this keeps functioning as a warning, or quietly turns into scenery nobody reads anymore, depends entirely on whether anyone still stops to read it.</p>
-      </div>
-      <details class="sources">
-        <summary>Sources for this section</summary>
-        <ul><li>Hamblyn, R., 2014</li></ul>
-      </details>
-    `
-  },
-  {
     id:'sharknado',
     name:'Los Angeles / global streaming', hazard:'Disaster film genre',
     coords:[34.05,-118.24], stage:'degradation',
@@ -1422,33 +1522,6 @@ Told me leave my baby and my happy home<cite>Kansas Joe McCoy, "When the Levee B
     `
   },
   {
-    id:'chicago-heatwave',
-    name:'Chicago, Illinois, USA', hazard:'1995 heat wave',
-    coords:[41.88,-87.63], stage:'strengthening',
-    why:"Sociologist Eric Klinenberg found that physically similar Chicago blocks had wildly different death rates during the 1995 heat wave, depending only on how well neighbors actually knew and checked in on each other.",
-    program:"Social cohesion is not a soft variable. In Chicago's heat wave, knowing who was vulnerable on your own block functioned as literal, lifesaving infrastructure.",
-    dek:"In July 1995, a heat wave killed hundreds of people in Chicago within a single week. Neighborhoods with nearly identical housing had wildly different death tolls, depending only on how connected their residents were to each other.",
-    storyTag:'Chicago, Illinois, USA · Strengthening, as literal social infrastructure',
-    story:`
-      <div class="story-section">
-        <h3>Same heat, different blocks</h3>
-        <div class="story-quote">Blocks with higher social cohesion, where neighbors checked on elderly residents, had significantly lower mortality rates than identical blocks without that social fabric.<cite>On Eric Klinenberg's research into the 1995 Chicago heat wave</cite></div>
-        <p>Sociologist Eric Klinenberg's research on Chicago's 1995 heat wave, which killed hundreds of people in less than a week, found that the deciding factor between comparable blocks was rarely housing quality or access to air conditioning. It was whether neighbors actually knew who was elderly, who lived alone, and who needed someone to check in.</p>
-      </div>
-      <div class="story-section">
-        <h3>Infrastructure nobody built on purpose</h3>
-        <p>Nobody designed those social ties as emergency infrastructure. Neighbors checked in on each other for the usual reasons, out of habit, obligation, friendship, and it turned out to save lives anyway. Nobody had to build a program for that. It was already there, doing the work, long before anyone thought to measure it.</p>
-      </div>
-      <details class="sources">
-        <summary>Sources for this section</summary>
-        <ul>
-          <li>Klinenberg, E., Heat Wave: A Social Autopsy of Disaster in Chicago, University of Chicago Press, 2002</li>
-          <li>Revkin, A. and Starosta, D., "Raised Under Bad Stars" conversation transcript</li>
-        </ul>
-      </details>
-    `
-  },
-  {
     id:'vermont',
     name:'Vermont, USA', hazard:'1927 and 2023 flooding',
     coords:[44.26,-72.58], stage:'degradation',
@@ -1598,25 +1671,6 @@ What will be of my Puerto Rico when the storm arrives?<cite>Puerto Rican plena s
     `
   },
   {
-    id:'rome',
-    name:'Rome, Italy', hazard:'1557 flood marker',
-    coords:[41.90,12.50], stage:'degradation',
-    tag:'Cross-referenced from Aneyoshi',
-    dek:"A marble panel on a Roman church still marks the height of a flood from 1557, another example of a community choosing to carve its worst flood directly into a building.",
-    storyTag:'Rome, Italy · Degradation, the same risk as Aneyoshi',
-    story:`
-      <div class="story-section">
-        <button class="crossref-btn" onclick="selectCase('aneyoshi')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transform:scaleX(-1)"><path d="M5 12h14M13 6l6 6-6 6"/></svg> The same question this tool asks about Aneyoshi</button>
-        <h3>A flood, marked in marble</h3>
-        <p>A marble panel on a church in Rome still records the height of a flood from 1557, more than 450 years of quiet physical commemoration in a city few visitors associate with flooding at all. It sits in the same category as Vicksburg's seawall and Aneyoshi's tsunami stone: a warning that only works for as long as someone still reads it as one.</p>
-      </div>
-      <details class="sources">
-        <summary>Sources for this section</summary>
-        <ul><li>Hamblyn, R., 2014</li></ul>
-      </details>
-    `
-  },
-  {
     id:'lisbon',
     name:'Lisbon, Portugal', hazard:'1755 earthquake',
     coords:[38.72,-9.14], stage:'operationalizing',
@@ -1689,6 +1743,128 @@ What will be of my Puerto Rico when the storm arrives?<cite>Puerto Rican plena s
     id:'netherlands', thin:true,
     name:'Netherlands', hazard:'Flood engineering tradition',
   },
+];
+
+/* ============================================================
+   ATLAS OF DISASTER CULTURE
+   The looser, unfinished-on-purpose companion to the curated map
+   above. Everything here is real and sourced in the underlying
+   research docs, it just doesn't have a full narrative writeup or
+   a pin of its own (yet). Tagged by five facets so it can be
+   browsed thematically ("show me everything about rain," "show me
+   South Asia") instead of read case by case.
+   ============================================================ */
+const ATLAS_FACETS = {
+  format:['Statue / monument','Festival / recurring event','Song / literature / visual art','Oral tradition','Architecture','Institution / campaign','Museum / archive'],
+  hazard:['Flood','Earthquake','Tsunami','Wildfire','Volcanic eruption','Drought / famine','Hurricane / cyclone','Heat','Conflict-compounded'],
+  region:['Africa','East Asia','South Asia','Southeast Asia','Pacific / Oceania','North America','Central America & Caribbean','South America','Europe','Middle East'],
+  era:['Ancient / deep-time','Early modern (pre-1900)','20th century','21st century','Ongoing / unresolved'],
+  theme:['Privilege & inequality','Suppression & delayed acknowledgment','Object that survived','Children specifically','Climate displacement'],
+};
+
+const ATLAS = [
+  // ---- Deep-time deities and mythic carvings ----
+  {name:"Tlaloc monolith, Mexico", blurb:"The largest monolithic sculpture in the Americas. Unseasonal rain reportedly broke out the day it arrived in Mexico City in 1964, a causal claim that's disputed rather than confirmed.", format:['Statue / monument'], hazard:['Drought / famine','Flood'], region:['Central America & Caribbean'], era:['Ancient / deep-time'], theme:[]},
+  {name:"Fuxi and Nüwa / Gong Gong flood myth, China", blurb:"Wu Liang Shrine reliefs from the 2nd century CE, among the oldest surviving figural art from China, depicting a flood-and-repair cosmology.", format:['Statue / monument','Song / literature / visual art'], hazard:['Flood'], region:['East Asia'], era:['Ancient / deep-time'], theme:[]},
+  {name:"Matsya, the fish avatar of Vishnu, India", blurb:"A third independent ancient flood tradition, build a boat, save the seeds, alongside Gilgamesh and Noah, arrived at separately in South Asian cosmology.", format:['Oral tradition','Song / literature / visual art'], hazard:['Flood'], region:['South Asia'], era:['Ancient / deep-time'], theme:[]},
+  {name:"Poseidon Ennosigaios, Greece", blurb:"Earthquake-specific worship in seismic Greek regions like Corinth, a deity whose title translates directly to \"earth-shaker.\"", format:['Statue / monument'], hazard:['Earthquake'], region:['Europe'], era:['Ancient / deep-time'], theme:[]},
+  {name:"Deucalion and Pyrrha, Greece", blurb:"The Greek flood myth, structurally near-identical to Gilgamesh and Genesis, right down to the repopulation-after-the-water beat.", format:['Oral tradition','Song / literature / visual art'], hazard:['Flood'], region:['Europe'], era:['Ancient / deep-time'], theme:[]},
+  {name:"Chalchiuhtlicue, Aztec water goddess, Mexico", blurb:"Tied directly to the Sun Stone's Fourth Sun, the cosmic era that ends in flood.", format:['Statue / monument'], hazard:['Flood'], region:['Central America & Caribbean'], era:['Ancient / deep-time'], theme:[]},
+  {name:"Hapi and Sekhmet, Egypt", blurb:"Fertility-flood versus plague-and-destruction, Karnak reliefs and Amenhotep III's hundreds of Sekhmet statues, two sides of the same ancient risk landscape.", format:['Statue / monument'], hazard:['Flood','Drought / famine'], region:['Africa'], era:['Ancient / deep-time'], theme:[]},
+  {name:"Susanoo, Raijin, and Fujin, Japan", blurb:"Sōtatsu's \"Wind God and Thunder God\" screen, devotional rather than a direct disaster response, but a strong visual-culture entry point.", format:['Song / literature / visual art'], hazard:['Wildfire'], region:['East Asia'], era:['Early modern (pre-1900)'], theme:[]},
+
+  // ---- New geographic places ----
+  {name:"Halifax Explosion, Nova Scotia (1917)", blurb:"A wartime munitions-ship blast, not strictly a natural hazard, but Solnit's earliest and most striking mutual-aid case, plus the Boston Christmas tree sent almost every year since in gratitude.", format:['Institution / campaign'], hazard:['Conflict-compounded'], region:['North America'], era:['Early modern (pre-1900)','20th century'], theme:[]},
+  {name:"Yungay, Peru (1970 avalanche)", blurb:"An entire town of roughly 20,000 people buried in seconds. The site was left undisturbed as a memorial rather than rebuilt over.", format:['Museum / archive'], hazard:['Earthquake'], region:['South America'], era:['20th century'], theme:['Object that survived']},
+  {name:"Mount Merapi, Java, Indonesia", blurb:"The juru kunci spiritual-gatekeeper tradition, and a 2010 case where the gatekeeper died trusting tradition over a government evacuation order.", format:['Institution / campaign','Oral tradition'], hazard:['Volcanic eruption'], region:['Southeast Asia'], era:['21st century'], theme:[]},
+  {name:"Sri Lanka, 2004 tsunami", blurb:"The derailed passenger train site is now an informal pilgrimage stop, over a thousand lives lost on a single train.", format:['Museum / archive'], hazard:['Tsunami'], region:['South Asia'], era:['21st century'], theme:['Object that survived']},
+  {name:"Mount Pinatubo, Philippines (1991)", blurb:"Aeta displacement and oral tradition, a natural pairing with the already-dimmed Krakatoa case.", format:['Oral tradition'], hazard:['Volcanic eruption'], region:['Southeast Asia'], era:['20th century'], theme:['Climate displacement']},
+  {name:"Bhuj/Kutch, Gujarat, India (2001 earthquake)", blurb:"An embroidery-economy revival after the quake, a rare upbeat Operationalizing story rather than a cautionary one.", format:['Institution / campaign'], hazard:['Earthquake'], region:['South Asia'], era:['21st century'], theme:[]},
+  {name:"Nepal, 2015 Gorkha earthquake", blurb:"The Newar temple-carpenter apprentice tradition, a living craft lineage tasked with rebuilding what it lost.", format:['Architecture'], hazard:['Earthquake'], region:['South Asia'], era:['21st century'], theme:[]},
+  {name:"Messina, Italy (1908 earthquake)", blurb:"The deadliest earthquake in European history, but outshined in cultural memory by Lisbon and Pompeii.", format:['Museum / archive'], hazard:['Earthquake'], region:['Europe'], era:['20th century'], theme:['Suppression & delayed acknowledgment']},
+  {name:"Skopje, North Macedonia (1963 earthquake)", blurb:"Cold War joint-reconstruction aid from both NATO and Soviet-bloc countries, later overwritten by the controversial \"Skopje 2014\" architectural program.", format:['Architecture'], hazard:['Earthquake'], region:['Europe'], era:['20th century','21st century'], theme:[]},
+  {name:"Aberfan, Wales (1966)", blurb:"116 children killed when a coal-waste tip collapsed onto a school. Raw and present, recently reintroduced to wider audiences via a television dramatization.", format:['Museum / archive'], hazard:['Flood'], region:['Europe'], era:['20th century'], theme:['Children specifically','Suppression & delayed acknowledgment']},
+  {name:"Laki eruption, Iceland (1783-84)", blurb:"Killed an estimated 20-25% of Iceland's population through famine and poisoned livestock. Its ash cloud is credibly linked to failed harvests and excess deaths as far as France and Egypt.", format:['Oral tradition'], hazard:['Volcanic eruption','Drought / famine'], region:['Europe'], era:['Early modern (pre-1900)'], theme:[]},
+  {name:"Venice, Italy (Acqua Alta / MOSE)", blurb:"Ongoing tidal flooding and the MOSE barrier system, a natural pairing with the Netherlands case once that's built out.", format:['Architecture'], hazard:['Flood'], region:['Europe'], era:['Ongoing / unresolved'], theme:[]},
+  {name:"Ireland, the Great Famine (1845-52)", blurb:"Memory sustained by the diaspora rather than by the place itself, still audible in songs written generations after the fact.", format:['Song / literature / visual art'], hazard:['Drought / famine'], region:['Europe'], era:['Early modern (pre-1900)'], theme:['Climate displacement']},
+  {name:"Sahel drought and famine cycles, West Africa", blurb:"Griot oral tradition functions as a formal, hereditary professional class of living archivists; the 1740s-50s \"Great Famine\" survived roughly two centuries in oral form before being written down.", format:['Oral tradition'], hazard:['Drought / famine'], region:['Africa'], era:['Early modern (pre-1900)','Ongoing / unresolved'], theme:[]},
+  {name:"Goma, DRC (Mount Nyiragongo)", blurb:"A city repeatedly rebuilt on its own lava, eruptions in 1977, 2002, and 2021 alike.", format:['Institution / campaign'], hazard:['Volcanic eruption'], region:['Africa'], era:['Ongoing / unresolved'], theme:[]},
+  {name:"Valdivia, Chile (1960)", blurb:"The largest earthquake ever recorded. A dedicated cultural-response search is still needed before this becomes a real candidate.", format:['Museum / archive'], hazard:['Earthquake','Tsunami'], region:['South America'], era:['20th century'], theme:[]},
+  {name:"Managua, Nicaragua (1972 earthquake)", blurb:"Corruption in the aid response is directly credited by historians as a factor in sparking the Sandinista revolution.", format:['Institution / campaign'], hazard:['Earthquake'], region:['Central America & Caribbean'], era:['20th century'], theme:['Privilege & inequality']},
+  {name:"Peshtigo, Wisconsin (1871 fire)", blurb:"The deadliest wildfire in US history, forgotten largely because it shared a night with the Chicago fire and lost the news cycle.", format:['Museum / archive'], hazard:['Wildfire'], region:['North America'], era:['Early modern (pre-1900)'], theme:['Suppression & delayed acknowledgment']},
+  {name:"Charleston, South Carolina (1886 earthquake)", blurb:"\"Earthquake bolts,\" structural reinforcements retrofitted after the quake, are still visible on historic buildings today.", format:['Architecture'], hazard:['Earthquake'], region:['North America'], era:['Early modern (pre-1900)'], theme:['Object that survived']},
+  {name:"Alaska (1964 earthquake)", blurb:"Alutiiq and Chugach oral tsunami tradition, a possible non-Pacific-Rim-Asia parallel to the Moken and Bajau material already in the tool.", format:['Oral tradition'], hazard:['Earthquake','Tsunami'], region:['North America'], era:['20th century'], theme:[]},
+  {name:"New Madrid earthquakes (1811-12)", blurb:"Folded into camp-meeting religious revivalism across the American frontier, a case that still needs a research pass to confirm specifics.", format:['Oral tradition'], hazard:['Earthquake'], region:['North America'], era:['Early modern (pre-1900)'], theme:[]},
+  {name:"Turkey/Syria, 2023 earthquake", blurb:"Cultural response still forming; also the backdrop for the heritage-destruction research's Aleppo entry below.", format:['Museum / archive'], hazard:['Earthquake','Conflict-compounded'], region:['Middle East'], era:['21st century'], theme:[]},
+  {name:"Christchurch, New Zealand: \"185 empty chairs\"", blurb:"A single white chair placed for each life lost in the 2011 earthquake, an installation piece that outgrew its own temporary intent.", format:['Statue / monument'], hazard:['Earthquake'], region:['Pacific / Oceania'], era:['21st century'], theme:['Object that survived']},
+
+  // ---- Concrete art, literature, and music ----
+  {name:"Bessie Smith, \"Back-Water Blues\"", blurb:"A real song about a real flood, misattributed for decades to the 1927 Mississippi flood when it actually describes a 1926 Nashville flood, an almost perfect case study in memory getting misfiled.", format:['Song / literature / visual art'], hazard:['Flood'], region:['North America'], era:['Early modern (pre-1900)','20th century'], theme:['Suppression & delayed acknowledgment']},
+  {name:"\"Wasn't That a Mighty Storm\" (Galveston, 1900 hurricane)", blurb:"A folk song transmitted from a 1900s spiritual through a 1934 Library of Congress recording, the 1960s folk revival, and James Taylor's 2009 version, a clean century-plus chain of transmission.", format:['Song / literature / visual art'], hazard:['Hurricane / cyclone'], region:['North America'], era:['Early modern (pre-1900)','20th century','21st century'], theme:[]},
+  {name:"\"Fields of Athenry\" (Irish Famine song)", blurb:"Written in 1979 and sung at stadiums today, a disaster song composed generations after the event it commemorates.", format:['Song / literature / visual art'], hazard:['Drought / famine'], region:['Europe'], era:['20th century','21st century'], theme:[]},
+  {name:"John Steuart Curry, \"Tornado over Kansas\" (1929)", blurb:"With the wrinkle that fellow Kansans disliked the image being chosen to represent their state.", format:['Song / literature / visual art'], hazard:['Wildfire'], region:['North America'], era:['20th century'], theme:[]},
+
+  // ---- Disaster into recurring community event ----
+  {name:"Wafaa El-Nil, Egypt", blurb:"An ancient Hapi-worship lineage still marked today as a two-week modern festival.", format:['Festival / recurring event'], hazard:['Flood'], region:['Africa'], era:['Ancient / deep-time','Ongoing / unresolved'], theme:[]},
+  {name:"Þjóðhátíð, Heimaey, Iceland", blurb:"Survived the literal volcanic burial of a third of the town in 1973, and the festival continued that same year regardless.", format:['Festival / recurring event'], hazard:['Volcanic eruption'], region:['Europe'], era:['20th century'], theme:[]},
+  {name:"Kobe Luminarie, Japan (since 1995)", blurb:"200,000 lights as a deliberate electricity-and-recovery metaphor, drawing 3-5 million visitors a year.", format:['Festival / recurring event'], hazard:['Earthquake'], region:['East Asia'], era:['20th century','21st century'], theme:[]},
+  {name:"Disaster Prevention Day, Japan (since 1960)", blurb:"A whole country's civil-defense calendar built around a single date, September 1, the anniversary of the 1923 Kantō earthquake.", format:['Institution / campaign'], hazard:['Earthquake'], region:['East Asia'], era:['20th century','Ongoing / unresolved'], theme:[]},
+  {name:"Feast of San Gennaro's blood miracle, Naples", blurb:"A folk-religious, Vesuvius-adjacent ritual first recorded in 1389.", format:['Festival / recurring event'], hazard:['Volcanic eruption'], region:['Europe'], era:['Ancient / deep-time','Ongoing / unresolved'], theme:[]},
+  {name:"The Boston Christmas tree from Nova Scotia (since 1918)", blurb:"Sent nearly every year in gratitude for Boston's aid after the Halifax Explosion, gratitude rather than grief as the emotional register.", format:['Institution / campaign'], hazard:['Conflict-compounded'], region:['North America'], era:['20th century','Ongoing / unresolved'], theme:[]},
+
+  // ---- Commemorative monuments, plaques, and markers ----
+  {name:"Monument to the Great Fire of London (1677)", blurb:"Its 202-foot height literally encodes the distance to the fire's origin point. Still climbable today.", format:['Statue / monument'], hazard:['Wildfire'], region:['Europe'], era:['Early modern (pre-1900)'], theme:[]},
+  {name:"Nilometers, Egypt", blurb:"The Rhoda Island example, dated to 861 CE and still standing, infrastructure doubling as a ritual object.", format:['Architecture','Statue / monument'], hazard:['Flood'], region:['Africa'], era:['Ancient / deep-time'], theme:['Object that survived']},
+  {name:"Halifax Explosion Memorial Bell Tower", blurb:"A single survivor's private donation, becoming a permanent public monument decades after the fact.", format:['Statue / monument'], hazard:['Conflict-compounded'], region:['North America'], era:['20th century'], theme:[]},
+  {name:"Erwang Temple, China", blurb:"The built-monument half of the Qingming Water-Releasing Festival at Dujiangyan.", format:['Statue / monument'], hazard:['Flood'], region:['East Asia'], era:['Ancient / deep-time'], theme:[]},
+
+  // ---- High-water marks ----
+  {name:"Passau, Germany (flood marks)", blurb:"Flood marks on the Rathaus dating back to the 11th century, the single richest version of this idea found anywhere in the research.", format:['Statue / monument','Architecture'], hazard:['Flood'], region:['Europe'], era:['Ancient / deep-time','Ongoing / unresolved'], theme:['Object that survived']},
+  {name:"The Zouave of Pont de l'Alma, Paris", blurb:"An accidental flood gauge since 1910, a statue Parisians still check the water level against.", format:['Statue / monument'], hazard:['Flood'], region:['Europe'], era:['Early modern (pre-1900)'], theme:['Object that survived']},
+  {name:"Baiheliang (White Crane Ridge), China", blurb:"The inverse case, a drought marker rather than a flood one, tracking 72 low-water years across more than 1,000 years.", format:['Architecture'], hazard:['Drought / famine'], region:['East Asia'], era:['Ancient / deep-time'], theme:[]},
+  {name:"A Ganges flood marker (open thread)", blurb:"Plausible and widely assumed to exist, but not confirmed despite searching. A genuine open question worth a targeted follow-up starting from a specific city and flood year.", format:['Architecture'], hazard:['Flood'], region:['South Asia'], era:['Ancient / deep-time'], theme:[]},
+
+  // ---- Oral tradition ----
+  {name:"Gunditjmara songlines, Australia", blurb:"Narratives matching paleoclimatic sea-level data from 13,000 to 7,000 years ago, oral tradition functioning as an actual scientific record.", format:['Oral tradition'], hazard:['Flood'], region:['Pacific / Oceania'], era:['Ancient / deep-time'], theme:[]},
+
+  // ---- Heritage destruction ----
+  {name:"Tsunami stones washed away by the tsunamis they warned about, Japan", blurb:"The literal, non-metaphorical case of a warning marker destroyed by the exact kind of event it existed to warn against.", format:['Statue / monument'], hazard:['Tsunami'], region:['East Asia'], era:['Early modern (pre-1900)','21st century'], theme:['Object that survived']},
+  {name:"The Kakhovka Dam, Ukraine (2023, paused for review)", blurb:"A \"natural\" disaster that was actually an act of war, drowning museums and Bronze Age and Scythian archaeological sites downstream.", format:['Museum / archive'], hazard:['Flood','Conflict-compounded'], region:['Europe'], era:['21st century'], theme:['Suppression & delayed acknowledgment']},
+  {name:"Aleppo, Syria", blurb:"A UNESCO World Heritage site already war-damaged and on the Heritage-in-Danger list since 2013, then hit directly by the 2023 earthquake.", format:['Museum / archive','Architecture'], hazard:['Earthquake','Conflict-compounded'], region:['Middle East'], era:['21st century'], theme:[]},
+  {name:"The Timbuktu manuscripts, Mali (2012, paused for review)", blurb:"Deliberate ideological destruction by Ansar Dine, versus a risk-everything rescue by local librarians who smuggled roughly 350,000 manuscripts out by donkey and boat.", format:['Museum / archive'], hazard:['Conflict-compounded'], region:['Africa'], era:['21st century'], theme:['Object that survived']},
+  {name:"Diego de Landa and the Maya codices, Yucatán (1562, paused for review)", blurb:"A colonial bishop's mass burning of bark-paper texts left only four Maya codices surviving anywhere in the world.", format:['Museum / archive'], hazard:['Conflict-compounded'], region:['Central America & Caribbean'], era:['Early modern (pre-1900)'], theme:['Suppression & delayed acknowledgment']},
+  {name:"The 1923 Great Kantō earthquake massacre and its suppression, Japan", blurb:"A real atrocity born from post-quake rumor that was then itself institutionally minimized or omitted for decades.", format:['Museum / archive'], hazard:['Earthquake'], region:['East Asia'], era:['20th century'], theme:['Suppression & delayed acknowledgment']},
+
+  // ---- Vernacular and disaster-resistant architecture ----
+  {name:"Circular and domed cyclone housing, coastal India", blurb:"An aerodynamic shape that dissipates cyclonic wind pressure around its curve, now a starting point for engineered cyclone shelters.", format:['Architecture'], hazard:['Hurricane / cyclone'], region:['South Asia'], era:['Ongoing / unresolved'], theme:[]},
+  {name:"Lombok, Indonesia's timber houses (2018 earthquakes)", blurb:"A very recent, clean data point for wood outperforming masonry, traditional flexible timber houses left largely undamaged while modern construction nearby was destroyed.", format:['Architecture'], hazard:['Earthquake'], region:['Southeast Asia'], era:['21st century'], theme:[]},
+  {name:"Fires in Edo, Japan (1600s-1868)", blurb:"A 267-year rolling cycle of fire and incremental urban redesign, firebreaks and deliberate deconcentration, rather than one dated turning point.", format:['Architecture'], hazard:['Wildfire'], region:['East Asia'], era:['Early modern (pre-1900)'], theme:[]},
+
+  // ---- Participatory and incremental post-disaster housing ----
+  {name:"Yasmeen Lari's Barefoot Social Architecture, Pakistan", blurb:"Self-build bamboo shelters after the 2010 and 2022 floods, under the explicit philosophy \"communities as partners, not victims.\"", format:['Architecture','Institution / campaign'], hazard:['Flood'], region:['South Asia'], era:['21st century'], theme:[]},
+
+  // ---- Fire and land management as ritual ----
+  {name:"Karuk, Yurok, and Hoopa tribes, Northern California", blurb:"\"Good fire\" and pest control through deliberate burning, a near-identical suppress-then-reinvite arc to Australia's Aboriginal land-management case.", format:['Institution / campaign','Oral tradition'], hazard:['Wildfire'], region:['North America'], era:['Ongoing / unresolved'], theme:[]},
+  {name:"Krahô and Xavante peoples, Brazilian Cerrado", blurb:"Ceremonial group hunts that are simultaneously the land-management act itself; Brazil reversed its own suppression policy in 2014.", format:['Institution / campaign','Oral tradition'], hazard:['Wildfire'], region:['South America'], era:['Ongoing / unresolved'], theme:[]},
+
+  // ---- Institutional and celebrity-led preparedness campaigns ----
+  {name:"Smokey Bear, USA (since 1944)", blurb:"The longest-running public-service-announcement campaign in American history.", format:['Institution / campaign'], hazard:['Wildfire'], region:['North America'], era:['20th century','Ongoing / unresolved'], theme:[]},
+  {name:"Cyclone Preparedness Programme, Bangladesh (since 1973)", blurb:"A volunteer-network model rather than a media campaign, with more than 76,000 trained volunteers.", format:['Institution / campaign'], hazard:['Hurricane / cyclone'], region:['South Asia'], era:['20th century','Ongoing / unresolved'], theme:[]},
+  {name:"A sports-celebrity preparedness campaign outside the Caribbean (open thread)", blurb:"Searched for specifically and not found. A genuine gap worth another pass starting from a national disaster-management agency rather than the sport or celebrity angle.", format:['Institution / campaign'], hazard:[], region:[], era:['Ongoing / unresolved'], theme:[]},
+
+  // ---- Community normalcy through culture ----
+  {name:"The Calais Sessions, Calais \"Jungle\" camp (2016)", blurb:"A full album recorded inside the camp, proceeds partly directed toward reuniting unaccompanied refugee children with family.", format:['Song / literature / visual art'], hazard:['Conflict-compounded'], region:['Europe'], era:['21st century'], theme:['Children specifically','Climate displacement']},
+
+  // ---- Regional deep-dives: Africa ----
+  {name:"Tilahun Gessesse and the 1983-85 Ethiopian famine", blurb:"Domestic musician-led relief, a distinct story from Band Aid and Live Aid's Western celebrity model.", format:['Song / literature / visual art','Institution / campaign'], hazard:['Drought / famine'], region:['Africa'], era:['20th century'], theme:[]},
+  {name:"Cape Town's \"Day Zero\" drought", blurb:"Strong on street art and behavior-change culture, though no single named artwork has been confirmed yet, an honest open thread rather than a settled case.", format:['Song / literature / visual art'], hazard:['Drought / famine'], region:['Africa'], era:['21st century'], theme:[]},
+  {name:"Nigeria's 2022 floods (open thread)", blurb:"A real, severe disaster with no specific artistic or cultural response confirmed yet, a genuine gap flagged honestly rather than papered over.", format:[], hazard:['Flood'], region:['Africa'], era:['21st century'], theme:[]},
+
+  // ---- Deliberate testimony archives ----
+  {name:"Voices from the Dust Bowl, Library of Congress (recorded 1940-41)", blurb:"The oldest example in this research, and a different authorship model, outside folklorists recording testimony rather than the affected community archiving itself.", format:['Museum / archive'], hazard:['Drought / famine'], region:['North America'], era:['20th century'], theme:[]},
+
+  // ---- Climate displacement ----
+  {name:"Kwajalein Atoll Sustainability Laboratory (KASL), Marshall Islands (founded 2022)", blurb:"A Marshallese-run, youth-education-focused climate adaptation lab, would substantially deepen the already-dimmed Marshall Islands case from a purely historical entry into a present-tense one.", format:['Institution / campaign'], hazard:['Flood'], region:['Pacific / Oceania'], era:['21st century'], theme:['Climate displacement']},
 ];
 
 /* ============================================================
@@ -1902,6 +2078,7 @@ function enterTool(){
   document.getElementById('app').classList.add('active');
   if(!map){ initMap(); }
   setTimeout(()=>{ if(map) map.invalidateSize(); selectCase('simeulue'); }, 60);
+  setTimeout(()=>{ launchTour(); }, 500);
 }
 
 function openEgg(){
@@ -1930,6 +2107,306 @@ function openTimeline(){
 function closeTimeline(){
   document.getElementById('timeline-modal').classList.remove('open');
 }
+
+/* ============================================================
+   ATLAS: filterable interface
+   ============================================================ */
+const atlasActive = {format:new Set(), hazard:new Set(), region:new Set(), era:new Set(), theme:new Set()};
+let atlasSearch = '';
+let atlasBuilt = false;
+
+function buildAtlasFacets(){
+  const wrap = document.getElementById('atlas-facets');
+  wrap.innerHTML = '';
+  const labels = {format:'Format', hazard:'Hazard', region:'Region', era:'Era', theme:'Theme'};
+  Object.keys(ATLAS_FACETS).forEach(facet=>{
+    const group = document.createElement('div');
+    group.className = 'atlas-facet-group';
+    const label = document.createElement('div');
+    label.className = 'atlas-facet-label';
+    label.textContent = labels[facet];
+    group.appendChild(label);
+    const chipRow = document.createElement('div');
+    chipRow.className = 'atlas-chip-row';
+    ATLAS_FACETS[facet].forEach(value=>{
+      const chip = document.createElement('button');
+      chip.className = 'atlas-chip';
+      chip.type = 'button';
+      chip.textContent = value;
+      chip.onclick = ()=>toggleAtlasChip(facet, value, chip);
+      chipRow.appendChild(chip);
+    });
+    group.appendChild(chipRow);
+    wrap.appendChild(group);
+  });
+}
+
+function toggleAtlasChip(facet, value, el){
+  if(atlasActive[facet].has(value)){ atlasActive[facet].delete(value); el.classList.remove('active'); }
+  else { atlasActive[facet].add(value); el.classList.add('active'); }
+  renderAtlasGrid();
+}
+
+function clearAtlasFilters(){
+  Object.keys(atlasActive).forEach(f=>atlasActive[f].clear());
+  atlasSearch = '';
+  document.getElementById('atlas-search').value = '';
+  document.querySelectorAll('.atlas-chip').forEach(el=>el.classList.remove('active'));
+  renderAtlasGrid();
+}
+
+function setAtlasSearch(v){
+  atlasSearch = v.trim().toLowerCase();
+  renderAtlasGrid();
+}
+
+function renderAtlasGrid(){
+  const grid = document.getElementById('atlas-grid');
+  const anyActive = Object.values(atlasActive).some(s=>s.size>0);
+  const matches = ATLAS.filter(entry=>{
+    if(atlasSearch){
+      const hay = (entry.name+' '+entry.blurb).toLowerCase();
+      if(!hay.includes(atlasSearch)) return false;
+    }
+    return Object.keys(atlasActive).every(facet=>{
+      const wanted = atlasActive[facet];
+      if(wanted.size===0) return true;
+      const has = entry[facet]||[];
+      return has.some(v=>wanted.has(v));
+    });
+  });
+  document.getElementById('atlas-count').textContent =
+    matches.length + ' of ' + ATLAS.length + ' atlas entries' + (atlasSearch||anyActive ? ' match' : '');
+  grid.innerHTML = '';
+  if(matches.length===0){
+    grid.innerHTML = '<div class="atlas-empty">Nothing matches that combination yet. Try clearing a filter.</div>';
+    return;
+  }
+  matches.forEach(entry=>{
+    const card = document.createElement('div');
+    card.className = 'atlas-card';
+    const allTags = [].concat(entry.format,entry.hazard,entry.region,entry.era,entry.theme);
+    card.innerHTML = '<h4>'+entry.name+'</h4>'
+      + '<p>'+entry.blurb+'</p>'
+      + '<div class="atlas-card-tags">'+allTags.map(t=>'<span class="atlas-tag">'+t+'</span>').join('')+'</div>';
+    grid.appendChild(card);
+  });
+}
+
+function openAtlas(){
+  if(!atlasBuilt){ buildAtlasFacets(); atlasBuilt = true; }
+  renderAtlasGrid();
+  document.getElementById('atlas-modal').classList.add('open');
+}
+function closeAtlas(){
+  document.getElementById('atlas-modal').classList.remove('open');
+}
+
+/* ============================================================
+   GUIDED TOUR (spotlight)
+   ============================================================ */
+(function(){
+  const TOUR_SLIDES = [
+    {
+      sel:null,
+      gc:'var(--accent)', bc:'var(--accent)', dc:'var(--accent)',
+      badge:{icon:'&#9733;',label:'Raised Under Bad Stars',bg:'var(--accent-dim)',col:'var(--accent)',border:'var(--accent-border)'},
+      title:"Disaster isn't only a physical event. It's a story a place tells itself afterward.",
+      body:"This tool maps the culture that comes out of disaster: the songs, myths, monuments, festivals, and habits communities build once a hazard becomes part of their history. Quick tour, six stops, skip anytime.",
+      pills:null, btn:'Start the tour &rarr;'
+    },
+    {
+      sel:'#acc-idea-btn', pad:6,
+      gc:'var(--accent)', bc:'var(--accent)', dc:'var(--accent)',
+      badge:null,
+      title:'Culture as infrastructure',
+      body:"The core idea: what a community sings, carves, or jokes about after a disaster isn't just aftermath, it's the clearest record of what that hazard actually means to the people who live with it. Listening to that record is where good disaster response should start.",
+      pills:null, btn:'Next &rarr;'
+    },
+    {
+      sel:'#acc-stages-btn', pad:6,
+      gc:'var(--stage-strengthening)', bc:'var(--stage-strengthening)', dc:'var(--stage-strengthening)',
+      badge:{icon:'&#9679;',label:'The framework',bg:'var(--aqua-dim)',col:'var(--aqua)',border:'rgba(13,148,136,.35)'},
+      title:'Four stages, not a straight line',
+      body:'Every case is placed somewhere in this cycle: Formulation gives a hazard a name, Strengthening makes the memory stick, Operationalizing builds it into policy, and Degradation is where the thread gets dropped. A place can be doing more than one at once, or sliding backward.',
+      pills:['Formulation','Strengthening','Operationalizing','Degradation'],
+      pillBg:'var(--bg-panel)', btn:'Next &rarr;'
+    },
+    {
+      sel:'#rail-list', pad:8,
+      gc:'var(--accent)', bc:'var(--accent)', dc:'var(--accent)',
+      badge:null,
+      title:'Every place and story lives here',
+      body:"This is the full list of cases. Click any name to open its full story in the right-hand panel. The grayed-out ones near the bottom don't have enough source material yet, they're placeholders, not finished cases.",
+      pills:null, btn:'Next &rarr;'
+    },
+    {
+      sel:'#map-wrap', pad:0,
+      gc:'var(--gold)', bc:'var(--gold)', dc:'var(--gold)',
+      badge:null,
+      title:'Or find them on the map',
+      body:'Each pin is colored by its stage in the cycle. Click one to jump straight to its story, or use the drawer at the bottom of the map for a quick preview before committing to the full read.',
+      pills:null, btn:'Next &rarr;'
+    },
+    {
+      sel:'.rail-view-toggle', pad:8,
+      gc:'var(--purple)', bc:'var(--purple)', dc:'var(--purple)',
+      badge:null,
+      title:'Switch from geography to theme',
+      body:'This toggle flips the list from browsing place by place to browsing by the four-stage framework itself, the same grouping the underlying research is organized into.',
+      pills:null, btn:'Next &rarr;'
+    },
+    {
+      sel:'#atlas-btn', pad:8,
+      gc:'var(--accent)', bc:'var(--accent)', dc:'var(--accent)',
+      badge:{icon:'&#128218;',label:'New: the atlas',bg:'var(--accent-dim)',col:'var(--accent)',border:'var(--accent-border)'},
+      title:"Everything that didn't make the curated map",
+      body:"Over seventy additional entries live here: deities, monuments, festivals, oral traditions, and open research threads that are real and sourced but don't have a full narrative writeup yet. Search it or filter by format, hazard, region, era, or theme to browse it the way it was actually researched.",
+      pills:null, btn:'Start exploring &rarr;'
+    }
+  ];
+
+  let tCur=0, tDismissed=true;
+  let tOv, tDim, tGlow, tCard, tAutoTimer;
+
+  function tRect(sel, pad){
+    const el = document.querySelector(sel);
+    if(!el) return null;
+    el.scrollIntoView({block:'center', inline:'center'});
+    const r = el.getBoundingClientRect();
+    const p = pad==null?8:pad;
+    return {x:r.left-p, y:r.top-p, w:r.width+p*2, h:r.height+p*2};
+  }
+
+  function tUpdateDim(rect){
+    if(!tDim) return;
+    const W = window.innerWidth, H = window.innerHeight;
+    let path;
+    if(!rect){ path = 'M0,0 H'+W+' V'+H+' H0 Z'; }
+    else{
+      const x=Math.max(0,rect.x), y=Math.max(0,rect.y);
+      const x2=Math.min(W,rect.x+rect.w), y2=Math.min(H,rect.y+rect.h);
+      path = 'M0,0 H'+W+' V'+H+' H0 Z M'+x+','+y+' H'+x2+' V'+y2+' H'+x+' Z';
+    }
+    tDim.querySelector('path').setAttribute('d', path);
+  }
+
+  function tUpdateGlow(rect, col){
+    if(!rect){ tGlow.style.display='none'; return; }
+    tGlow.style.display='block';
+    tGlow.style.setProperty('--gc', col||'var(--accent)');
+    tGlow.style.left=rect.x+'px'; tGlow.style.top=rect.y+'px';
+    tGlow.style.width=rect.w+'px'; tGlow.style.height=rect.h+'px';
+  }
+
+  function tRenderSlide(idx){
+    const s = TOUR_SLIDES[idx];
+    const rect = s.sel ? tRect(s.sel, s.pad) : null;
+    tUpdateDim(rect);
+    tUpdateGlow(rect, s.gc);
+
+    const bw = document.getElementById('t-badge-wrap');
+    bw.innerHTML = s.badge
+      ? '<div class="t-badge" style="background:'+s.badge.bg+';color:'+s.badge.col+';border:1px solid '+s.badge.border+'">'+s.badge.icon+' '+s.badge.label+'</div>'
+      : '';
+
+    document.getElementById('tour-ttl').textContent = s.title;
+    document.getElementById('tour-bod').textContent = s.body||'';
+
+    const pw = document.getElementById('t-pill-wrap');
+    pw.innerHTML = '';
+    if(s.pills){
+      const pDiv = document.createElement('div'); pDiv.className='t-pills';
+      s.pills.forEach(p=>{
+        const d = document.createElement('div'); d.className='t-pill';
+        if(s.pillBg) d.style.background=s.pillBg;
+        d.textContent = p; pDiv.appendChild(d);
+      });
+      pw.appendChild(pDiv);
+    }
+
+    document.querySelectorAll('.t-dot').forEach((d,i)=>{
+      d.classList.toggle('on', i===idx);
+      d.style.setProperty('--dc', TOUR_SLIDES[i].dc);
+    });
+
+    const nb = document.getElementById('tour-next');
+    nb.innerHTML = s.btn;
+    nb.style.setProperty('--bc', s.bc);
+    document.getElementById('tour-skip').style.visibility = idx===TOUR_SLIDES.length-1 ? 'hidden' : 'visible';
+  }
+
+  function tAdvance(){
+    if(tCur < TOUR_SLIDES.length-1){ tCur++; tRenderSlide(tCur); }
+    else{ tClose(); }
+  }
+
+  function tClose(){
+    tDismissed = true;
+    clearTimeout(tAutoTimer);
+    if(tOv){
+      tOv.classList.add('tour-hiding');
+      setTimeout(()=>{ if(tOv && tOv.parentNode) tOv.parentNode.removeChild(tOv); }, 450);
+    }
+  }
+
+  function tBuild(){
+    tDismissed = false;
+    tOv = document.createElement('div');
+    tOv.id = 'tour-ov';
+    tOv.addEventListener('click', e=>{ if(e.target===tOv) tClose(); });
+
+    const W = window.innerWidth, H = window.innerHeight;
+    tDim = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    tDim.id = 'tour-dim';
+    tDim.setAttribute('viewBox','0 0 '+W+' '+H);
+    tDim.setAttribute('preserveAspectRatio','none');
+    tDim.innerHTML = '<path fill="rgba(24,24,24,.72)" fill-rule="evenodd" d="M0,0 H'+W+' V'+H+' H0 Z"/>';
+    tOv.appendChild(tDim);
+
+    tGlow = document.createElement('div');
+    tGlow.id = 'tour-glow';
+    tOv.appendChild(tGlow);
+
+    tCard = document.createElement('div');
+    tCard.id = 'tour-card';
+    tCard.style.width = Math.min(440, W-24)+'px';
+    tCard.innerHTML =
+      '<div id="tour-card-inner">'+
+        '<div id="t-badge-wrap"></div>'+
+        '<h2 id="tour-ttl"></h2>'+
+        '<p id="tour-bod"></p>'+
+        '<div id="t-pill-wrap"></div>'+
+      '</div>'+
+      '<div id="tour-foot">'+
+        '<div class="t-dots">'+
+          TOUR_SLIDES.map((_,i)=>'<button class="t-dot" onclick="tourGo('+i+')" aria-label="Go to slide '+(i+1)+'"></button>').join('')+
+        '</div>'+
+        '<span id="tour-skip" onclick="tourClose()">Skip tour</span>'+
+        '<button class="t-btn prim" id="tour-next" onclick="tourNext()"></button>'+
+      '</div>';
+    tOv.appendChild(tCard);
+    document.body.appendChild(tOv);
+
+    window.addEventListener('resize', function(){
+      if(!tDismissed){
+        const s = TOUR_SLIDES[tCur];
+        const rect = s.sel ? tRect(s.sel, s.pad) : null;
+        const svgEl = document.querySelector('#tour-dim');
+        if(svgEl){ svgEl.setAttribute('viewBox','0 0 '+window.innerWidth+' '+window.innerHeight); }
+        tUpdateDim(rect);
+        tUpdateGlow(rect, s.gc);
+      }
+    });
+
+    tRenderSlide(0);
+  }
+
+  window.tourNext = function(){ tAdvance(); };
+  window.tourClose = function(){ tClose(); };
+  window.tourGo = function(i){ tCur=i; tRenderSlide(i); };
+  window.launchTour = function(){ tCur=0; tBuild(); };
+})();
 </script>
 </body>
 </html>
