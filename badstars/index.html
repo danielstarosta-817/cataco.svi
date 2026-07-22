@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Raised Under Bad Stars · Brackish Projects (prototype)</title>
+<title>Raised Under Bad Stars · Brackish Projects</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -487,6 +487,73 @@
   .leaflet-popup-content-wrapper{background:var(--bg-card);color:var(--text);border-radius:8px;}
   .leaflet-popup-tip{background:var(--bg-card);}
   .leaflet-container a.leaflet-popup-close-button{color:var(--text-dim);}
+
+  /* ============================================================
+     MOBILE / SMALL SCREENS
+     ============================================================ */
+  #mobile-bar{display:none;}
+  #rail-scrim{display:none;position:fixed;inset:0;background:rgba(24,24,24,.45);z-index:2900;}
+  #rail-scrim.show{display:block;}
+
+  @media (max-width:860px){
+    /* -- top bar replaces the desktop rail-toggle / collapse pattern -- */
+    #mobile-bar{
+      display:flex;align-items:center;gap:10px;position:fixed;top:0;left:0;right:0;height:52px;
+      z-index:2000;background:var(--bg);border-bottom:1px solid var(--line);padding:0 14px;
+    }
+    #mobile-bar .bh-back{position:static;}
+    #mobile-menu-btn{
+      display:flex;align-items:center;gap:8px;background:none;border:none;padding:6px 4px;cursor:pointer;
+      font-size:13px;font-weight:600;color:var(--text-dim);font-family:inherit;
+    }
+    #mobile-menu-btn svg{width:18px;height:18px;color:var(--text-dim);flex-shrink:0;}
+
+    #rail-toggle{display:none;}
+    #tour-replay-btn{display:none !important;}
+
+    #app.active{flex-direction:column;height:auto;min-height:100vh;padding-top:52px;}
+
+    /* nav rail becomes an off-canvas drawer */
+    #nav-rail{
+      position:fixed;top:0;left:0;bottom:0;width:85vw;max-width:340px;z-index:3000;
+      transform:translateX(-100%);transition:transform .25s ease;box-shadow:0 0 40px rgba(24,24,24,.28);
+    }
+    #nav-rail.mobile-open{transform:translateX(0);}
+    #nav-rail.collapsed{width:85vw;} /* ignore desktop collapse state on mobile */
+    #nav-rail.collapsed .rail-body{opacity:1;pointer-events:auto;}
+    #nav-rail.collapsed .rail-brand{display:block;}
+
+    /* map + story stack vertically instead of sitting side by side */
+    #mid-col{flex:none;height:38vh;border-right:none;border-bottom:1px solid var(--line);}
+    #story-col{width:100%;max-width:none;overflow-y:visible;flex:none;}
+
+    .story-hero{padding:26px 18px 20px;}
+    .story-hero h1{white-space:normal;}
+    #story-inner{padding:24px 18px 60px;}
+    .story-section h3{font-size:20px;}
+    .story-section p{font-size:15px;max-width:none;}
+    .story-img,.story-quote,.crossref-btn,details.sources{max-width:none;}
+
+    #map-drawer-tab{padding:14px 18px;}
+    #map-drawer-body{padding:0 18px;}
+    #map-drawer.open #map-drawer-body{padding:0 18px 18px;}
+
+    .rail-item{padding:11px 8px;}
+    .atlas-chip{padding:7px 13px;}
+
+    #egg-panel,#timeline-panel,#atlas-panel{padding:26px 18px 22px;}
+    #egg-panel h3,#timeline-panel h3,#atlas-panel h3{font-size:20px;}
+
+    #landing-inner{padding:44px 20px;}
+    #landing h1{font-size:30px;}
+    #landing p.lede{font-size:15.5px;}
+  }
+
+  @media (max-width:420px){
+    #atlas-grid{grid-template-columns:1fr;}
+    #egg-modal,#timeline-modal,#atlas-modal{padding:12px;}
+    #egg-panel,#timeline-panel,#atlas-panel{padding:22px 14px 18px;}
+  }
 </style>
 </head>
 <body>
@@ -661,6 +728,18 @@
      TOOL SHELL
      ============================================================ -->
 <div id="app">
+
+  <!-- ---------- mobile-only top bar ---------- -->
+  <div id="mobile-bar">
+    <a href="../index.html" class="bh-back" style="position:static;" title="Back to Brackish Projects" aria-label="Back to home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </a>
+    <button id="mobile-menu-btn" onclick="toggleMobileRail()" aria-label="Open places &amp; stories menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <span>Places &amp; stories</span>
+    </button>
+  </div>
+  <div id="rail-scrim" onclick="toggleMobileRail()"></div>
 
   <!-- ---------- far-left nav rail ---------- -->
   <div id="nav-rail">
@@ -2165,21 +2244,21 @@ const ATLAS_FACETS = {
   format:['Statue / monument','Festival / recurring event','Song / literature / visual art','Oral tradition','Architecture','Institution / campaign','Museum / archive'],
   hazard:['Flood','Earthquake','Tsunami','Wildfire','Volcanic eruption','Drought / famine','Hurricane / cyclone','Heat','Conflict-compounded'],
   region:['Africa','East Asia','South Asia','Southeast Asia','Pacific / Oceania','North America','Central America & Caribbean','South America','Europe','Middle East'],
-  era:['Ancient / deep-time','Early modern (pre-1900)','20th century','21st century','Ongoing / unresolved'],
+  era:['Ancient','Early modern (pre-1900)','20th century','21st century','Ongoing / unresolved'],
   theme:['Privilege & inequality','Suppression & delayed acknowledgment','Object that survived','Children specifically','Climate displacement'],
 };
 
 const ATLAS = [
   // ---- Deep-time deities and mythic carvings ----
-  {name:"Tlaloc monolith, Mexico", blurb:"The largest monolithic sculpture in the Americas. Unseasonal rain reportedly broke out the day it arrived in Mexico City in 1964, a causal claim that's disputed rather than confirmed.", format:['Statue / monument'], hazard:['Drought / famine','Flood'], region:['Central America & Caribbean'], era:['Ancient / deep-time'], theme:[], detail:`<p>The Monolith of Tlaloc is a 168-ton, twenty-three-foot carving of basalt, discovered in the 1880s near the town of Coatlinchan and moved to Mexico City in 1964, where it still stands outside the National Museum of Anthropology as the largest monolithic sculpture anywhere in the Americas. Tlaloc was the Aztec and earlier Mesoamerican god of rain, lightning, and flooding all at once, which meant drought and deluge were never treated as opposite forces. They were the same god's responsibility, and a community praying for rain and a community drowning in it were petitioning the same figure.</p>
+  {name:"Tlaloc monolith, Mexico", blurb:"The largest monolithic sculpture in the Americas. Unseasonal rain reportedly broke out the day it arrived in Mexico City in 1964, a causal claim that's disputed rather than confirmed.", format:['Statue / monument'], hazard:['Drought / famine','Flood'], region:['Central America & Caribbean'], era:['Ancient'], theme:[], detail:`<p>The Monolith of Tlaloc is a 168-ton, twenty-three-foot carving of basalt, discovered in the 1880s near the town of Coatlinchan and moved to Mexico City in 1964, where it still stands outside the National Museum of Anthropology as the largest monolithic sculpture anywhere in the Americas. Tlaloc was the Aztec and earlier Mesoamerican god of rain, lightning, and flooding all at once, which meant drought and deluge were never treated as opposite forces. They were the same god's responsibility, and a community praying for rain and a community drowning in it were petitioning the same figure.</p>
 <p>That combined power carried a harsh cost. Tlaloc reportedly demanded child sacrifice specifically at moments when the rains failed, tying his goodwill directly to the water supply the whole community depended on. The monolith's move to the capital in 1964 produced its own strange postscript. It arrived during the dry season, greeted by a crowd of some 25,000 people, and an unseasonal storm broke out just as it reached the city. Plenty of locals read the timing as proof that the rain god's power had traveled with his statue.</p>`, sources:["Miller, M. and Taube, K., 1993", "Matos Moctezuma, E., 1988"]},
-  {name:"Matsya, the fish avatar of Vishnu, India", blurb:"A third independent ancient flood tradition, build a boat, save the seeds, alongside Gilgamesh and Noah, arrived at separately in South Asian cosmology.", format:['Oral tradition','Song / literature / visual art'], hazard:['Flood'], region:['South Asia'], era:['Ancient / deep-time'], theme:[], detail:`<p>Matsya is the Hindu parallel to Utnapishtim and Noah. Vishnu takes the form of a fish to warn the first man, Manu, of a coming deluge, instructing him to build a boat and gather the seeds of all living things before the flood arrives. The story has been carved and painted across many centuries of Hindu temple sculpture and later miniature painting traditions, giving it a continuous visual record stretching across a very long span of time.</p>
+  {name:"Matsya, the fish avatar of Vishnu, India", blurb:"A third independent ancient flood tradition, build a boat, save the seeds, alongside Gilgamesh and Noah, arrived at separately in South Asian cosmology.", format:['Oral tradition','Song / literature / visual art'], hazard:['Flood'], region:['South Asia'], era:['Ancient'], theme:[], detail:`<p>Matsya is the Hindu parallel to Utnapishtim and Noah. Vishnu takes the form of a fish to warn the first man, Manu, of a coming deluge, instructing him to build a boat and gather the seeds of all living things before the flood arrives. The story has been carved and painted across many centuries of Hindu temple sculpture and later miniature painting traditions, giving it a continuous visual record stretching across a very long span of time.</p>
 <p>What makes Matsya worth holding onto is the company it keeps. Hinduism turns out to be one of at least three separate, geographically unconnected ancient cultures, alongside the Mesopotamian tradition and arguably the Mesoamerican one, that each independently arrived at the same basic instruction inside their founding religious literature: build a vessel, save what you can, and survive the flood. Nobody borrowed the story from anyone else. The same warning simply surfaced more than once, in cultures that never met.</p>`, sources:["Doniger, W., 1975", "Dimmitt, C. and van Buitenen, J.A.B., 1978"]},
-  {name:"Deucalion and Pyrrha, Greece", blurb:"The Greek flood myth, structurally near-identical to Gilgamesh and Genesis, right down to the repopulation-after-the-water beat.", format:['Oral tradition','Song / literature / visual art'], hazard:['Flood'], region:['Europe'], era:['Ancient / deep-time'], theme:[], detail:`<p>In this myth, Zeus floods the earth to destroy a humanity he has come to consider corrupt. Deucalion and Pyrrha survive by riding out the flood inside a wooden chest, and afterward repopulate the world in a strange, specific way: by throwing stones over their shoulders, which turn into people as they land.</p>
+  {name:"Deucalion and Pyrrha, Greece", blurb:"The Greek flood myth, structurally near-identical to Gilgamesh and Genesis, right down to the repopulation-after-the-water beat.", format:['Oral tradition','Song / literature / visual art'], hazard:['Flood'], region:['Europe'], era:['Ancient'], theme:[], detail:`<p>In this myth, Zeus floods the earth to destroy a humanity he has come to consider corrupt. Deucalion and Pyrrha survive by riding out the flood inside a wooden chest, and afterward repopulate the world in a strange, specific way: by throwing stones over their shoulders, which turn into people as they land.</p>
 <p>The story is structurally almost identical to Utnapishtim's flood in the Epic of Gilgamesh and to the Genesis flood, three separate ancient traditions converging on the same basic shape of survival narrative: a corrupt world, a chosen pair, a vessel, and a fresh start afterward. Deucalion and Pyrrha were depicted across Greek and later Roman vase painting and relief, and the myth was revived constantly once classical mythology came back into fashion during the Renaissance and Baroque periods, giving it a visual afterlife stretching from antiquity through early modern European painting.</p>`, sources:["Graves, R., 1955", "Gantz, T., 1993"]},
-  {name:"Chalchiuhtlicue, Aztec water goddess, Mexico", blurb:"Tied directly to the Sun Stone's Fourth Sun, the cosmic era that ends in flood.", format:['Statue / monument'], hazard:['Flood'], region:['Central America & Caribbean'], era:['Ancient / deep-time'], theme:[], detail:`<p>Chalchiuhtlicue is the Aztec goddess of water, lakes, and floods, and in the Five Suns cosmology encoded on the Aztec Sun Stone, she is the deity credited with ending the Fourth Sun by flood, the world-age before the present one, which drowned and turned all of humanity into fish.</p>
+  {name:"Chalchiuhtlicue, Aztec water goddess, Mexico", blurb:"Tied directly to the Sun Stone's Fourth Sun, the cosmic era that ends in flood.", format:['Statue / monument'], hazard:['Flood'], region:['Central America & Caribbean'], era:['Ancient'], theme:[], detail:`<p>Chalchiuhtlicue is the Aztec goddess of water, lakes, and floods, and in the Five Suns cosmology encoded on the Aztec Sun Stone, she is the deity credited with ending the Fourth Sun by flood, the world-age before the present one, which drowned and turned all of humanity into fish.</p>
 <p>Her domain did not stop at destruction. Chalchiuhtlicue also ruled over childbirth and baptism-like purification rites, so the same goddess governed water as both life-giving and world-ending, one figure holding both functions rather than having them split across separate deities.</p>`, sources:["Miller, M. and Taube, K., 1993"]},
-  {name:"Hapi and Sekhmet, Egypt", blurb:"Fertility-flood versus plague-and-destruction, Karnak reliefs and Amenhotep III's hundreds of Sekhmet statues, two sides of the same ancient risk landscape.", format:['Statue / monument'], hazard:['Flood','Drought / famine'], region:['Africa'], era:['Ancient / deep-time'], theme:[], detail:`<p>Hapi was the Egyptian god of the Nile flood, and temple reliefs at Karnak and elsewhere depict him as an androgynous, fertile figure physically carrying the floodwaters on which all of Egypt's agriculture depended. His imagery treats the river's rise as an act of abundance, the flood a community needed rather than feared.</p>
+  {name:"Hapi and Sekhmet, Egypt", blurb:"Fertility-flood versus plague-and-destruction, Karnak reliefs and Amenhotep III's hundreds of Sekhmet statues, two sides of the same ancient risk landscape.", format:['Statue / monument'], hazard:['Flood','Drought / famine'], region:['Africa'], era:['Ancient'], theme:[], detail:`<p>Hapi was the Egyptian god of the Nile flood, and temple reliefs at Karnak and elsewhere depict him as an androgynous, fertile figure physically carrying the floodwaters on which all of Egypt's agriculture depended. His imagery treats the river's rise as an act of abundance, the flood a community needed rather than feared.</p>
 <p>Sekhmet is the harder case. A lioness-headed goddess of plague and violent destruction, she appears in the "Destruction of Mankind" myth as the force Ra sent to punish humanity, coming close to wiping it out entirely before being tricked into stopping. Amenhotep III responded to that mythology by commissioning several hundred statues of Sekhmet, by some estimates one for each day of the year, for his mortuary temple, an entire sculptural program built around appeasing a goddess of precisely the kind of destruction a community hopes never actually arrives.</p>`, sources:["Wilkinson, R.H., 2003", "Pinch, G., 2002"]},
   {name:"Susanoo, Raijin, and Fujin, Japan", blurb:"Sōtatsu's \"Wind God and Thunder God\" screen, devotional rather than a direct disaster response, but a strong visual-culture entry point.", format:['Song / literature / visual art'], hazard:['Wildfire'], region:['East Asia'], era:['Early modern (pre-1900)'], theme:[], detail:`<p>Susanoo is the Shinto god of storms and the sea, and Raijin and Fujin are a paired wind-and-thunder duo, together representing a tradition older and more purely religious than the mostly satirical Edo-period catfish prints that get most of the attention elsewhere in Japanese disaster folklore. Tawaraya Sotatsu's folding-screen painting "Wind God and Thunder God," made in the seventeenth century, is one of the most famous images in all of Japanese art and has been copied by generations of later painters, giving these two deities an enormous visual legacy.</p>
 <p>That legacy sits closer to devotional and decorative art than to a direct disaster-response artifact, worth noting honestly as the more ambiguous case in this group. It is a great and enduring work of art built around gods of storm and thunder, but not necessarily produced in direct reaction to any single documented weather disaster the way a flood plaque or a tsunami stone would be.</p>`, sources:["Yamane, Y., 1977", "Murase, M., 2000"]},
@@ -2247,7 +2326,7 @@ const ATLAS = [
   // ---- Disaster into recurring community event ----
   {name:"Þjóðhátíð, Heimaey, Iceland", blurb:"Survived the literal volcanic burial of a third of the town in 1973, and the festival continued that same year regardless.", format:['Festival / recurring event'], hazard:['Volcanic eruption'], region:['Europe'], era:['20th century'], theme:[], detail:`<p>Þjóðhátíð began in 1874 for a reason that had nothing to do with disaster: bad weather kept the islanders of Heimaey from reaching the Icelandic mainland's millennial celebration that year, so they held their own festival instead. It became an annual fixture with no connection to catastrophe for almost a century.</p>
 <p>That changed in January 1973, when the Eldfell volcano erupted without warning and buried a third of the town under lava and ash, forcing a complete evacuation of the island. Once the eruption had run its course, the town held Þjóðhátíð anyway, that same year. It remains one of Iceland's biggest annual gatherings today. The Eldheimar museum, built around a single excavated, buried house, now carries the memory of the eruption through the rest of the calendar year, while the festival stays the one moment the town still comes together in person, the same way it always has.</p>`, sources:["Eldheimar museum, Heimaey", "Historical records of the 1973 Eldfell eruption"]},
-  {name:"Feast of San Gennaro's blood miracle, Naples", blurb:"A folk-religious, Vesuvius-adjacent ritual first recorded in 1389.", format:['Festival / recurring event'], hazard:['Volcanic eruption'], region:['Europe'], era:['Ancient / deep-time','Ongoing / unresolved'], theme:[], detail:`<p>The blood miracle of San Gennaro was first recorded in 1389 and is still observed today. San Gennaro is Naples' patron saint, and he is invoked specifically for protection from Vesuvius. Several times a year, including on his September 19 feast day, a reliquary said to hold the saint's dried blood is exposed at the Naples cathedral in front of crowds waiting to see what happens next.</p>
+  {name:"Feast of San Gennaro's blood miracle, Naples", blurb:"A folk-religious, Vesuvius-adjacent ritual first recorded in 1389.", format:['Festival / recurring event'], hazard:['Volcanic eruption'], region:['Europe'], era:['Ancient','Ongoing / unresolved'], theme:[], detail:`<p>The blood miracle of San Gennaro was first recorded in 1389 and is still observed today. San Gennaro is Naples' patron saint, and he is invoked specifically for protection from Vesuvius. Several times a year, including on his September 19 feast day, a reliquary said to hold the saint's dried blood is exposed at the Naples cathedral in front of crowds waiting to see what happens next.</p>
 <p>A liquefaction of the blood is read as a good omen for the city and for the volcano staying quiet, while its failure to liquefy has historically been treated as a warning. The tradition is folk ritual and religious devotion first, but Neapolitans talk about it as a disaster-response tradition too, a centuries-old ceremony whose entire meaning is bound up with whether Vesuvius stays dormant. It shares its civic instinct with the Guglia di San Gennaro, the baroque spire the city built in the 1630s after crediting the saint with stopping a major eruption, the same saint and the same volcano running through both.</p>`, sources:["First recorded liquefaction of San Gennaro's blood, 1389", "Cosimo Fanzago, Guglia di San Gennaro, Naples, 1636-1650"]},
   {name:"The Boston Christmas tree from Nova Scotia (since 1918)", blurb:"Sent nearly every year in gratitude for Boston's aid after the Halifax Explosion, gratitude rather than grief as the emotional register.", format:['Institution / campaign'], hazard:['Conflict-compounded'], region:['North America'], era:['20th century','Ongoing / unresolved'], theme:[], detail:`<p>Nova Scotia has sent Boston an official Christmas tree nearly every year since 1918, the year after the Halifax Explosion killed roughly 2,000 people and devastated the city. The gift is a direct thank-you for the relief effort Boston sent north in the disaster's immediate aftermath, when the city organized aid and shipped it to Halifax within days.</p>
 <p>The tradition lapsed for stretches over the decades before being deliberately revived as an annual practice in 1971 and formally codified by the provincial government in 1976, turning what began as an informal gesture of gratitude into a standing intergovernmental ritual. It is a rare example of a community's disaster commemoration pointed outward, toward the place that helped, rather than inward toward its own loss.</p>`, sources:["Nova Scotia provincial government records on the Boston Christmas tree tradition, formalized 1976"]},
@@ -2257,15 +2336,15 @@ const ATLAS = [
 <p>Visitors have been able to climb it since it was completed in 1677, which means it has worked as public architecture and a tourist attraction continuously for well over three centuries, never sealed off or reduced to something viewed only from behind glass. It stands today as one of the oldest secular, purpose-built disaster monuments in the Western world still standing in its original form and still open for anyone to climb.</p>`, sources:["Christopher Wren and Robert Hooke, Monument to the Great Fire of London, completed 1677"]},
   {name:"Halifax Explosion Memorial Bell Tower", blurb:"A single survivor's private donation, becoming a permanent public monument decades after the fact.", format:['Statue / monument'], hazard:['Conflict-compounded'], region:['North America'], era:['20th century'], theme:[], detail:`<p>Ten of the fourteen bronze bells now housed in the Halifax Explosion Memorial Bell Tower were originally donated to a nearby church by Barbara Orr, a survivor who lost her parents and four siblings in the 1917 explosion. That donation was a private act of grief, made decades before any public monument existed, a single woman choosing to memorialize her own family through bells rather than through a plaque bearing their names.</p>
 <p>The standalone tower itself wasn't built until 1985, in Fort Needham Memorial Park, constructed specifically to house those bells and turn a private family gift into a permanent public monument. It is a rare case where the physical objects at the center of a memorial predate the memorial's own architecture by close to seventy years, a single grieving family's donation eventually becoming a city's shared place of remembrance.</p>`, sources:["Fort Needham Memorial Park, Halifax Explosion Memorial Bell Tower, dedicated 1985", "Barbara Orr, bell donation following the 1917 Halifax Explosion"]},
-  {name:"Erwang Temple, China", blurb:"The built-monument half of the Qingming Water-Releasing Festival at Dujiangyan.", format:['Statue / monument'], hazard:['Flood'], region:['East Asia'], era:['Ancient / deep-time'], theme:[], detail:`<p>Erwang Temple in Dujiangyan, Sichuan, was built to honor Li Bing and his son for the flood-control irrigation system they engineered in 256 BCE, designed to tame the Min River's flooding while still irrigating the Chengdu Plain. The temple has hosted continuous worship for the entire span since, and the irrigation system itself, not just the temple built to honor its creators, remains in active use today, more than 2,200 years later, unmodernized in its basic design and recognized as a UNESCO World Heritage site.</p>
+  {name:"Erwang Temple, China", blurb:"The built-monument half of the Qingming Water-Releasing Festival at Dujiangyan.", format:['Statue / monument'], hazard:['Flood'], region:['East Asia'], era:['Ancient'], theme:[], detail:`<p>Erwang Temple in Dujiangyan, Sichuan, was built to honor Li Bing and his son for the flood-control irrigation system they engineered in 256 BCE, designed to tame the Min River's flooding while still irrigating the Chengdu Plain. The temple has hosted continuous worship for the entire span since, and the irrigation system itself, not just the temple built to honor its creators, remains in active use today, more than 2,200 years later, unmodernized in its basic design and recognized as a UNESCO World Heritage site.</p>
 <p>The site still holds an annual Qingming Water-Releasing Festival, along with a separate temple fair marking the two engineers' birthdays, making it about as direct a line as you'll find anywhere between an ancient flood-control project and a still-living, still-scheduled public event. It also stands as one of the longest continuously functioning pieces of disaster-mitigation infrastructure anywhere in the record, a permanent built object rather than a once-a-year observance that leaves no trace the rest of the year.</p>`, sources:["Dujiangyan irrigation system, built 256 BCE by Li Bing", "UNESCO World Heritage listing, Dujiangyan"]},
 
   // ---- High-water marks ----
-  {name:"Passau, Germany (flood marks)", blurb:"Flood marks on the Rathaus dating back to the 11th century, the single richest version of this idea found anywhere in the research.", format:['Statue / monument','Architecture'], hazard:['Flood'], region:['Europe'], era:['Ancient / deep-time','Ongoing / unresolved'], theme:['Object that survived'], detail:`<p>Passau sits at the meeting point of three rivers, the Danube, the Inn, and the Ilz, and has flooded repeatedly for as long as it has kept written records, with the earliest documented high water in the city going back to the year 1060. The wall of the Rathaus, Passau's city hall, carries a running chart of flood heights that reads almost like a timeline of the city's worst days: 1501, 1595, 1787, 1862, 1899, 1920, and 1954 are all marked directly on the building. The 1501 line sits high enough that it rests above the building's own entrance archway, a detail that makes the scale of that flood immediately legible to anyone walking up to the door centuries later, no explanation required.</p>
+  {name:"Passau, Germany (flood marks)", blurb:"Flood marks on the Rathaus dating back to the 11th century, the single richest version of this idea found anywhere in the research.", format:['Statue / monument','Architecture'], hazard:['Flood'], region:['Europe'], era:['Ancient','Ongoing / unresolved'], theme:['Object that survived'], detail:`<p>Passau sits at the meeting point of three rivers, the Danube, the Inn, and the Ilz, and has flooded repeatedly for as long as it has kept written records, with the earliest documented high water in the city going back to the year 1060. The wall of the Rathaus, Passau's city hall, carries a running chart of flood heights that reads almost like a timeline of the city's worst days: 1501, 1595, 1787, 1862, 1899, 1920, and 1954 are all marked directly on the building. The 1501 line sits high enough that it rests above the building's own entrance archway, a detail that makes the scale of that flood immediately legible to anyone walking up to the door centuries later, no explanation required.</p>
 <p>That five-century-old mark held its record for a very long time, until 2013, when a new flood finally topped even the 1501 line, the highest water level recorded in the city in over 500 years. The Rathaus wall functions, in effect, as a living document. It had been accurate for five centuries, and then it had to be updated.</p>`, sources:["Glaser, R., 2001", "Munzar, J., 2004"]},
   {name:"The Zouave of Pont de l'Alma, Paris", blurb:"An accidental flood gauge since 1910, a statue Parisians still check the water level against.", format:['Statue / monument'], hazard:['Flood'], region:['Europe'], era:['Early modern (pre-1900)'], theme:['Object that survived'], detail:`<p>The Zouave is not a plaque at all, and it was never built to measure anything. It is a decorative stone statue of a soldier, one of four originally installed in 1856 to flank a bridge over the Seine, a purely ornamental addition to the cityscape with no flood function built into its design.</p>
 <p>That changed by accident. The catastrophic Paris flood of 1910 submerged the statue up to its shoulders, and from that point on, Parisians began using the Zouave informally as the city's flood gauge, judging a flood's severity by how much of the statue's body had disappeared under the water. The habit has persisted, and Parisians reportedly still gauge flood severity by the Zouave today, with one honest caveat: the bridge, and the statue's exact placement on it, was rebuilt in the 1970s, so the statue people check today is not standing in precisely the same spot as the one that went under in 1910.</p>`, sources:["Jackson, J.H., 2010"]},
-  {name:"A Ganges flood marker", pending:true, blurb:"A historic, physically inscribed Ganges flood marker likely exists, in the spirit of Passau or Rome, but hasn't been located yet.", format:['Architecture'], hazard:['Flood'], region:['South Asia'], era:['Ancient / deep-time'], theme:[], detail:``, sources:[]},
+  {name:"A Ganges flood marker", pending:true, blurb:"A historic, physically inscribed Ganges flood marker likely exists, in the spirit of Passau or Rome, but hasn't been located yet.", format:['Architecture'], hazard:['Flood'], region:['South Asia'], era:['Ancient'], theme:[], detail:``, sources:[]},
 
   // ---- Oral tradition ----
 
@@ -2469,6 +2548,11 @@ function selectCase(id){
     map.flyTo(c.coords, 5, {duration:0.6});
     if(markers[id]) markers[id].openPopup();
   }
+
+  if(window.innerWidth<=860){
+    closeMobileRail();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
 }
 
 function selectStage(stage){
@@ -2502,6 +2586,11 @@ function selectStage(stage){
   `;
   document.getElementById('story-col').scrollTop = 0;
   fitStoryTitle();
+
+  if(window.innerWidth<=860){
+    closeMobileRail();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
 }
 
 function toggleDrawer(){
@@ -2524,7 +2613,7 @@ function fitStoryTitle(){
     el.style.whiteSpace = 'normal';
   }
 }
-window.addEventListener('resize', ()=>{ if(currentId) fitStoryTitle(); });
+window.addEventListener('resize', ()=>{ if(currentId) fitStoryTitle(); if(map) map.invalidateSize(); });
 
 /* ============================================================
    NAV RAIL TABS + COLLAPSE
@@ -2537,6 +2626,14 @@ function toggleRail(){
   document.getElementById('nav-rail').classList.toggle('collapsed');
   setTimeout(()=>{ if(map) map.invalidateSize(); }, 230);
 }
+function toggleMobileRail(){
+  document.getElementById('nav-rail').classList.toggle('mobile-open');
+  document.getElementById('rail-scrim').classList.toggle('show');
+}
+function closeMobileRail(){
+  document.getElementById('nav-rail').classList.remove('mobile-open');
+  document.getElementById('rail-scrim').classList.remove('show');
+}
 
 /* ============================================================
    LANDING -> TOOL
@@ -2546,7 +2643,9 @@ function enterTool(){
   document.getElementById('app').classList.add('active');
   if(!map){ initMap(); }
   setTimeout(()=>{ if(map) map.invalidateSize(); selectCase('simeulue'); }, 60);
-  setTimeout(()=>{ launchTour(); }, 500);
+  if(window.innerWidth>860){
+    setTimeout(()=>{ launchTour(); }, 500);
+  }
 }
 
 function openEgg(){
@@ -2731,7 +2830,7 @@ function closeAtlas(){
       gc:'var(--accent)', bc:'var(--accent)', dc:'var(--accent)',
       badge:null,
       title:'Every place and story lives here',
-      body:"This is the full list of cases. Click any name to open its full story in the right-hand panel. The grayed-out ones near the bottom don't have enough source material yet, they're placeholders, not finished cases.",
+      body:"This is the full list of cases. Click any name to open its full story in the right-hand panel. New ones are continuously being added.",
       pills:null, btn:'Next &rarr;'
     },
     {
