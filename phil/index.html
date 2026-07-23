@@ -558,7 +558,7 @@ canvas:focus,canvas:focus-visible{outline:none}
 .rp-acc:first-child{margin-top:10px}
 .rp-acc:last-child{margin-bottom:14px}
 .rp-acc-open{background:#162444;border-color:rgba(100,150,255,0.4);box-shadow:0 3px 16px rgba(0,0,0,.45)}
-.rp-acc:first-child.rp-acc-open{border-color:rgba(255,107,53,0.55);box-shadow:0 3px 16px rgba(255,107,53,.15)}
+.rp-acc:first-child.rp-acc-open{border-color:rgba(99,140,220,.35);box-shadow:0 3px 12px rgba(0,0,0,.35)}
 .rp-acc-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;cursor:pointer;gap:10px;transition:background .15s;user-select:none}
 .rp-acc-hdr:hover{background:rgba(255,255,255,.04)}
 .rp-acc-open .rp-acc-hdr{padding-bottom:11px;border-bottom:1px solid rgba(255,255,255,.07)}
@@ -594,7 +594,12 @@ canvas:focus,canvas:focus-visible{outline:none}
 .rp-gap-card-val{font-size:23px;font-weight:800;line-height:1;letter-spacing:-.02em}
 .rp-gap-bar{height:4px;border-radius:2px;margin-top:7px;background:#0f1923}
 .rp-gap-bar-fill{height:100%;border-radius:2px}
-.rp-gap-alert{background:#2d1515;border-left:3px solid #dc2626;border-radius:0 6px 6px 0;padding:9px 12px;display:flex;gap:8px;align-items:flex-start;font-size:11px;color:#fca5a5;line-height:1.55}
+.rp-gap-alert{background:rgba(160,90,30,.1);border-left:3px solid rgba(160,110,50,.35);border-radius:0 6px 6px 0;padding:9px 12px;display:flex;gap:8px;align-items:flex-start;font-size:11px;color:#7a8fa8;line-height:1.55}
+.rp-gap-alert--mild{background:rgba(90,80,20,.08);border-left:3px solid rgba(130,110,40,.3);border-radius:0 6px 6px 0;padding:9px 12px;display:flex;gap:8px;align-items:flex-start;font-size:11px;color:#6a7e96;line-height:1.55}
+/* Always-visible model comparison block */
+.rp-model-cmp{padding:12px 12px 8px;border-bottom:1px solid rgba(255,255,255,.05)}
+.rp-model-cmp-label{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#3a5070;margin-bottom:8px}
+.rp-cond-block{padding:8px 12px 12px;border-bottom:1px solid rgba(255,255,255,.05)}
 .rp-bvm-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}
 .rp-bvm-card{background:#1a2535;border-radius:7px;padding:9px 11px;cursor:help}
 .rp-bvm-val{font-size:21px;font-weight:800;letter-spacing:-.02em;line-height:1}
@@ -612,15 +617,15 @@ canvas:focus,canvas:focus-visible{outline:none}
 .rp-fp-val{font-size:11px;font-weight:700;width:22px;text-align:right;flex-shrink:0}
 .rp-fp-composite{margin-top:5px;padding-top:7px;border-top:1px solid rgba(255,255,255,.06)}
 .rp-flag{display:flex;gap:9px;align-items:flex-start;padding:8px 10px;border-radius:6px;margin-bottom:5px;border-left:2px solid transparent}
-.rp-flag.danger{border-left-color:#dc2626;background:#1f1515}
-.rp-flag.warn{border-left-color:#d97706;background:#1c1a10}
-.rp-flag.info{border-left-color:#2563eb;background:#111b2d}
-.rp-flag.green{border-left-color:#16a34a;background:#0f1f14}
+.rp-flag.danger{border-left-color:rgba(180,80,80,.45);background:rgba(160,60,60,.06)}
+.rp-flag.warn{border-left-color:rgba(180,130,50,.45);background:rgba(160,110,40,.06)}
+.rp-flag.info{border-left-color:rgba(60,110,200,.45);background:rgba(50,90,180,.06)}
+.rp-flag.green{border-left-color:rgba(40,150,90,.45);background:rgba(30,130,70,.06)}
 .rp-flag-badge{font-size:9px;font-weight:800;padding:2px 6px;border-radius:3px;white-space:nowrap;flex-shrink:0;letter-spacing:.06em;text-transform:uppercase;margin-top:1px}
-.rp-flag-badge.danger{background:#450a0a;color:#fca5a5}
-.rp-flag-badge.warn{background:#2c1c04;color:#fde68a}
-.rp-flag-badge.info{background:#0c1a2e;color:#93c5fd}
-.rp-flag-badge.green{background:#052e16;color:#86efac}
+.rp-flag-badge.danger{background:rgba(150,60,60,.18);color:#a87878}
+.rp-flag-badge.warn{background:rgba(150,110,40,.18);color:#a08858}
+.rp-flag-badge.info{background:rgba(50,100,180,.18);color:#7898c8}
+.rp-flag-badge.green{background:rgba(30,130,70,.18);color:#60a878}
 .rp-flag-text{font-size:11px;color:#94a3b8;line-height:1.55}
 .rp-flag-text strong{color:#e2e8f0;font-weight:500}
 .rp-ctx-card{background:#1a2535;border-left:3px solid #6366f1;border-radius:0 7px 7px 0;padding:11px 13px}
@@ -3916,60 +3921,61 @@ function openPanel(m){
     h+='<div style="font-size:11px;color:var(--text-dim);line-height:1.5">'+(muni.rnote||'')+'</div></div></div>';
   } else {
 
-    // ── ACCORDION 1: THE GAP (open by default) ───────
+    // ── ALWAYS-VISIBLE: MODEL COMPARISON ─────────────
     var bPhysScore=enr?enr[BE.phys]:physS;
     var bSocScore=enr?enr[BE.soc]:socS;
     var bCompScore=enr?enr[BE.composite]:fullSVI;
     if(bPhysScore==null) bPhysScore=physS;
     if(bCompScore==null) bCompScore=fullSVI;
     var bGap=bCompScore-bPhysScore;
-    var hGap='';
 
-    hGap+='<div class="rp-gap-grid">';
-    hGap+='<div class="rp-gap-card" data-tip="phys" onmouseenter="_showScoreTip(this)" onmouseleave="_hideScoreTip()" style="cursor:help">';
-    hGap+='<div class="rp-gap-card-lbl">Physical hazard only ⓘ</div>';
-    hGap+='<div class="rp-gap-card-val" style="color:#64748b">'+Math.round(bPhysScore*100)+'</div>';
-    hGap+='<div class="rp-gap-bar"><div class="rp-gap-bar-fill" style="width:'+Math.round(bPhysScore*100)+'%;background:rgba(100,116,139,.5)"></div></div>';
-    hGap+='</div>';
-    hGap+='<div class="rp-gap-card" data-tip="comp" onmouseenter="_showScoreTip(this)" onmouseleave="_hideScoreTip()" style="cursor:help;border-left:3px solid '+riskColor(bCompScore)+'">';
-    hGap+='<div class="rp-gap-card-lbl">Full SVI composite ⓘ</div>';
-    hGap+='<div class="rp-gap-card-val" style="color:'+riskColor(bCompScore)+'">'+Math.round(bCompScore*100)+'</div>';
-    hGap+='<div class="rp-gap-bar"><div class="rp-gap-bar-fill" style="width:'+Math.round(bCompScore*100)+'%;background:'+riskColor(bCompScore)+'"></div></div>';
-    hGap+='</div></div>';
-
+    h+='<div class="rp-model-cmp">';
+    h+='<div class="rp-model-cmp-label">Model Comparison</div>';
+    h+='<div class="rp-gap-grid">';
+    h+='<div class="rp-gap-card" data-tip="phys" onmouseenter="_showScoreTip(this)" onmouseleave="_hideScoreTip()" style="cursor:help">';
+    h+='<div class="rp-gap-card-lbl">Physical hazard only ⓘ</div>';
+    h+='<div class="rp-gap-card-val" style="color:#4e657f">'+Math.round(bPhysScore*100)+'</div>';
+    h+='<div class="rp-gap-bar"><div class="rp-gap-bar-fill" style="width:'+Math.round(bPhysScore*100)+'%;background:rgba(78,101,127,.45)"></div></div>';
+    h+='</div>';
+    h+='<div class="rp-gap-card" data-tip="comp" onmouseenter="_showScoreTip(this)" onmouseleave="_hideScoreTip()" style="cursor:help;border-left:3px solid '+riskColor(bCompScore)+'">';
+    h+='<div class="rp-gap-card-lbl">Full SVI composite ⓘ</div>';
+    h+='<div class="rp-gap-card-val" style="color:'+riskColor(bCompScore)+'">'+Math.round(bCompScore*100)+'</div>';
+    h+='<div class="rp-gap-bar"><div class="rp-gap-bar-fill" style="width:'+Math.round(bCompScore*100)+'%;background:'+riskColor(bCompScore)+'"></div></div>';
+    h+='</div></div>';
     if(bGap>0.12){
-      hGap+='<div class="rp-gap-alert">⚠ Social vulnerability significantly exceeds physical hazard score. Standard risk maps alone will undercount this community\'s need.</div>';
+      h+='<div class="rp-gap-alert" style="margin-top:8px">⚠ Social vulnerability significantly exceeds physical hazard score. Standard risk maps alone will undercount this community\'s need.</div>';
     } else if(bGap>0.06){
-      hGap+='<div class="rp-gap-alert" style="border-color:rgba(251,191,36,.4);color:#fbbf24">↑ Social dimensions elevate risk meaningfully above physical exposure alone.</div>';
+      h+='<div class="rp-gap-alert--mild" style="margin-top:8px">↑ Social dimensions elevate risk meaningfully above physical exposure alone.</div>';
     }
+    h+='</div>';
 
-    // Barangay vs. Municipality — merged into gap accordion
+    // ── ALWAYS-VISIBLE: CONTEXT & CONDITIONS ──────────
+    var hCond='';
+    // Barangay vs. Municipality
     if(isBrgy&&enr){
       var brvMuni=fullSVI;
       var brvBrgy=bCompScore;
       var brvMax=Math.max(brvMuni,brvBrgy,0.01);
-      hGap+='<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07)">';
-      hGap+='<div style="font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#64748b;margin-bottom:8px">vs. '+muni.n+' average</div>';
-      hGap+='<div class="rp-bvm-grid">';
-      hGap+='<div class="rp-bvm-card" data-tip="bvm-brgy" onmouseenter="_showScoreTip(this)" onmouseleave="_hideScoreTip()" style="cursor:help">';
-      hGap+='<div class="rp-bvm-val" style="color:'+riskColor(brvBrgy)+'">'+Math.round(brvBrgy*100)+'</div>';
-      hGap+='<div class="rp-bvm-lbl">This barangay ⓘ</div>';
-      hGap+='<div class="rp-bvm-bar"><div class="rp-bvm-bar-fill" style="width:'+Math.round((brvBrgy/brvMax)*100)+'%;background:'+riskColor(brvBrgy)+'"></div></div>';
-      hGap+='</div>';
-      hGap+='<div class="rp-bvm-card" data-tip="bvm-muni" onmouseenter="_showScoreTip(this)" onmouseleave="_hideScoreTip()" style="cursor:help">';
-      hGap+='<div class="rp-bvm-val" style="color:'+riskColor(brvMuni)+'">'+Math.round(brvMuni*100)+'</div>';
-      hGap+='<div class="rp-bvm-lbl">Municipality avg ⓘ</div>';
-      hGap+='<div class="rp-bvm-bar"><div class="rp-bvm-bar-fill" style="width:'+Math.round((brvMuni/brvMax)*100)+'%;background:'+riskColor(brvMuni)+'"></div></div>';
-      hGap+='</div></div>';
-      if(brvBrgy>brvMuni+0.10){
-        hGap+='<div class="rp-bvm-note">Significantly more vulnerable than the municipal average — may be invisible in municipal-level targeting.</div>';
-      } else if(brvBrgy<brvMuni-0.10){
-        hGap+='<div class="rp-bvm-note">Notably less vulnerable than the municipal average.</div>';
-      }
-      hGap+='</div>';
+      hCond+='<div style="margin-bottom:10px">';
+      hCond+='<div class="rp-model-cmp-label" style="margin-bottom:8px">vs. '+muni.n+' average</div>';
+      hCond+='<div class="rp-bvm-grid">';
+      hCond+='<div class="rp-bvm-card" data-tip="bvm-brgy" onmouseenter="_showScoreTip(this)" onmouseleave="_hideScoreTip()" style="cursor:help">';
+      hCond+='<div class="rp-bvm-val" style="color:'+riskColor(brvBrgy)+'">'+Math.round(brvBrgy*100)+'</div>';
+      hCond+='<div class="rp-bvm-lbl">This barangay ⓘ</div>';
+      hCond+='<div class="rp-bvm-bar"><div class="rp-bvm-bar-fill" style="width:'+Math.round((brvBrgy/brvMax)*100)+'%;background:'+riskColor(brvBrgy)+'"></div></div>';
+      hCond+='</div>';
+      hCond+='<div class="rp-bvm-card" data-tip="bvm-muni" onmouseenter="_showScoreTip(this)" onmouseleave="_hideScoreTip()" style="cursor:help">';
+      hCond+='<div class="rp-bvm-val" style="color:'+riskColor(brvMuni)+'">'+Math.round(brvMuni*100)+'</div>';
+      hCond+='<div class="rp-bvm-lbl">Municipality avg ⓘ</div>';
+      hCond+='<div class="rp-bvm-bar"><div class="rp-bvm-bar-fill" style="width:'+Math.round((brvMuni/brvMax)*100)+'%;background:'+riskColor(brvMuni)+'"></div></div>';
+      hCond+='</div></div>';
+      if(brvBrgy>brvMuni+0.10)
+        hCond+='<div class="rp-bvm-note" style="color:#5a7898">Significantly more vulnerable than the municipal average — may be invisible in municipal-level targeting.</div>';
+      else if(brvBrgy<brvMuni-0.10)
+        hCond+='<div class="rp-bvm-note" style="color:#5a7898">Notably less vulnerable than the municipal average.</div>';
+      hCond+='</div>';
     }
-
-    // Compounding conditions — merged into gap accordion
+    // Compounding conditions
     var flags=[];
     if(isBrgy&&enr){
       if(enr[BE.pdz])  flags.push({sev:'danger',badge:'Inside PDZ',text:'Within APSEMO 8km pre-emptive evacuation zone. Aid eligibility frequently blocked by tenure status.'});
@@ -3988,16 +3994,16 @@ function openPanel(m){
       if(gap>0.12) flags.push({sev:'warn',badge:'High gap',text:'Standard physical risk maps significantly undercount this municipality. SVI-inclusive targeting is essential.'});
     }
     if(flags.length>0){
-      hGap+='<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07)">';
-      hGap+='<div style="font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#64748b;margin-bottom:8px">Compounding conditions</div>';
+      hCond+='<div>';
+      hCond+='<div class="rp-model-cmp-label" style="margin-bottom:8px">Compounding conditions</div>';
       flags.forEach(function(f){
-        hGap+='<div class="rp-flag '+f.sev+'"><span class="rp-flag-badge '+f.sev+'">'+f.badge+'</span><span class="rp-flag-text">'+f.text+'</span></div>';
+        hCond+='<div class="rp-flag '+f.sev+'"><span class="rp-flag-badge '+f.sev+'">'+f.badge+'</span><span class="rp-flag-text">'+f.text+'</span></div>';
       });
-      hGap+='</div>';
+      hCond+='</div>';
     }
-    h+=_acc('The Gap','Where standard models undercount this place',hGap,true);
+    if(hCond) h+='<div class="rp-cond-block">'+hCond+'</div>';
 
-    // ── ACCORDION 2: VULNERABILITY BREAKDOWN ──────────
+    // ── ACCORDION: VULNERABILITY BREAKDOWN ────────────
     var hBreak='';
     hBreak+='<div class="rp-fp-sublabel">Physical Hazards</div>';
     var physDims=isBrgy&&enr ? [
@@ -4030,7 +4036,7 @@ function openPanel(m){
       if(d.v==null) return;
       hBreak+='<div class="rp-fp-row"><div class="rp-fp-name">'+d.l+'</div><div class="rp-fp-track"><div class="rp-fp-fill" style="width:'+Math.round(d.v*100)+'%;background:'+riskColor(d.v)+'"></div></div><div class="rp-fp-val">'+Math.round(d.v*100)+'</div></div>';
     });
-    h+=_acc('Vulnerability Breakdown','Physical hazards and social dimensions side by side',hBreak);
+    h+=_acc('Vulnerability Breakdown','Physical hazards and social dimensions side by side',hBreak,true);
 
     // ── ACCORDION 3: WHAT'S DRIVING IT ────────────────
     var hDims='';
@@ -4052,6 +4058,12 @@ function openPanel(m){
     h+='<button class="rp-dl-btn-compare" onclick="openCompareModal()">◈ Compare with another municipality</button>';
     h+='</div>';
 
+  }
+
+  // Auto-collapse left panel when a place is selected
+  var appEl=document.getElementById('app');
+  if(appEl&&appEl.classList.contains('lp-open')){
+    setTimeout(function(){ toggleLpPanel(); },200);
   }
 
   rp.innerHTML = h;
@@ -5716,7 +5728,7 @@ function _renderSingle(doc,muni,PW,PH){
   doc.text('DATA SOURCES',ML,fy+5);
 
   doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.setTextColor(45,78,128);
-  var srcText='PSA Census 2020 · PHIVOLCS volcanic hazard maps · IOM LandLedger 2023 · NHA resettlement data (PMC7989691) · APSEMO field records · MGB hazard assessments · NAMRIA topographic data';
+  var srcText='PSA Census 2020 · PHIVOLCS volcanic hazard maps · NHA resettlement data (PMC7989691) · APSEMO field records · MGB hazard assessments · NAMRIA topographic data';
   var srcLines=doc.splitTextToSize(srcText,CW);
   doc.text(srcLines,ML,fy+10);
 
@@ -5747,7 +5759,7 @@ function _renderCompare(doc,m1,m2,PW,PH){
   doc.setFillColor(8,15,38); doc.rect(0,fy,PW,PH-fy,'F');
   doc.setFont('helvetica','italic'); doc.setFontSize(6.5); doc.setTextColor(38,68,118);
   var dateStr=new Date().toLocaleDateString('en-PH',{year:'numeric',month:'long',day:'numeric'});
-  doc.text('Generated '+dateStr+' · Albay SVHI · Data: PSA 2020, PHIVOLCS, IOM LandLedger, NHA/PMC7989691, APSEMO · Not an official government document.',PW/2,fy+9,{align:'center'});
+  doc.text('Generated '+dateStr+' · Albay SVHI · Data: PSA 2020, PHIVOLCS, NHA/PMC7989691, APSEMO · Not an official government document.',PW/2,fy+9,{align:'center'});
 }
 
 function _renderColumn(doc,muni,x,cW,PH){
