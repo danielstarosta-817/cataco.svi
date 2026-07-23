@@ -654,6 +654,19 @@ canvas:focus,canvas:focus-visible{outline:none}
 .rp-needs-item{display:flex;gap:8px;align-items:flex-start;font-size:11px;color:#94a3b8;line-height:1.55;margin-bottom:5px}
 .rp-needs-arrow{color:#94a3b8;flex-shrink:0;margin-top:1px}
 .rp-needs-item strong{color:#e2e8f0;font-weight:500}
+/* ── Actions full-panel takeover ────────────────────────────── */
+.rp-act-panel-hdr{position:sticky;top:0;z-index:10;background:#0c1929;border-bottom:1px solid rgba(255,255,255,.07);padding:0}
+.rp-act-back-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px 8px}
+.rp-act-back-btn{display:flex;align-items:center;gap:5px;background:none;border:1px solid rgba(255,255,255,.1);border-radius:6px;color:#64748b;font-size:11px;font-weight:600;padding:5px 10px;cursor:pointer;font-family:inherit;transition:all .15s}
+.rp-act-back-btn:hover{border-color:rgba(255,255,255,.22);color:#94a3b8}
+.rp-act-panel-title-block{padding:0 14px 12px}
+.rp-act-panel-eyebrow{font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4a7cb5;margin-bottom:3px}
+.rp-act-panel-name{font-size:17px;font-weight:800;color:#f1f5f9;line-height:1.15}
+.rp-act-panel-muni{font-size:11px;color:#475569;margin-top:2px}
+.rp-act-panel-tabs{padding:0 12px 12px;background:#0c1929;border-bottom:1px solid rgba(255,255,255,.05)}
+.rp-act-panel-body{padding:14px}
+.rp-act-panel-gaps{margin:0 12px 20px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:9px}
+.rp-act-panel-gaps-label{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin-bottom:10px}
 /* ── Missing rp- class definitions ─────────────────────────── */
 .rp-name{font-size:20px;font-weight:700;color:#f1f5f9;letter-spacing:-0.3px;line-height:1.2;margin:0 0 2px}
 .rp-meta{font-size:11px;color:#94a3b8;margin-bottom:10px}
@@ -4027,7 +4040,7 @@ function openPanel(m){
     h+=_acc('What\'s Driving It','Sensitivity, exposure, and adaptive capacity unpacked',hDims);
 
     // ── CTA: ACTIONS TAB ─────────────────────────────────
-    h+='<div class="rp-act-cta" onclick="setModeGroup(\'act\')">';
+    h+='<div class="rp-act-cta" onclick="showActionsInPanel()">';
     h+='<div><div class="rp-act-cta-txt">🎯 See what to do in '+(isBrgy?m.n:muni.n)+'</div>';
     h+='<div class="rp-act-cta-sub">Phase-by-phase guidance &amp; priority gaps →</div></div>';
     h+='<span class="rp-act-cta-arr">›</span>';
@@ -5291,6 +5304,74 @@ function enterApp(grp){
 window.addEventListener('load',function(){
   initLandingMap();
 });
+
+// ================================================================
+// ACTIONS FULL-PANEL TAKEOVER
+// ================================================================
+
+function showActionsInPanel(){
+  var muni=_selectedMuni;
+  if(!muni) return;
+  var isBrgy=!!_selectedBrgy;
+  var m=_selectedBrgy||muni;
+  var enr=_selectedBrgy&&_selectedBrgy._enr||null;
+  var placeName=isBrgy?(m._displayName||m.n):muni.n;
+  var rp=document.getElementById('rightpanel');
+  var h='';
+
+  // ── STICKY HEADER ────────────────────────────────────────────
+  h+='<div class="rp-act-panel-hdr">';
+  h+='<div class="rp-act-back-row">';
+  h+='<button class="rp-act-back-btn" onclick="openPanel(_selectedBrgy||_selectedMuni)">‹ Back to profile</button>';
+  h+='<span style="font-size:10px;color:#334155">Actions &amp; Guidance</span>';
+  h+='</div>';
+  h+='<div class="rp-act-panel-title-block">';
+  h+='<div class="rp-act-panel-eyebrow">🎯 Phase-by-phase guidance</div>';
+  h+='<div class="rp-act-panel-name">'+placeName+'</div>';
+  if(isBrgy) h+='<div class="rp-act-panel-muni">'+muni.n+'</div>';
+  h+='</div>';
+
+  // ── PHASE TABS (still inside sticky header block) ────────────
+  h+='<div class="rp-act-panel-tabs">';
+  h+='<div class="rp-phase-tabs" id="rp-act-panel-tabs" style="margin-bottom:0">';
+  ['Preparedness','Response','Recovery','Mitigation','Adaptation'].forEach(function(p,i){
+    h+='<button class="rp-phase-tab'+(i===0?' active':'')+'" data-phase="'+p+'" onclick="rpActPanelSwitch(this)">'+p+'</button>';
+  });
+  h+='</div>'; // close .rp-phase-tabs
+  h+='</div>'; // close .rp-act-panel-tabs
+  h+='</div>'; // close .rp-act-panel-hdr
+
+  // ── PHASE CONTENT ────────────────────────────────────────────
+  h+='<div class="rp-act-panel-body">';
+  h+='<div id="rp-act-panel-content">'+_buildPhase('Preparedness',muni,isBrgy,enr)+'</div>';
+  h+='</div>';
+
+  // ── PRIORITY GAPS ────────────────────────────────────────────
+  var localNha=NHA_SITES.filter(function(s){ return s.muni===muni.n; });
+  var needs=[];
+  if(muni.ptenure>0.35) needs.push('Tenure documentation: ~'+Math.round(muni.ptenure*100)+'% of households lack formal title — pre-register with DSWD alternates (barangay certification / affidavit).');
+  if(isBrgy&&enr&&enr[BE.pdz]) needs.push('PDZ pre-positioning: evacuation pack checklist and rapid registration for APSEMO coordinated evacuation.');
+  if(muni.svi_road>0.5) needs.push('Route planning: identify secondary evacuation routes — road isolation score is elevated for this area.');
+  if(isBrgy&&enr&&enr[BE.stacked]) needs.push('Prioritization flag: stacked vulnerability — this barangay should appear on the first-response priority list.');
+  if(muni.svi_cell>0.45) needs.push('Communication: community radio or barangay warning node — cell coverage gaps documented here.');
+  if(localNha.length>0) needs.push('NHA site audit: verify lot transfers and drainage before next storm season ('+localNha.length+' site'+(localNha.length>1?'s':'')+' in '+muni.n+').');
+  if(needs.length===0) needs.push('No critical pre-event gaps flagged. Standard DRR protocols apply. Revisit after next field assessment.');
+
+  h+='<div class="rp-act-panel-gaps">';
+  h+='<div class="rp-act-panel-gaps-label">Priority gaps — '+placeName+'</div>';
+  needs.forEach(function(n){ h+='<div class="rp-needs-item"><span class="rp-needs-arrow">→</span>'+n+'</div>'; });
+  h+='</div>';
+
+  rp.innerHTML=h;
+  rp.scrollTop=0;
+}
+
+function rpActPanelSwitch(btn){
+  document.querySelectorAll('#rp-act-panel-tabs .rp-phase-tab').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  var pc=document.getElementById('rp-act-panel-content');
+  if(pc) pc.innerHTML=_buildPhase(btn.dataset.phase,_selectedMuni,!!_selectedBrgy,_selectedBrgy&&_selectedBrgy._enr||null);
+}
 
 // ================================================================
 // PDF REPORT GENERATOR
