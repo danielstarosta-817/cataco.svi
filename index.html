@@ -203,6 +203,8 @@
 
   .tc-flagrow{display:flex;align-items:center;gap:10px;margin-bottom:16px}
   .tc-flag-emoji{font-size:22px;line-height:1}
+  .tc-flag-icons{display:flex;align-items:center;gap:6px;flex-shrink:0}
+  .tc-flag-icon{height:20px;width:auto;border-radius:3px;box-shadow:0 0 0 1px rgba(255,255,255,.1);display:block;background:rgba(255,255,255,.04)}
   .tc-flag-text{display:flex;flex-direction:column;gap:3px}
   .tc-flag{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--card-accent,var(--accent))}
   .tc-flag-sub{font-size:9.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)}
@@ -705,6 +707,74 @@
       ],
       thinkingQuote: 'A flood-extent map tells you where the water went. It says nothing about a family still deciding, a month in, whether there\'s still a next harvest to plant for, or a debt to service instead. That\'s the map we were actually trying to build.'
     },
+    {
+      id: 'almeda',
+      flags: ['us'],
+      flagMain: 'Oregon · Wildfire',
+      flagSub: 'Rogue Valley — Talent & Phoenix',
+      shortName: 'the Almeda Fire tool',
+      title: 'The fire that emptied eighteen trailer parks in an afternoon.',
+      blurb: 'The 2020 Almeda Fire tore through Bear Creek in hours, destroying roughly 1,000 manufactured homes across the Rogue Valley\'s Latino and immigrant farmworker community. FEMA denied more than half the aid applications that followed. Five years later, some displaced families are only now moving back in.',
+      stats: [
+        { val: '2,800+', lbl: 'Structures destroyed, 2020', color: 'var(--red)' },
+        { val: '57%', lbl: 'FEMA aid applications denied', color: 'var(--yellow)' },
+        { val: '5 yrs', lbl: 'Until displaced residents could return', color: 'var(--secondary)' }
+      ],
+      tags: ['Manufactured Housing Loss', 'Language & Documentation Barriers', 'Multi-Year Rebuild Failure'],
+      wip: true,
+      accent: '#FF8C65'
+    },
+    {
+      id: 'helene',
+      flags: ['us', 'north-carolina'],
+      flagMain: 'North Carolina · Hurricane & Flooding',
+      flagSub: 'Blue Ridge — French Broad Corridor',
+      shortName: 'the Western NC tool',
+      title: 'The town people moved to for climate safety, flooded worse than it ever had on record.',
+      blurb: 'Hurricane Helene sent the French Broad and Swannanoa rivers past their 1916 flood marks in September 2024, hitting a region long marketed as a climate haven. Immigrant farmworkers on Christmas tree and poultry operations were largely invisible to federal aid, while a wave of disaster misinformation complicated the response itself.',
+      stats: [
+        { val: '2024', lbl: 'Record flood, tops the 1916 crest', color: 'var(--red)' },
+        { val: '11', lbl: 'Yancey County deaths, highest per capita', color: 'var(--yellow)' },
+        { val: '3', lbl: 'Catastrophic French Broad floods since 1916', color: 'var(--secondary)' }
+      ],
+      tags: ['"Climate Haven" Reversal', 'Cyclical Flood History', 'Immigrant Farmworker Aid Gaps', 'Disaster Misinformation'],
+      wip: true,
+      accent: '#FF8C65'
+    },
+    {
+      id: 'ian',
+      flags: ['us'],
+      flagMain: 'Florida · Hurricane',
+      flagSub: 'Lee County & Immokalee',
+      shortName: 'the Hurricane Ian tool',
+      title: 'Twenty minutes apart, the same storm produced two entirely different disasters.',
+      blurb: 'Hurricane Ian devastated retiree- and transplant-heavy Lee County in 2022, triggering an insurance-market collapse that is still reshaping the region. Just inland in Immokalee, migrant farmworkers took on the same storm surge with almost none of the same federal aid eligibility.',
+      stats: [
+        { val: '272K+', lbl: 'Insurance claims filed, most of any FL county', color: 'var(--red)' },
+        { val: '6', lbl: 'Florida insurers made insolvent in 2022', color: 'var(--yellow)' },
+        { val: '72', lbl: 'Lee County deaths, nearly all age 50+', color: 'var(--secondary)' }
+      ],
+      tags: ['Insurance Market Collapse', 'Retiree & Elderly Risk', 'Undocumented Farmworker Exclusion'],
+      wip: true,
+      accent: '#FF8C65'
+    },
+    {
+      id: 'lahaina',
+      flags: ['us', 'hawaii', 'kanaka-maoli'],
+      flagMain: 'Hawaii · Wildfire',
+      flagSub: 'Lahaina, West Maui',
+      shortName: 'the Lahaina tool',
+      title: 'An island built its warning system for tsunamis. The fire came from the old sugar fields instead.',
+      blurb: 'The 2023 Lahaina fire, the deadliest US wildfire in over a century, followed a century of plantation water diversion that turned cane fields into dry invasive grass. Two of three warning sirens never sounded, and survivors are now fighting land-grab attempts on the town they\'re still trying to rebuild.',
+      stats: [
+        { val: '102', lbl: 'Confirmed deaths, deadliest US fire since 1918', color: 'var(--red)' },
+        { val: '2 of 3', lbl: 'Warning sirens non-operational', color: 'var(--yellow)' },
+        { val: '~49', lbl: 'Of 1,300+ lost homes rebuilt by mid-2025', color: 'var(--secondary)' }
+      ],
+      tags: ['Warning System Failure', 'Plantation-Era Water Diversion', 'Native Hawaiian Land Dispossession'],
+      wip: true,
+      accent: '#FF8C65'
+    },
   ];
 
   const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
@@ -719,6 +789,17 @@
     return `<svg class="tc-outline" viewBox="0 0 ${o.viewBox}" xmlns="http://www.w3.org/2000/svg"><path d="${o.path}"/></svg>`;
   }
 
+  // Cards can either show a single Unicode flag emoji (t.emoji) or a row of
+  // real flag image assets (t.flags — array of filenames, no extension,
+  // living in assets/flags/*.svg). Used for US-based tools that need a
+  // state flag (and, for Lahaina, the Kanaka Maoli flag) alongside the US flag.
+  function flagIconsHtml(t){
+    if (t.flags && t.flags.length){
+      return `<span class="tc-flag-icons">${t.flags.map(f => `<img class="tc-flag-icon" src="assets/flags/${f}.svg" alt="" loading="lazy">`).join('')}</span>`;
+    }
+    return `<span class="tc-flag-emoji">${t.emoji}</span>`;
+  }
+
   function cardHtml(t){
     const stats = t.stats.map(s => s.break ? `<div class="tc-stat-break"></div>` : `
       <div>
@@ -731,7 +812,7 @@
         ${outlineSvg(t.outline)}
         <div class="tc-content">
           <div class="tc-flagrow">
-            <span class="tc-flag-emoji">${t.emoji}</span>
+            ${flagIconsHtml(t)}
             <span class="tc-flag-text">
               <span class="tc-flag">${t.flagMain}</span>
               ${t.flagSub ? `<span class="tc-flag-sub">${t.flagSub}</span>` : ''}
