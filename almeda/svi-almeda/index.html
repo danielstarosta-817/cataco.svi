@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Almeda Fire · Talent &amp; Phoenix Social Vulnerability &amp; Hazard Intelligence (v0.1 bare-bones)</title>
+<meta name="description" content="An interactive prototype mapping wildfire hazard, social vulnerability, manufactured-housing tenure risk, emergency-alert failure, and resilience across Talent and Phoenix, Oregon — the Almeda Fire, 2020.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- ================================================================
+     BARE-BONES v0.1 NOTICE (see also almeda/svi-almeda/almeda_fire_svi_briefing.md)
+     Census TIGER/TIGERweb, CDC/ATSDR SVI, and FEMA NRI/OpenFEMA data portals
+     were not reachable from the build environment (network-restricted), so
+     this v0.1 uses ~8 hand-curated named places (neighborhood/mobile-home-park
+     resolution) along the Bear Creek / Highway 99 burn corridor instead of
+     true census-tract resolution. Coordinates and scores are best-effort
+     estimates grounded in the research in almeda_fire_svi_briefing.md, NOT a
+     joined government dataset. Upgrade path: replace PLACES below with a real
+     tract-level array (GEOID, INTPTLAT/LON from Census TIGERweb, RPL_THEMES/
+     EP_* fields from CDC SVI, EAL/risk scores from FEMA NRI) plus park-level
+     points for the manufactured-home-park tenure layer — see
+     SVI_MAP_ARCHITECTURE_GENERIC.md's BARANGAYS pattern. This build follows
+     the same v0.1 precedent set by the Hurricane Ian tool (ian/svi-ian/index.html).
+     ================================================================ -->
+
+<!-- Lightweight hex-grid engine (mimics h3-js API: polygonToCells, cellToLatLng,
+     cellToBoundary). Copied verbatim from the Puerto Rico tool per
+     SVI_MAP_ARCHITECTURE_GENERIC.md — geography-independent, do not modify. -->
+<script>
+(function(){
+'use strict';
+var RES_R={7:0.013,8:0.005,9:0.0018,10:0.0007};
+var S3=1.73205080757;
+function polygonToCells(polygon,res){
+  var ring=(polygon.length>0&&Array.isArray(polygon[0])&&Array.isArray(polygon[0][0]))?polygon[0]:polygon;
+  var lats=ring.map(function(p){return p[0];});
+  var lngs=ring.map(function(p){return p[1];});
+  var minLat=Math.min.apply(null,lats), maxLat=Math.max.apply(null,lats);
+  var minLng=Math.min.apply(null,lngs), maxLng=Math.max.apply(null,lngs);
+  var R=RES_R[res]||RES_R[7];
+  var midLat=(minLat+maxLat)/2;
+  var cosLat=Math.cos(midLat*Math.PI/180)||0.001;
+  var rowStep=R*S3, colStep=R*1.5/cosLat;
+  var cells=[]; var row=0; var lat=minLat-R*2;
+  while(lat<=maxLat+R*2){
+    var lngOff=(row%2===1)?(colStep/2):0;
+    var lng=minLng-colStep+lngOff;
+    while(lng<=maxLng+colStep){ cells.push([lat,lng,res]); lng+=colStep; }
+    lat+=rowStep; row++;
+  }
+  return cells;
+}
+function cellToLatLng(cell){return[cell[0],cell[1]];}
+function cellToBoundary(cell){
+  var lat=cell[0],lng=cell[1],res=cell[2];
+  var R=RES_R[res]||RES_R[7];
+  var cosLat=Math.cos(lat*Math.PI/180)||0.001;
+  var verts=[];
+  for(var i=0;i<6;i++){
+    var a=i*Math.PI/3-Math.PI/6;
+    verts.push([lat+R*Math.sin(a),lng+R*Math.cos(a)/cosLat]);
+  }
+  return verts;
+}
+window.h3={polygonToCells:polygonToCells,cellToLatLng:cellToLatLng,cellToBoundary:cellToBoundary};
+})();
+</script>
+
+<style>
+:root{
+  --bg:#080C18;--surface:#0F1628;--surface2:#161F35;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --text:#E2E8F4;--text-dim:#9BAAC2;--text-faint:#5A6B85;
+  --cyan:#00D4FF;--green:#00E096;--yellow:#FFD93D;
+  --orange:#FF6B35;--red:#FF2D55;--purple:#A855F7;
+  --phys:#38BDF8;--svi:#FB923C;--fail:#A855F7;--res:#34D399;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:13px}
+#app{display:grid;grid-template-rows:52px 1fr;grid-template-columns:52px 280px 1fr;height:100vh;transition:grid-template-columns .25s}
+#app.rp-open{grid-template-columns:52px 280px 1fr 360px}
+#topbar{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:0 14px;background:var(--surface);border-bottom:1px solid var(--border2);z-index:1000}
+.tb-brand{font-weight:800;font-size:13px;letter-spacing:-.02em;white-space:nowrap}
+.tb-brand span{color:var(--cyan)}
+.tb-sub{font-size:10px;color:var(--text-faint);white-space:nowrap;border-left:1px solid var(--border2);padding-left:10px;margin-left:2px}
+.tb-badge{margin-left:auto;font-size:10px;font-weight:700;padding:4px 10px;border-radius:12px;background:rgba(255,140,101,.12);border:1px solid rgba(255,140,101,.35);color:var(--orange);white-space:nowrap}
+#navrail{grid-row:2;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding-top:8px;gap:2px}
+.nav-btn{width:44px;height:44px;border:none;background:transparent;color:var(--text-faint);cursor:pointer;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:18px;gap:1px;transition:all .15s}
+.nav-btn .nl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+.nav-btn:hover{background:rgba(255,255,255,.04);color:var(--text-dim)}
+.nav-btn.active{background:rgba(0,212,255,.10);color:var(--cyan)}
+#leftpanel{grid-row:2;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto}
+.lp-group{display:none;padding:14px}
+.lp-group.active{display:block}
+.lp-intro{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-faint);margin-bottom:6px}
+.lp-q{font-size:14px;font-weight:700;margin-bottom:8px;line-height:1.3}
+.lp-p{font-size:11.5px;line-height:1.6;color:var(--text-dim);margin-bottom:14px}
+.lp-p strong{color:var(--text)}
+.layer-row{display:flex;align-items:flex-start;gap:8px;padding:6px 0;cursor:pointer;border-top:1px solid var(--border)}
+.layer-row:first-of-type{border-top:none}
+.layer-row input{accent-color:var(--cyan);width:13px;height:13px;flex-shrink:0;margin-top:2px;cursor:pointer}
+.layer-name{font-size:11.5px;font-weight:600;color:var(--text-dim)}
+.layer-name.on{color:var(--text)}
+.layer-desc{font-size:10px;color:var(--text-faint);line-height:1.35;margin-top:1px}
+.legend-bar{height:9px;border-radius:5px;margin:10px 0 4px;background:linear-gradient(to right,#00E096,#4ADE80 22%,#FFD93D 42%,#FF6B35 64%,#FF2D55 82%,#B40032)}
+.legend-bar.res{background:linear-gradient(to right,#4A5568,#B7791F 35%,#38A169 58%,#00E096 80%,#00D4FF)}
+.legend-bar.fail{background:linear-gradient(to right,#1E2D3D,#5B21B6 40%,#A855F7 70%,#E9D5FF)}
+.legend-lbls{display:flex;justify-content:space-between;font-size:9.5px;color:var(--text-faint)}
+.story-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+.story-card h4{font-size:12px;margin-bottom:4px;color:var(--text)}
+.story-card p{font-size:11px;line-height:1.5;color:var(--text-dim)}
+#mapwrap{grid-row:2;position:relative}
+#map{width:100%;height:100%;background:#080C18}
+#rightpanel{grid-row:2;background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;display:none}
+#app.rp-open #rightpanel{display:block}
+.rp-ph{padding:40px 22px;text-align:center;color:var(--text-faint);font-size:12px;line-height:1.6}
+.rp-hd{padding:16px 16px 0}
+#rp-name{font-size:19px;font-weight:800;letter-spacing:-.02em;margin-bottom:3px}
+#rp-meta{font-size:11px;color:var(--text-dim);margin-bottom:12px}
+.rp-close{float:right;background:none;border:none;color:var(--text-faint);font-size:18px;cursor:pointer}
+.rp-sec{padding:12px 16px;border-top:1px solid var(--border)}
+.rp-sec h4{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text-dim);margin-bottom:9px}
+.sc-row{margin-bottom:8px}
+.sc-lbl{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px}
+.sc-lbl span:first-child{color:var(--text-dim);font-weight:600}
+.sc-lbl span:last-child{font-weight:800;font-variant-numeric:tabular-nums}
+.sc-track{height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.sc-fill{height:100%;border-radius:3px;transition:width .4s}
+.rp-alert{display:flex;gap:9px;padding:9px 10px;border-radius:7px;margin-bottom:8px;border:1px solid;font-size:11px;line-height:1.45}
+.rp-alert.a-purple{background:rgba(168,85,247,.08);border-color:rgba(168,85,247,.35)}
+.rp-alert.a-red{background:rgba(255,45,85,.08);border-color:rgba(255,45,85,.35)}
+.rp-alert.a-green{background:rgba(0,224,150,.08);border-color:rgba(0,224,150,.35)}
+.rp-alert b{display:block;margin-bottom:2px;color:var(--text)}
+.rp-detail{font-size:11.5px;line-height:1.6;color:var(--text-dim)}
+.rp-detail strong{color:var(--text)}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="topbar">
+    <div class="tb-brand">CATACO SVI <span>·</span> Almeda Fire</div>
+    <div class="tb-sub">Talent &amp; Phoenix, OR — Sept. 2020</div>
+    <div class="tb-badge">v0.1 bare-bones — named-place resolution, not tract-level</div>
+  </div>
+  <div id="navrail">
+    <button class="nav-btn active" data-grp="hazard" onclick="setModeGroup('hazard')"><span>🔥</span><span class="nl">Hazard</span></button>
+    <button class="nav-btn" data-grp="vuln" onclick="setModeGroup('vuln')"><span>👥</span><span class="nl">Vuln</span></button>
+    <button class="nav-btn" data-grp="fail" onclick="setModeGroup('fail')"><span>⚡</span><span class="nl">Fail</span></button>
+    <button class="nav-btn" data-grp="res" onclick="setModeGroup('res')"><span>🌿</span><span class="nl">Resil</span></button>
+    <button class="nav-btn" data-grp="str" onclick="setModeGroup('str')"><span>🧑</span><span class="nl">Stories</span></button>
+  </div>
+  <div id="leftpanel">
+
+    <div class="lp-group active" id="lpg-hazard">
+      <div class="lp-intro">Hazard</div>
+      <div class="lp-q">What physical risk exists?</div>
+      <div class="lp-p">The Almeda Fire started near Ashland on Sept. 8, 2020 and, driven by 40–45 mph wind gusts and severe drought, ran ~15 miles north along the Bear Creek Greenway/Highway 99 corridor through Talent and Phoenix into south Medford in a matter of hours. Fire spread is the dominant, wind-driven hazard; structure density (wildland-urban interface exposure) is scored as a secondary factor.</div>
+      <label class="layer-row"><input type="checkbox" class="phys-cb" data-id="fire" checked onchange="togglePhys('fire',this.checked)">
+        <div><div class="layer-name on">Wind-driven fire spread</div><div class="layer-desc">Proximity to the Bear Creek/Hwy 99 burn corridor. Dominant hazard for this build.</div></div></label>
+      <label class="layer-row"><input type="checkbox" class="phys-cb" data-id="wui" checked onchange="togglePhys('wui',this.checked)">
+        <div><div class="layer-name on">Structure density (WUI)</div><div class="layer-desc">Wildland-urban interface exposure — tightly packed manufactured-home parks burned fastest and most completely.</div></div></label>
+      <div class="legend-bar"></div>
+      <div class="legend-lbls"><span>Lower</span><span>Higher physical hazard</span></div>
+    </div>
+
+    <div class="lp-group" id="lpg-vuln">
+      <div class="lp-intro">Vulnerability</div>
+      <div class="lp-q">Who is most at risk, and why?</div>
+      <div class="lp-p">Toggle social vulnerability dimensions one at a time. Watch <strong>Phoenix's still-private-landlord mobile home parks</strong> jump on Manufactured Housing Tenure, and the <strong>rural ag-labor corridor</strong> jump on Documentation Status.</div>
+      <div id="soc-layer-list"></div>
+      <div class="legend-bar"></div>
+      <div class="legend-lbls"><span>Lower</span><span>Higher vulnerability</span></div>
+    </div>
+
+    <div class="lp-group" id="lpg-fail">
+      <div class="lp-intro">Failure Modes</div>
+      <div class="lp-q">What breaks when a fire like Almeda hits?</div>
+      <div class="lp-p">Almeda's exclusion mechanism is <strong>domestic, not informal</strong>: manufactured-home residents held full legal title to their houses, but not the land under them, on lots inside privately owned parks. This tab scores that <strong>Manufactured Housing Tenure</strong> track and the <strong>Emergency Alert Failure</strong> track — Jackson County issued no broadcast alert at all, and Talent's opt-in Everbridge system never fired — as their own combined "what broke" view, separate from the full Vulnerability composite. <strong>Documentation-status exclusion</strong> (undocumented/mixed-status farmworker households ineligible for FEMA aid) is the same mechanism already scored in the Vulnerability tab — reused from Western NC and Ian, not reinvented here.</div>
+      <div id="fail-layer-list"></div>
+      <div class="legend-bar fail"></div>
+      <div class="legend-lbls"><span>Lower</span><span>Higher failure exposure</span></div>
+      <div class="lp-p" style="margin-top:14px">FEMA denied roughly 57% of the ~27,000 individual-assistance applications filed after Oregon's 2020 wildfires. For any household with an undocumented member, FEMA's Individuals and Households Program and Disaster Unemployment Assistance are categorically unavailable, full stop.</div>
+    </div>
+
+    <div class="lp-group" id="lpg-res">
+      <div class="lp-intro">Resilience</div>
+      <div class="lp-q">What is already working?</div>
+      <div class="lp-p">Talent Mobile Estates — with CASA of Oregon's help — became the first resident-owned manufactured home community (ROC) in the Rogue Valley: 89 displaced households now govern the park itself, closing the tenure trap rather than just documenting it. <strong>New Spirit Village</strong> (Proud Ground/ACCESS, Medford) is shown as a reference marker, not part of the scored grid — a ~$28M, 87-home community land trust built specifically for Almeda Fire survivors, with permanent affordability built into the land itself.</div>
+      <div class="legend-bar res"></div>
+      <div class="legend-lbls"><span>Lower resilience</span><span>Higher resilience</span></div>
+    </div>
+
+    <div class="lp-group" id="lpg-str">
+      <div class="lp-intro">Human Stories</div>
+      <div class="lp-q">What did it feel like to live it?</div>
+      <div class="story-card"><h4>The Talent Mobile Estates resident who now owns the park</h4><p>Nearly all 99 homes in the park burned. Now part of the Rogue Valley's first resident-owned manufactured home cooperative — the tenure trap not just documented but closed, through CASA of Oregon's ROC model.</p></div>
+      <div class="story-card"><h4>The farmworker family FEMA can't see, again</h4><p>A mixed-status household on a Bear Creek corridor mobile home lot, working Rogue Valley pear orchards or vineyards, lost everything but never appears in a FEMA registration count — the same trap as Western NC's Christmas-tree workers and Ian's Immokalee field labor, filled instead by UNETE and Coalición Fortaleza.</p></div>
+      <div class="story-card"><h4>The Talent resident who got no warning at all</h4><p>No Everbridge alert, no emergency broadcast — not a bureaucratic exclusion or documentation gap, but a literal absence of warning in a town the county's own after-action review found under-resourced and under-trained to protect.</p></div>
+      <div class="story-card"><h4>The park that didn't come back</h4><p>Not every one of the corridor's 18–19 destroyed mobile home parks has rebuilt at the same pace; some sit as vacant lots along Highway 99 five years on — a landlord's decision the residents who once lived there had no legal standing to contest.</p></div>
+      <div class="story-card"><h4>The five-years-later return</h4><p>A family that left the Rogue Valley after the fire, priced out or discouraged by the slow rebuild, set against a family now moving back into a rebuilt or resident-owned home. Talent's population has recovered to near pre-fire levels — but not household-by-household, and not evenly across tenure types.</p></div>
+    </div>
+
+  </div>
+  <div id="mapwrap"><div id="map"></div></div>
+  <div id="rightpanel">
+    <div class="rp-ph" id="rp-teaser"><div style="font-size:26px;opacity:.3;margin-bottom:8px">🗺️</div>Click any hex to open its profile.</div>
+    <div id="rp-body" style="display:none">
+      <div class="rp-hd"><button class="rp-close" onclick="closePanel()">&times;</button><div id="rp-name"></div><div id="rp-meta"></div></div>
+      <div class="rp-sec" id="rp-alerts"></div>
+      <div class="rp-sec"><h4>Hazard Model</h4><div id="rp-hazard-bars"></div></div>
+      <div class="rp-sec"><h4>Social Vulnerability Fingerprint</h4><div id="rp-svi-bars"></div></div>
+      <div class="rp-sec"><h4>Failure Modes &amp; Resilience</h4><div id="rp-fail-bars"></div></div>
+      <div class="rp-sec"><h4>Profile</h4><div class="rp-detail" id="rp-detail"></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ================================================================
+// COLOR SCALES — copied from SVI_MAP_ARCHITECTURE_GENERIC.md verbatim
+// ================================================================
+var RISK_STOPS=[[0,[0,224,150]],[.22,[74,222,128]],[.42,[255,217,61]],[.64,[255,107,53]],[.82,[255,45,85]],[1,[180,0,50]]];
+var RES_STOPS= [[0,[18,38,28]],[.25,[22,85,55]],[.50,[34,160,95]],[.75,[52,211,130]],[1,[0,240,130]]];
+var FAIL_STOPS=[[0,[30,45,61]],[.35,[91,33,182]],[.70,[168,85,247]],[1,[233,213,255]]];
+function interpColor(t,stops){
+  var s=Math.max(0,Math.min(1,t));
+  for(var i=0;i<stops.length-1;i++){
+    var a=stops[i][0],ca=stops[i][1],b=stops[i+1][0],cb=stops[i+1][1];
+    if(s<=b){var f=(s-a)/(b-a);return 'rgb('+Math.round(ca[0]+f*(cb[0]-ca[0]))+','+Math.round(ca[1]+f*(cb[1]-ca[1]))+','+Math.round(ca[2]+f*(cb[2]-ca[2]))+')'}
+  }
+  return 'rgb('+stops[stops.length-1][1].join(',')+')';
+}
+function riskColor(t){return interpColor(t,RISK_STOPS);}
+function resColor(t){return interpColor(t,RES_STOPS);}
+function failColor(t){return interpColor(t,FAIL_STOPS);}
+function normalize(arr){var mn=Math.min.apply(null,arr),mx=Math.max.apply(null,arr),r=mx-mn||.01;return arr.map(function(v){return(v-mn)/r;});}
+
+// ================================================================
+// PLACES — v0.1 hand-curated named places along the Bear Creek / Hwy 99
+// burn corridor (see notice at top of file).
+// Fields: n,lat,lng,pop(approx), pfire/pwui (hazard 0-1),
+// svi_poverty/svi_tenure/svi_docstatus/svi_alertfail/svi_elderly (vuln 0-1),
+// res (adaptive capacity/resilience 0-1), rtag, detail, flags{}.
+// ================================================================
+var PLACES=[
+  {n:"Ashland (ignition area)", lat:42.1946,lng:-122.7095, pop:21000,
+   pfire:.30,pwui:.35, svi_poverty:.10,svi_tenure:.05,svi_docstatus:.08,svi_alertfail:.15,svi_elderly:.28,
+   res:.60, rtag:"Where It Started, Not Where It Hit Hardest",
+   flags:{},
+   detail:"The Almeda Fire ignited near Ashland on Sept. 8, 2020, then moved north away from the town center. Ashland's housing stock — wealthier, far less manufactured housing — saw comparatively minor structural loss versus Talent and Phoenix a few miles downwind. The clearest within-corridor proof that raw proximity to the fire's start doesn't predict social consequence; what mattered was what kind of housing sat in the fire's path once it got moving."},
+
+  {n:"Talent Mobile Estates", lat:42.2415,lng:-122.7935, pop:300,
+   pfire:.95,pwui:.85, svi_poverty:.55,svi_tenure:.30,svi_docstatus:.55,svi_alertfail:1.0,svi_elderly:.22,
+   res:.80, rtag:"The Park That Now Owns Itself",
+   flags:{rocConverted:true,docExclusion:true,alertFail:true},
+   detail:"Nearly all 99 manufactured homes in this park were destroyed. With CASA of Oregon's help, it became the Rogue Valley's first resident-owned manufactured home community (ROC) — 89 displaced households now govern the park itself through a cooperative board, rather than leasing from a private landlord. The clearest case in this build of the tenure trap being closed, not just documented. Still sits inside Talent's documented zero-alert zone: Jackson County issued no emergency broadcast, and the opt-in Everbridge system never reached this town at all."},
+
+  {n:"Talent — town / non-mobile residential", lat:42.2480,lng:-122.7845, pop:5800,
+   pfire:.70,pwui:.60, svi_poverty:.24,svi_tenure:.15,svi_docstatus:.20,svi_alertfail:1.0,svi_elderly:.26,
+   res:.45, rtag:"Same Zero Alert, Different Housing Stock",
+   flags:{alertFail:true},
+   detail:"Jackson County's after-action review confirmed Talent received no emergency broadcast alert and no Everbridge notification at all during the fire — a town-wide institutional failure independent of housing type, cited to miscommunication, understaffing, and insufficient training. As of 2025, roughly 72% of Talent's lost homes are rebuilt, permitted, or under active permit, with ~350 certificates of occupancy issued and the town's population back to ~6,411, near its pre-fire ~6,600."},
+
+  {n:"Phoenix — mobile home park corridor", lat:42.2705,lng:-122.8125, pop:700,
+   pfire:.95,pwui:.85, svi_poverty:.58,svi_tenure:.85,svi_docstatus:.60,svi_alertfail:.55,svi_elderly:.30,
+   res:.22, rtag:"Waiting on a Landlord's Decision",
+   flags:{tenureTrap:true,docExclusion:true},
+   detail:"Several of the corridor's 18–19 destroyed mobile home parks sit here, most still under private-landlord ownership rather than the resident-owned model Talent Mobile Estates adopted — meaning rebuild timeline, and whether a park reopens at all, depends on a decision residents have no legal claim over. ACCESS-linked recovery housing properties in the Medford/Phoenix area (reported as Royal Oaks and Mobile Manor) sit in this same corridor, offering a path back for some but not all displaced households."},
+
+  {n:"Phoenix — town / broader residential", lat:42.2755,lng:-122.8180, pop:3300,
+   pfire:.65,pwui:.55, svi_poverty:.30,svi_tenure:.18,svi_docstatus:.26,svi_alertfail:.50,svi_elderly:.28,
+   res:.38, rtag:"Rebuilding, a Step Behind Talent",
+   flags:{},
+   detail:"Phoenix has passed the halfway mark on rebuilding — just over half of destroyed homes reoccupied as of 2025 — a step behind Talent's roughly 72% rebuilt-or-permitted pace, consistent with the corridor's uneven, park-by-park recovery timeline."},
+
+  {n:"South Medford / Coleman Creek (burn's northern terminus)", lat:42.3050,lng:-122.8550, pop:4200,
+   pfire:.45,pwui:.40, svi_poverty:.26,svi_tenure:.30,svi_docstatus:.22,svi_alertfail:.30,svi_elderly:.24,
+   res:.40, rtag:"Where the Fire Ran Out of Corridor",
+   flags:{},
+   detail:"The fire's effective end point as it reached denser south Medford — lower structure-loss density than Talent/Phoenix, but still inside the same county-wide alert-failure and documentation-exclusion footprint. Bear Creek's streamside habitat through this stretch is undergoing a multi-year native-plant restoration effort."},
+
+  {n:"Rural Bear Creek corridor — ag labor land", lat:42.2150,lng:-122.7550, pop:900,
+   pfire:.55,pwui:.45, svi_poverty:.48,svi_tenure:.55,svi_docstatus:.80,svi_alertfail:.45,svi_elderly:.14,
+   res:.20, rtag:"Rogue Valley's Ag Labor Corridor",
+   flags:{docExclusion:true},
+   detail:"Pear orchards, vineyards, and nursery-stock operations along the valley floor employ much of the same farmworker population concentrated in the corridor's mobile home parks. USDA NASS Census of Agriculture is this build's proxy source for documentation-status exclusion here — the same architecture reused from the Western NC and Hurricane Ian tools, since no direct dataset on documentation status exists at any public geographic resolution."},
+
+  {n:"Vacant lots — unresolved Hwy 99 parcels", lat:42.2600,lng:-122.8000, pop:0,
+   pfire:.90,pwui:.75, svi_poverty:.50,svi_tenure:.90,svi_docstatus:.40,svi_alertfail:.60,svi_elderly:.10,
+   res:.08, rtag:"Five Years On, Still Empty",
+   flags:{tenureTrap:true},
+   detail:"Not every one of the corridor's destroyed mobile home parks has rebuilt at the same pace. Some parcels along Highway 99 remain vacant five years on — the sharpest concrete illustration of the tenure trap in this build, since the decision to rebuild, sell, or redevelop belongs to a park owner, not the household that once lived there."},
+];
+
+// Special resilience reference marker — outside the scored grid.
+var NEW_SPIRIT_VILLAGE={n:"New Spirit Village (Medford — reference point)", lat:42.3150,lng:-122.8600,
+  res:.95, rtag:"What Rebuilding-With-Land-Security Looks Like",
+  detail:"A collaboration between Proud Ground, ACCESS, and private donors: an ~87-home, ~$28M community land trust development in Medford built specifically for Almeda Fire survivors, with homes sold below market and permanent affordability built into the land itself rather than the individual sale. Not part of this tool's scored hex grid — the closest thing in this corridor to Track 1's tenure trap being closed at the scale of a whole new development, the same reference-marker role Babcock Ranch plays in the Hurricane Ian tool."};
+
+// ================================================================
+// SOCIAL VULNERABILITY LAYERS (additive with physical, per architecture doc)
+// ================================================================
+var SOC_LAYERS=[
+  {id:'poverty',   key:'svi_poverty',   w:.18, name:'Poverty', desc:'Income/poverty concentration'},
+  {id:'tenure',    key:'svi_tenure',    w:.24, name:'Manufactured housing tenure fragility', desc:'Own the home, lease the lot — private-landlord parks score highest; ROC-converted parks score lower'},
+  {id:'docstatus', key:'svi_docstatus', w:.24, name:'Undocumented farmworker exclusion', desc:'USDA ag-employment + foreign-born/LEP proxy — reused from the Western NC and Ian builds'},
+  {id:'alertfail', key:'svi_alertfail', w:.20, name:'Emergency alert failure exposure', desc:'Jackson County issued no broadcast alert; Talent\'s Everbridge system never fired at all'},
+  {id:'elderly',   key:'svi_elderly',   w:.14, name:'Elderly population share', desc:'Standard SVI dimension; a smaller factor here than in the retiree-heavy Ian build'},
+];
+var SOC_MAX_W=SOC_LAYERS.reduce(function(a,l){return a+l.w;},0);
+
+// ================================================================
+// FAILURE MODES LAYERS — the two Almeda-specific "what broke" tracks,
+// scored as their own combined view distinct from the full Vulnerability
+// composite above. Documentation-status exclusion is reused, not
+// duplicated here (see the Failure Modes intro text in the left panel).
+// ================================================================
+var FAIL_LAYERS=[
+  {id:'tenure',    key:'svi_tenure',    w:.55, name:'Manufactured Housing Tenure Risk', desc:'Private-landlord park ownership vs. resident-owned (ROC) conversion'},
+  {id:'alertfail', key:'svi_alertfail', w:.45, name:'Emergency Alert Failure', desc:'Documented Everbridge/broadcast-alert gap, sharpest in Talent'},
+];
+var FAIL_MAX_W=FAIL_LAYERS.reduce(function(a,l){return a+l.w;},0);
+
+var activePhys=new Set(['fire','wui']);
+var activeSoc=new Set(['poverty','tenure','docstatus','alertfail','elderly']);
+var activeFail=new Set(['tenure','alertfail']);
+
+function calcPhys(m){
+  if(!activePhys.size) return 0;
+  var s=0,w=0;
+  if(activePhys.has('fire')){w+=1.3;s+=(m.pfire||0)*1.3;}
+  if(activePhys.has('wui')) {w+=0.9;s+=(m.pwui||0)*0.9;}
+  return w>0?s/w:0;
+}
+function calcSoc(m){
+  var physS=calcPhys(m);
+  if(!activeSoc.size) return physS;
+  var sw=0,ss=0;
+  activeSoc.forEach(function(id){
+    var L=SOC_LAYERS.find(function(l){return l.id===id;});
+    if(!L) return;
+    sw+=L.w; ss+=(m[L.key]||0)*L.w;
+  });
+  var socNorm=sw>0?ss/sw:0;
+  var frac=Math.min(1,sw/SOC_MAX_W);
+  return physS+socNorm*frac*1.2;
+}
+function calcFail(m){
+  if(!activeFail.size) return 0;
+  var sw=0,ss=0;
+  activeFail.forEach(function(id){
+    var L=FAIL_LAYERS.find(function(l){return l.id===id;});
+    if(!L) return;
+    sw+=L.w; ss+=(m[L.key]||0)*L.w;
+  });
+  return sw>0?ss/sw:0;
+}
+function calcScore(m){
+  if(curMode==='res')   return m.res!=null?m.res:0.3;
+  if(curMode==='hazard') return calcPhys(m);
+  if(curMode==='fail')   return calcFail(m);
+  return calcSoc(m); // 'vuln' and default
+}
+
+// ================================================================
+// GEOGRAPHY — hand-approximated Bear Creek / Hwy 99 burn corridor (see
+// notice at top of file: real tract/parcel boundary GeoJSON should
+// replace this). v0.1 simplification: one diagonal band tracing the
+// valley from Ashland to south Medford, buffered generously either side.
+// Verified against all PLACES/NEW_SPIRIT_VILLAGE points before shipping.
+// ================================================================
+var CORRIDOR_POLY=[
+  [42.155,-122.760],
+  [42.160,-122.685],
+  [42.215,-122.670],
+  [42.270,-122.775],
+  [42.300,-122.805],
+  [42.355,-122.820],
+  [42.360,-122.905],
+  [42.300,-122.905],
+  [42.265,-122.860],
+  [42.240,-122.830],
+  [42.195,-122.790],
+  [42.155,-122.760],
+];
+function ptInPoly(lat,lng,poly){
+  var inside=false;
+  for(var i=0,j=poly.length-1;i<poly.length;j=i++){
+    var yi=poly[i][0],xi=poly[i][1],yj=poly[j][0],xj=poly[j][1];
+    var intersect=((yi>lat)!==(yj>lat))&&(lng<(xj-xi)*(lat-yi)/(yj-yi)+xi);
+    if(intersect) inside=!inside;
+  }
+  return inside;
+}
+function ptInAlmeda(lat,lng){
+  if(lat<42.10||lat>42.40||lng<-122.95||lng>-122.65) return false;
+  return ptInPoly(lat,lng,CORRIDOR_POLY);
+}
+
+// ================================================================
+// NEAREST-PLACE CACHE + HEX SCORING
+// ================================================================
+function nearestPlace(lat,lng){
+  var best=null,bd=Infinity;
+  var cosL=Math.cos(lat*Math.PI/180);
+  PLACES.forEach(function(m){
+    var d=(m.lat-lat)*(m.lat-lat)+((m.lng-lng)*cosL)*((m.lng-lng)*cosL);
+    if(d<bd){bd=d;best=m;}
+  });
+  return best;
+}
+var _placeCache={};
+function nearestPlaceCached(lat,lng){
+  var key=(lat*50|0)+','+(lng*50|0);
+  if(_placeCache[key]) return _placeCache[key];
+  var m=nearestPlace(lat,lng);
+  _placeCache[key]=m;
+  return m;
+}
+function phash(lat,lng){var s=Math.sin(lat*127.1+lng*311.7)*43758.5453;return s-Math.floor(s);}
+
+function hexScore(lat,lng){
+  var m=nearestPlaceCached(lat,lng);
+  if(curMode==='res') return m&&m.res!=null?m.res:0.30;
+  var rnd=(phash(lat,lng)-.5)*0.04;
+  var hm={
+    pfire:Math.min(1,Math.max(0,(m.pfire||0)+rnd)),
+    pwui:Math.min(1,Math.max(0,(m.pwui||0)+rnd)),
+    svi_poverty:m.svi_poverty,svi_tenure:m.svi_tenure,svi_docstatus:m.svi_docstatus,
+    svi_alertfail:m.svi_alertfail,svi_elderly:m.svi_elderly,res:m.res
+  };
+  if(curMode==='hazard') return calcPhys(hm);
+  if(curMode==='fail')   return calcFail(hm);
+  return calcSoc(hm);
+}
+
+// ================================================================
+// MAP INIT
+// ================================================================
+var map=L.map('map',{zoomControl:true,attributionControl:false}).setView([42.26,-122.80],12);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:16,subdomains:'abcd'}).addTo(map);
+
+var canvasRenderer=L.canvas({padding:0.3});
+var hexLayer=L.layerGroup().addTo(map);
+var _regenTimer=null;
+var curMode='hazard';
+
+function getH3Res(zoom){ if(zoom>=14) return 10; if(zoom>=12) return 9; if(zoom>=10) return 8; return 7; }
+function scheduleRegen(delay){ if(_regenTimer) clearTimeout(_regenTimer); _regenTimer=setTimeout(generateHexes,delay||180); }
+
+function generateHexes(){
+  if(!map||typeof map.getBounds!=='function') return;
+  if(curMode==='str'){ hexLayer.clearLayers(); return; }
+  var bounds=map.getBounds(),zoom=map.getZoom(),res=getH3Res(zoom),pad=0.03;
+  var n=bounds.getNorth()+pad,s=bounds.getSouth()-pad,e=bounds.getEast()+pad,w=bounds.getWest()-pad;
+  var cells;
+  try{ cells=h3.polygonToCells([[n,w],[n,e],[s,e],[s,w],[n,w]],res); }catch(err){ return; }
+  var landCells=[];
+  cells.forEach(function(cell){
+    var c=h3.cellToLatLng(cell);
+    if(!ptInAlmeda(c[0],c[1])) return;
+    landCells.push(cell);
+  });
+  if(!landCells.length) return;
+  var scores=landCells.map(function(cell){ var c=h3.cellToLatLng(cell); return hexScore(c[0],c[1]); });
+  var norm=curMode==='res' ? scores.map(function(v){return Math.max(0,Math.min(1,v||0));}) : normalize(scores);
+  var cf=curMode==='res'?resColor:(curMode==='fail'?failColor:riskColor);
+  var sw=zoom>=13?0.25:zoom>=11?0.4:0.6;
+  hexLayer.clearLayers();
+  landCells.forEach(function(cell,i){
+    var boundary=h3.cellToBoundary(cell);
+    var c=h3.cellToLatLng(cell);
+    var m=nearestPlaceCached(c[0],c[1]);
+    var poly=L.polygon(boundary,{renderer:canvasRenderer,weight:sw,color:'rgba(255,255,255,0.14)',fillColor:cf(norm[i]),fillOpacity:0.55});
+    poly.on('click',function(){ openPanel(m); });
+    poly.on('mouseover',function(e){
+      hexLayer.eachLayer(function(l){ if(l!==poly){ try{l.closeTooltip();}catch(err){} } });
+      poly.setStyle({weight:2,color:'rgba(255,255,255,0.75)'});
+      L.popup({closeButton:false,offset:[0,-2]}).setLatLng(e.latlng)
+        .setContent('<strong>'+m.n+'</strong><br><span style="color:#8896AA;font-size:11px">Click for full profile</span>').openOn(map);
+    });
+    poly.on('mouseout',function(){ try{poly.closeTooltip();}catch(e){} poly.setStyle({weight:sw,color:'rgba(255,255,255,0.14)'}); map.closePopup(); });
+    hexLayer.addLayer(poly);
+  });
+}
+map.on('moveend zoomend',function(){ scheduleRegen(200); });
+map.on('zoom',function(){ var nr=getH3Res(map.getZoom()); scheduleRegen(60); });
+
+// New Spirit Village reference marker (Resilience tab only)
+var nsvMarker=L.circleMarker([NEW_SPIRIT_VILLAGE.lat,NEW_SPIRIT_VILLAGE.lng],{radius:9,color:'#00E096',weight:2,fillColor:'#00E096',fillOpacity:.85});
+nsvMarker.on('click',function(){ openPanel(NEW_SPIRIT_VILLAGE); });
+nsvMarker.bindTooltip(NEW_SPIRIT_VILLAGE.n,{direction:'top'});
+
+// ================================================================
+// LEFT PANEL — nav groups, SOC + FAIL layer builders
+// ================================================================
+function setModeGroup(g){
+  document.querySelectorAll('.nav-btn').forEach(function(b){ b.classList.toggle('active',b.dataset.grp===g); });
+  document.querySelectorAll('.lp-group').forEach(function(p){ p.classList.toggle('active',p.id==='lpg-'+g); });
+  var modeMap={hazard:'hazard',vuln:'vuln',fail:'fail',res:'res',str:'str'};
+  curMode=modeMap[g]||'hazard';
+  if(g==='res'){ if(!map.hasLayer(nsvMarker)) nsvMarker.addTo(map); }
+  else { if(map.hasLayer(nsvMarker)) map.removeLayer(nsvMarker); }
+  scheduleRegen(0);
+}
+function togglePhys(id,on){ if(on) activePhys.add(id); else activePhys.delete(id); scheduleRegen(0); }
+function toggleSocLayer(id,on){ if(on) activeSoc.add(id); else activeSoc.delete(id); scheduleRegen(0); }
+function toggleFailLayer(id,on){ if(on) activeFail.add(id); else activeFail.delete(id); scheduleRegen(0); }
+
+function renderSocLayerList(){
+  var el=document.getElementById('soc-layer-list');
+  el.innerHTML=SOC_LAYERS.map(function(L){
+    return '<label class="layer-row"><input type="checkbox" class="soc-cb" data-id="'+L.id+'" checked onchange="toggleSocLayer(\''+L.id+'\',this.checked)">'+
+      '<div><div class="layer-name on">'+L.name+'</div><div class="layer-desc">'+L.desc+'</div></div></label>';
+  }).join('');
+}
+function renderFailLayerList(){
+  var el=document.getElementById('fail-layer-list');
+  el.innerHTML=FAIL_LAYERS.map(function(L){
+    return '<label class="layer-row"><input type="checkbox" class="fail-cb" data-id="'+L.id+'" checked onchange="toggleFailLayer(\''+L.id+'\',this.checked)">'+
+      '<div><div class="layer-name on">'+L.name+'</div><div class="layer-desc">'+L.desc+'</div></div></label>';
+  }).join('');
+}
+renderSocLayerList();
+renderFailLayerList();
+
+// ================================================================
+// RIGHT PANEL
+// ================================================================
+function scRow(label,val,color){
+  return '<div class="sc-row"><div class="sc-lbl"><span>'+label+'</span><span style="color:'+color+'">'+Math.round(val*100)+'</span></div>'+
+    '<div class="sc-track"><div class="sc-fill" style="width:'+Math.round(val*100)+'%;background:'+color+'"></div></div></div>';
+}
+function openPanel(m){
+  document.getElementById('app').classList.add('rp-open');
+  document.getElementById('rp-teaser').style.display='none';
+  document.getElementById('rp-body').style.display='block';
+  document.getElementById('rp-name').textContent=m.n;
+  document.getElementById('rp-meta').textContent = (m.pop!=null?('Approx. pop '+m.pop.toLocaleString()+' · '):'') + (m.rtag||'');
+
+  var alerts='';
+  if(m.flags&&m.flags.tenureTrap) alerts+='<div class="rp-alert a-red"><div>🏚️</div><div><b>Manufactured Housing Tenure Trap</b>Residents own the home, not the land — rebuild timeline depends on a private park owner\'s decision, not the household\'s.</div></div>';
+  if(m.flags&&m.flags.docExclusion) alerts+='<div class="rp-alert a-red"><div>🪪</div><div><b>Documentation Exclusion Zone</b>Concentrated undocumented/mixed-status farmworker population with limited FEMA Individual Assistance eligibility. Same mechanism as the Western NC and Ian tools.</div></div>';
+  if(m.flags&&m.flags.alertFail) alerts+='<div class="rp-alert a-purple"><div>📡</div><div><b>Emergency Alert Failure</b>No county broadcast alert was issued; the opt-in Everbridge system did not reach this area during the fire.</div></div>';
+  if(m.flags&&m.flags.rocConverted) alerts+='<div class="rp-alert a-green"><div>🤝</div><div><b>Resident-Owned Community</b>Converted to resident/cooperative ownership after the fire — the tenure trap closed rather than left open.</div></div>';
+  document.getElementById('rp-alerts').innerHTML=alerts;
+
+  var hb='';
+  if(m.pfire!=null) hb+=scRow('Wind-driven fire spread',m.pfire,'var(--phys)');
+  if(m.pwui!=null) hb+=scRow('Structure density (WUI)',m.pwui,'var(--phys)');
+  document.getElementById('rp-hazard-bars').innerHTML=hb || '<div class="layer-desc">Reference marker — outside scored hazard model.</div>';
+
+  var vb='';
+  SOC_LAYERS.forEach(function(L){ if(m[L.key]!=null) vb+=scRow(L.name,m[L.key],'var(--svi)'); });
+  document.getElementById('rp-svi-bars').innerHTML=vb || '<div class="layer-desc">Reference marker — outside scored vulnerability model.</div>';
+
+  var fb='';
+  if(m.svi_tenure!=null) fb+=scRow('Manufactured Housing Tenure Risk',m.svi_tenure,'var(--fail)');
+  if(m.svi_alertfail!=null) fb+=scRow('Emergency Alert Failure',m.svi_alertfail,'var(--fail)');
+  if(m.res!=null) fb+=scRow('Resilience / adaptive capacity',m.res,'var(--res)');
+  document.getElementById('rp-fail-bars').innerHTML=fb;
+
+  document.getElementById('rp-detail').innerHTML=m.detail||'';
+}
+function closePanel(){
+  document.getElementById('app').classList.remove('rp-open');
+  document.getElementById('rp-teaser').style.display='block';
+  document.getElementById('rp-body').style.display='none';
+}
+
+// init
+scheduleRegen(0);
+</script>
+</body>
+</html>
