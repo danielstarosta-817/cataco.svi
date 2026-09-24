@@ -45,3 +45,7 @@ venezuela/*
 # Raw badstars research material (PDFs, docx, alt image sets) — not referenced
 # by prototype_v1.html, not needed in the deployed site.
 badstars/Thesis/
+
+# Claude Desktop's own local app/session data — not project content, and far
+# too large to ever belong in this repo.
+local-agent-mode-sessions/
