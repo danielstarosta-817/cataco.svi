@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Raised Under Bad Stars · map wireframe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,500&family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#100E0B; --paper:#EFE7D8; --paper-deep:#E2D6BE; --ink:#161311; --ink-dim:#5A5449; --ink-faint:#9C978C;
+    --accent:#E8703A; --line:rgba(22,19,17,.14);
+    --c-eq:#A23B72; --c-fire:#DCC46B; --c-out:#D98A96;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden;}
+
+  #back{
+    position:fixed;top:20px;left:22px;z-index:400;display:flex;align-items:center;gap:8px;color:#fff;text-decoration:none;
+    font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;opacity:.8;transition:opacity .2s ease;
+  }
+  #back:hover{opacity:1;}
+  #back svg{width:15px;height:15px;}
+
+  #stage{position:relative;width:100vw;height:100vh;overflow:hidden;}
+  #world{position:absolute;inset:0;will-change:transform;}
+
+  /* ---------- layered paper terrain + soft biome washes, a la The Boat's stacked silhouettes ---------- */
+  .terrain{position:absolute;left:-5%;width:110%;height:auto;}
+  .terrain-1{bottom:-4%;}
+  .terrain-2{bottom:6%;}
+  .terrain-3{bottom:16%;}
+  .wash{position:absolute;border-radius:50%;filter:blur(60px);opacity:.5;pointer-events:none;}
+
+  /* ---------- atmosphere layers, react to proximity as you walk ---------- */
+  #atmosphere{position:fixed;inset:0;z-index:60;pointer-events:none;}
+  .rain-drop{position:absolute;top:-5%;width:1.5px;height:70px;background:linear-gradient(180deg,transparent,rgba(210,220,235,.55));animation:fall linear infinite;}
+  @keyframes fall{to{transform:translateY(115vh);}}
+  .ember{position:absolute;bottom:-5%;width:4px;height:4px;border-radius:50%;background:radial-gradient(circle,#FFCF7A,#E8703A);box-shadow:0 0 6px 1px rgba(232,112,58,.7);animation:rise linear infinite;}
+  @keyframes rise{to{transform:translate(var(--drift,10px),-110vh);}}
+  #vignette{position:fixed;inset:0;z-index:55;pointer-events:none;background:radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,.5) 100%);}
+
+  #caption{
+    position:fixed;left:50%;bottom:34px;transform:translateX(-50%) translateY(14px);z-index:300;
+    background:var(--paper);border-radius:14px;padding:22px 30px;max-width:460px;text-align:center;
+    box-shadow:0 20px 50px rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .3s ease,transform .3s ease;
+  }
+  #caption.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto;}
+  #caption .kicker{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin:0 0 8px;}
+  #caption h2{font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:22px;margin:0 0 10px;}
+  #caption p{font-family:'Fraunces',Georgia,serif;font-weight:300;font-style:italic;font-size:14px;line-height:1.55;color:var(--ink-dim);margin:0 0 16px;}
+  #caption a{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--ink);padding-bottom:3px;}
+
+  .legend{position:fixed;top:20px;right:22px;z-index:300;display:flex;flex-direction:column;gap:8px;color:rgba(255,255,255,.7);font-size:10.5px;letter-spacing:.03em;}
+  .legend div{display:flex;align-items:center;gap:8px;}
+  .legend .sw{width:16px;height:3px;border-radius:2px;}
+  .hint{
+    position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:300;color:rgba(255,255,255,.6);
+    font-size:11px;letter-spacing:.05em;text-transform:uppercase;font-weight:600;text-align:center;
+  }
+  .hint span{display:block;font-size:9.5px;opacity:.7;margin-top:3px;letter-spacing:.03em;}
+
+  /* ---------- path: a stitched thread, not a map line ---------- */
+  #paths{position:absolute;inset:0;z-index:5;}
+  .path-line{fill:none;stroke-width:2;stroke-linecap:round;stroke-dasharray:1,11;opacity:.3;transition:opacity .35s ease,stroke-width .35s ease;}
+  .path-line.lit{opacity:1;stroke-width:2.6;}
+  .path-tick{opacity:.3;transition:opacity .35s ease;}
+  .path-tick.lit{opacity:1;}
+
+  /* ---------- the walking figure ---------- */
+  #player{position:absolute;z-index:50;width:34px;height:58px;transform:translate(-50%,-92%);}
+  #player .shadow{position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:26px;height:8px;background:rgba(0,0,0,.4);border-radius:50%;filter:blur(2px);}
+  #player .figure{position:relative;width:100%;height:100%;transform-origin:50% 100%;animation:idle-bob 2.4s ease-in-out infinite;}
+  #player.walking .figure{animation:walk-bob .38s ease-in-out infinite;}
+  #player.face-left .figure{transform:scaleX(-1);}
+  @keyframes idle-bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-1.5px);}}
+  @keyframes walk-bob{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-4px) rotate(3deg);}}
+  #player .body{position:absolute;bottom:0;left:6px;width:22px;height:38px;background:var(--accent);border-radius:9px 9px 5px 5px;box-shadow:0 3px 8px rgba(0,0,0,.3);}
+  #player .head{position:absolute;top:0;left:9px;width:16px;height:16px;background:#F2D9B8;border-radius:50%;}
+  #player .satchel{position:absolute;bottom:12px;left:1px;width:9px;height:12px;background:#5A4A3C;border-radius:3px;}
+
+  /* ---------- location node: a small paper diorama, not a pin ---------- */
+  .node{position:absolute;z-index:10;transition:opacity .35s ease;}
+  .node.dim{opacity:.3;}
+  .node-inner{position:relative;width:168px;height:168px;transform-origin:50% 85%;animation:sway 6s ease-in-out infinite;}
+  .node:nth-of-type(2) .node-inner{animation-delay:-1.4s;}
+  .node:nth-of-type(3) .node-inner{animation-delay:-3s;}
+  .node:nth-of-type(4) .node-inner{animation-delay:-4.4s;}
+  @keyframes sway{0%,100%{transform:rotate(var(--tilt,-2deg));}50%{transform:rotate(calc(var(--tilt,-2deg) * -1));}}
+  .node.active .node-inner{animation-play-state:paused;transform:rotate(0deg) scale(1.12) !important;}
+
+  .backing{
+    position:absolute;inset:14px;border-radius:44% 56% 58% 42% / 48% 42% 58% 52%;
+    box-shadow:0 18px 34px rgba(0,0,0,.42);
+  }
+  .cutout-shape{position:absolute;inset:0;background-size:cover;background-position:center;filter:saturate(.85) contrast(1.04);}
+  .grain{position:absolute;inset:0;background:radial-gradient(circle at 30% 20%,rgba(255,255,255,.14),transparent 60%);mix-blend-mode:overlay;}
+  .sticker{position:absolute;width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:50%;box-shadow:0 4px 10px rgba(0,0,0,.35);}
+  .node-label{
+    position:absolute;bottom:-28px;left:50%;transform:translateX(-50%);
+    font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:13.5px;color:#fff;
+    background:rgba(16,14,11,.55);padding:3px 12px;border-radius:20px;white-space:nowrap;
+  }
+</style>
+</head>
+<body>
+
+<a id="back" href="index.html">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+  Raised Under Bad Stars
+</a>
+
+<div class="hint">A wireframe &middot; walk with arrow keys or WASD<span>or click a place to walk toward it</span></div>
+
+<div class="legend">
+  <div><span class="sw" style="background:var(--c-eq)"></span> Shares a hazard type</div>
+  <div><span class="sw" style="background:var(--c-fire)"></span> Shares a creative approach</div>
+</div>
+
+<div id="vignette"></div>
+<div id="atmosphere"></div>
+
+<div id="stage">
+  <div id="world">
+    <svg class="terrain terrain-1" viewBox="0 0 1600 400" preserveAspectRatio="none"><path d="M0,220 C250,140 400,260 650,190 C900,120 1050,240 1300,170 C1450,130 1550,200 1600,180 L1600,400 L0,400 Z" fill="#0C0A08"/></svg>
+    <svg class="terrain terrain-2" viewBox="0 0 1600 400" preserveAspectRatio="none"><path d="M0,240 C300,180 380,280 620,210 C880,140 1000,250 1280,190 C1420,160 1500,210 1600,200 L1600,400 L0,400 Z" fill="#171310"/></svg>
+    <svg class="terrain terrain-3" viewBox="0 0 1600 400" preserveAspectRatio="none"><path d="M0,260 C280,210 420,290 680,230 C920,180 1080,270 1340,220 C1460,195 1520,230 1600,225 L1600,400 L0,400 Z" fill="#221C16"/></svg>
+
+    <div class="wash" style="left:5vw;top:38vh;width:520px;height:520px;background:radial-gradient(circle,#D98A9633,transparent 70%);"></div>
+    <div class="wash" style="left:60vw;top:5vh;width:460px;height:460px;background:radial-gradient(circle,#A23B7233,transparent 70%);"></div>
+    <div class="wash" style="left:38vw;top:22vh;width:400px;height:400px;background:radial-gradient(circle,#A23B7222,transparent 70%);"></div>
+    <div class="wash" style="left:82vw;top:32vh;width:480px;height:480px;background:radial-gradient(circle,#DCC46B33,transparent 70%);"></div>
+
+    <svg id="paths" viewBox="0 0 1600 900" preserveAspectRatio="none">
+      <path class="path-line" id="pl-santacruz-mexicocity" data-a="santacruz" data-b="mexicocity" d="M 560 380 Q 480 300 430 230" stroke="#A23B72"/>
+      <path class="path-line" id="pl-santacruz-peregian" data-a="santacruz" data-b="peregian" d="M 560 380 Q 850 420 1180 470" stroke="#DCC46B"/>
+      <path class="path-line" id="pl-orleans-mexicocity" data-a="orleans" data-b="mexicocity" d="M 760 560 Q 600 400 430 230" stroke="#D98A96"/>
+    </svg>
+
+    <div class="node" id="n-orleans" data-place="orleans" data-x="47.5" data-y="62.2">
+      <div class="node-inner" style="--tilt:-3deg;">
+        <div class="backing" style="background:#8B4A3A;"></div>
+        <div class="cutout-shape" style="background-image:url('katrina-x-code-house.jpg');clip-path:polygon(8% 35%,20% 10%,45% 5%,70% 15%,92% 30%,96% 55%,85% 80%,60% 95%,30% 92%,10% 70%,2% 50%);"></div>
+        <div class="grain" style="clip-path:polygon(8% 35%,20% 10%,45% 5%,70% 15%,92% 30%,96% 55%,85% 80%,60% 95%,30% 92%,10% 70%,2% 50%);"></div>
+        <div class="sticker" style="left:-6px;top:-6px;background:#3B7A57;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M2 14c2 0 2-3 4-3s2 3 4 3 2-3 4-3 2 3 4 3 2-3 4-3"/></svg>
+        </div>
+        <div class="node-label">New Orleans</div>
+      </div>
+    </div>
+
+    <div class="node" id="n-santacruz" data-place="santacruz" data-x="35" data-y="42.2">
+      <div class="node-inner" style="--tilt:2deg;">
+        <div class="backing" style="background:#4A4438;"></div>
+        <div class="cutout-shape" style="background-image:url('pacific-garden-mall-1989.jpg');clip-path:polygon(15% 5%,45% 0%,80% 10%,100% 35%,90% 65%,100% 90%,70% 100%,40% 95%,10% 100%,0% 70%,10% 40%);"></div>
+        <div class="grain" style="clip-path:polygon(15% 5%,45% 0%,80% 10%,100% 35%,90% 65%,100% 90%,70% 100%,40% 95%,10% 100%,0% 70%,10% 40%);"></div>
+        <div class="sticker" style="right:-6px;top:2px;background:#A23B72;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13l4-8 3 6 3-10 3 12 4-6 4 6"/></svg>
+        </div>
+        <div class="node-label">Santa Cruz</div>
+      </div>
+    </div>
+
+    <div class="node" id="n-mexicocity" data-place="mexicocity" data-x="27" data-y="25.5">
+      <div class="node-inner" style="--tilt:-2.5deg;">
+        <div class="backing" style="background:#5A4A3C;"></div>
+        <div class="cutout-shape" style="background-image:url('mexico-city-camp-resident.jpg');clip-path:polygon(20% 0%,55% 8%,85% 0%,100% 30%,92% 60%,100% 85%,65% 100%,35% 90%,5% 100%,0% 60%,12% 25%);"></div>
+        <div class="grain" style="clip-path:polygon(20% 0%,55% 8%,85% 0%,100% 30%,92% 60%,100% 85%,65% 100%,35% 90%,5% 100%,0% 60%,12% 25%);"></div>
+        <div class="sticker" style="left:-8px;bottom:6px;background:#A23B72;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13l4-8 3 6 3-10 3 12 4-6 4 6"/></svg>
+        </div>
+        <div class="node-label">Mexico City</div>
+      </div>
+    </div>
+
+    <div class="node" id="n-peregian" data-place="peregian" data-x="74" data-y="52.2">
+      <div class="node-inner" style="--tilt:3deg;">
+        <div class="backing" style="background:#8A6A3A;"></div>
+        <div class="cutout-shape" style="background-image:url('peregian-bushfire-drawings-grid.png');clip-path:polygon(50% 0%,65% 15%,85% 5%,90% 30%,100% 45%,85% 55%,95% 75%,70% 80%,60% 100%,45% 85%,25% 95%,15% 70%,0% 60%,15% 40%,5% 20%,30% 25%);"></div>
+        <div class="grain" style="clip-path:polygon(50% 0%,65% 15%,85% 5%,90% 30%,100% 45%,85% 55%,95% 75%,70% 80%,60% 100%,45% 85%,25% 95%,15% 70%,0% 60%,15% 40%,5% 20%,30% 25%);"></div>
+        <div class="sticker" style="right:-8px;bottom:-4px;background:#DCC46B;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3B2A12" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1 4-3 5-3 9a3 3 0 0 0 6 0c0-2-1-3-1-3s2 1 2 4a5 5 0 0 1-10 0c0-5 5-6 4-10z"/></svg>
+        </div>
+        <div class="node-label">Peregian</div>
+      </div>
+    </div>
+
+    <div id="player">
+      <div class="shadow"></div>
+      <div class="figure">
+        <div class="body"></div>
+        <div class="head"></div>
+        <div class="satchel"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="caption">
+  <div class="kicker" id="cap-kicker"></div>
+  <h2 id="cap-title"></h2>
+  <p id="cap-dek"></p>
+  <a id="cap-link" href="#">Read the full story <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+</div>
+
+<script>
+  const places = {
+    orleans:   {kicker:"2005 · Hurricane Katrina", title:"New Orleans", dek:"A flood song, a spray-painted code, and a culture that refused to wait for permission to start healing.", target:"proto-v2-meander-chain.html#sec-orleans", connects:["mexicocity"]},
+    santacruz: {kicker:"1989 · Loma Prieta earthquake", title:"Santa Cruz", dek:"A poet-in-residence turned a shaken school year into a published book, and later, a reunion.", target:"proto-v2-meander-chain.html#sec-santacruz", connects:["mexicocity","peregian"]},
+    mexicocity:{kicker:"1985 & 2017 · earthquakes", title:"Mexico City", dek:"A city that remembers its worst earthquake vividly, and in some cases still hasn't finished responding to it.", target:"proto-v2-meander-chain.html#sec-mexicocity", connects:["santacruz","orleans"]},
+    peregian:  {kicker:"2019 · Queensland bushfires", title:"Peregian", dek:"No outside therapist, no dedicated curriculum. One teacher improvised, and it worked anyway.", target:"proto-v2-meander-chain.html#sec-peregian", connects:["santacruz"]},
+  };
+
+  const world = document.getElementById('world');
+  const nodes = Array.from(document.querySelectorAll('.node'));
+  const pathLines = Array.from(document.querySelectorAll('.path-line'));
+  const pathsSvg = document.getElementById('paths');
+  const caption = document.getElementById('caption');
+  const player = document.getElementById('player');
+  const atmosphere = document.getElementById('atmosphere');
+
+  nodes.forEach(el=>{
+    const x = parseFloat(el.dataset.x), y = parseFloat(el.dataset.y);
+    el.style.left = x + 'vw'; el.style.top = y + 'vh';
+    el.style.transform = 'translate(-50%,-50%)';
+  });
+
+  // footstep ticks along each path, purely decorative texture
+  pathLines.forEach(p=>{
+    const len = p.getTotalLength();
+    const count = Math.round(len / 34);
+    for(let i=1;i<count;i++){
+      const pt = p.getPointAtLength((len/count)*i);
+      const tick = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      tick.setAttribute('cx', pt.x); tick.setAttribute('cy', pt.y); tick.setAttribute('r', 2.4);
+      tick.setAttribute('fill', p.getAttribute('stroke'));
+      tick.classList.add('path-tick');
+      tick.dataset.a = p.dataset.a; tick.dataset.b = p.dataset.b;
+      pathsSvg.appendChild(tick);
+    }
+  });
+  const ticks = Array.from(document.querySelectorAll('.path-tick'));
+
+  // ---------- atmosphere: rain near the hurricane zone, embers near the wildfire zone ----------
+  const zones = [
+    {x:12, y:52, radius:26, type:'rain'},   // near New Orleans / hurricane wash
+    {x:78, y:38, radius:26, type:'ember'},  // near Peregian / wildfire wash
+  ];
+  for(let i=0;i<50;i++){
+    const d = document.createElement('div'); d.className='rain-drop';
+    d.style.left = Math.random()*100+'vw';
+    d.style.animationDuration = (0.7+Math.random()*0.5)+'s';
+    d.style.animationDelay = (Math.random()*1.5)+'s';
+    d.dataset.type='rain';
+    atmosphere.appendChild(d);
+  }
+  for(let i=0;i<26;i++){
+    const d = document.createElement('div'); d.className='ember';
+    d.style.left = Math.random()*100+'vw';
+    d.style.setProperty('--drift', (Math.random()*60-30)+'px');
+    d.style.animationDuration = (3+Math.random()*2.5)+'s';
+    d.style.animationDelay = (Math.random()*3)+'s';
+    d.dataset.type='ember';
+    atmosphere.appendChild(d);
+  }
+  const rainEls = Array.from(document.querySelectorAll('.rain-drop'));
+  const emberEls = Array.from(document.querySelectorAll('.ember'));
+
+  // ---------- player state ----------
+  let px = 55, py = 78; // vw / vh
+  let facing = 'right';
+  let activePlace = null;
+  const speed = 26; // vw-ish units per second
+  const keys = new Set();
+  let autoTarget = null;
+
+  window.addEventListener('keydown', e=>{
+    const k = e.key.toLowerCase();
+    if(['arrowup','arrowdown','arrowleft','arrowright','w','a','s','d'].includes(k)){
+      keys.add(k); autoTarget = null; e.preventDefault();
+    }
+  });
+  window.addEventListener('keyup', e=> keys.delete(e.key.toLowerCase()));
+
+  nodes.forEach(n=>{
+    n.style.cursor = 'pointer';
+    n.addEventListener('click', ()=>{
+      autoTarget = {x: parseFloat(n.dataset.x), y: parseFloat(n.dataset.y)};
+    });
+  });
+
+  function dist(x1,y1,x2,y2){ return Math.hypot(x1-x2, y1-y2); }
+
+  function reveal(key){
+    if(activePlace === key) return;
+    activePlace = key;
+    const data = places[key];
+    nodes.forEach(n=>{
+      const isSelf = n.dataset.place === key;
+      const isConnected = data.connects.includes(n.dataset.place);
+      n.classList.toggle('active', isSelf);
+      n.classList.toggle('dim', !isSelf && !isConnected);
+    });
+    [...pathLines, ...ticks].forEach(p=>{
+      p.classList.toggle('lit', p.dataset.a === key || p.dataset.b === key);
+    });
+    document.getElementById('cap-kicker').textContent = data.kicker;
+    document.getElementById('cap-title').textContent = data.title;
+    document.getElementById('cap-dek').textContent = data.dek;
+    document.getElementById('cap-link').href = data.target;
+    caption.classList.add('show');
+  }
+
+  let last = performance.now();
+  function tick(now){
+    const dt = Math.min((now-last)/1000, 0.05); last = now;
+
+    let dx=0, dy=0;
+    if(keys.has('arrowup')||keys.has('w')) dy -= 1;
+    if(keys.has('arrowdown')||keys.has('s')) dy += 1;
+    if(keys.has('arrowleft')||keys.has('a')) dx -= 1;
+    if(keys.has('arrowright')||keys.has('d')) dx += 1;
+    let walking = dx!==0 || dy!==0;
+
+    if(!walking && autoTarget){
+      const adx = autoTarget.x - px, ady = autoTarget.y - py;
+      const d = Math.hypot(adx,ady);
+      if(d < 1.2){ autoTarget = null; }
+      else { dx = adx/d; dy = ady/d; walking = true; }
+    } else if(walking && dx!==0 && dy!==0){
+      const n = Math.hypot(dx,dy); dx/=n; dy/=n;
+    }
+
+    if(walking){
+      px += dx*speed*dt; py += dy*speed*dt*0.62; // slower vertical to fake perspective
+      px = Math.max(4, Math.min(96, px));
+      py = Math.max(10, Math.min(94, py));
+      if(dx < -0.05) facing='left'; else if(dx > 0.05) facing='right';
+    }
+    player.classList.toggle('walking', walking);
+    player.classList.toggle('face-left', facing==='left');
+    player.style.left = px+'vw'; player.style.top = py+'vh';
+
+    // camera follows the player, gently
+    const scale = 1.18;
+    const targetTx = window.innerWidth/2 - (px/100*window.innerWidth)*scale;
+    const targetTy = window.innerHeight/2 - (py/100*window.innerHeight)*scale;
+    world.style.transform = `translate(${targetTx}px, ${targetTy}px) scale(${scale})`;
+
+    // atmosphere intensity based on proximity to zones
+    let rainAmt = 0, emberAmt = 0;
+    zones.forEach(z=>{
+      const d = dist(px,py,z.x,z.y);
+      const amt = Math.max(0, 1 - d/z.radius);
+      if(z.type==='rain') rainAmt = Math.max(rainAmt, amt);
+      if(z.type==='ember') emberAmt = Math.max(emberAmt, amt);
+    });
+    rainEls.forEach(el=> el.style.opacity = rainAmt*0.8);
+    emberEls.forEach(el=> el.style.opacity = emberAmt*0.9);
+
+    // arrival check
+    let nearest = null, nearestD = 999;
+    nodes.forEach(n=>{
+      const nx = parseFloat(n.dataset.x), ny = parseFloat(n.dataset.y);
+      const d = dist(px,py,nx,ny);
+      if(d < nearestD){ nearestD = d; nearest = n; }
+    });
+    if(nearest && nearestD < 6){ reveal(nearest.dataset.place); }
+
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+</script>
+
+</body>
+</html>

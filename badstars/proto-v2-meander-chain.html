@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What kids do with their hands · Raised Under Bad Stars (wireframe)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,500&family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#100E0B; --paper:#FBF9F3; --ink:#161311; --ink-dim:#5A5449; --ink-faint:#9C978C;
+    --accent:#E8703A; --line:rgba(22,19,17,.12);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;}
+  ::selection{background:var(--accent);color:#fff;}
+
+  #progress{position:fixed;top:0;left:0;height:2px;background:var(--accent);z-index:600;width:0%;transition:width .1s linear;}
+  #back{
+    position:fixed;top:20px;left:22px;z-index:400;display:flex;align-items:center;gap:8px;color:#fff;text-decoration:none;
+    font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;opacity:.88;mix-blend-mode:difference;transition:opacity .2s ease;
+  }
+  #back:hover{opacity:1;}
+  #back svg{width:15px;height:15px;}
+
+  /* ---------- minimal wayfinding rail (a la "The Boat"'s tick marks) ---------- */
+  #wayfind{
+    position:fixed;top:50%;right:22px;transform:translateY(-50%);z-index:400;
+    display:flex;flex-direction:column;align-items:flex-end;gap:22px;
+  }
+  .wf-stop{display:flex;align-items:center;gap:10px;cursor:pointer;text-decoration:none;}
+  .wf-label{
+    font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(22,19,17,.35);
+    opacity:0;transform:translateX(6px);transition:opacity .2s ease,transform .2s ease,color .2s ease;white-space:nowrap;
+  }
+  .wf-stop:hover .wf-label,.wf-stop.active .wf-label{opacity:1;transform:translateX(0);}
+  .wf-stop.active .wf-label{color:var(--ink);}
+  .wf-dot{width:6px;height:6px;border-radius:50%;background:rgba(22,19,17,.25);flex-shrink:0;transition:background .2s ease,transform .2s ease;}
+  .wf-stop.active .wf-dot{background:var(--accent);transform:scale(1.6);}
+  #wayfind.on-dark .wf-label{color:rgba(255,255,255,.5);}
+  #wayfind.on-dark .wf-stop.active .wf-label{color:#fff;}
+  #wayfind.on-dark .wf-dot{background:rgba(255,255,255,.35);}
+
+  /* ---------- connections rail (the "web," always visible, left side) ---------- */
+  #connections{
+    position:fixed;top:50%;left:22px;transform:translateY(-50%);z-index:400;width:186px;
+  }
+  #connections .conn-head{
+    font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(22,19,17,.4);margin:0 0 14px;
+  }
+  #connections .conn-list{display:flex;flex-direction:column;gap:15px;}
+  #connections .conn-item{display:flex;flex-direction:column;gap:2px;opacity:0;transform:translateX(-8px);transition:opacity .4s ease,transform .4s ease;}
+  #connections.ready .conn-item{opacity:1;transform:translateX(0);}
+  #connections .conn-item:nth-child(2){transition-delay:.06s;}
+  #connections .conn-item:nth-child(3){transition-delay:.12s;}
+  #connections .conn-item:nth-child(4){transition-delay:.18s;}
+  #connections .conn-row{display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;}
+  #connections .conn-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+  #connections .conn-name{font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:13px;color:rgba(22,19,17,.82);line-height:1.3;}
+  #connections .conn-reason{font-size:9.5px;letter-spacing:.03em;color:rgba(22,19,17,.4);padding-left:15px;text-transform:uppercase;}
+  #connections a.conn-row{cursor:pointer;}
+  #connections a.conn-row:hover .conn-name{color:var(--accent);}
+  #connections .conn-item.elsewhere .conn-name{color:rgba(22,19,17,.55);}
+  #connections .conn-item.elsewhere .conn-reason{font-style:italic;text-transform:none;letter-spacing:0;}
+  #connections.on-dark .conn-head{color:rgba(255,255,255,.45);}
+  #connections.on-dark .conn-name{color:rgba(255,255,255,.88);}
+  #connections.on-dark .conn-item.elsewhere .conn-name{color:rgba(255,255,255,.55);}
+  #connections.on-dark .conn-reason{color:rgba(255,255,255,.42);}
+  @media (max-width:1100px){ #connections{display:none;} }
+
+  /* ---------- overture ---------- */
+  #overture{
+    min-height:70vh;display:flex;align-items:center;justify-content:center;text-align:center;
+    background:var(--bg);color:rgba(255,255,255,.92);padding:14vh 8vw;
+  }
+  #overture p{
+    font-family:'Fraunces',Georgia,serif;font-weight:300;font-style:italic;
+    font-size:clamp(22px,3.6vw,36px);line-height:1.55;max-width:820px;margin:0;
+  }
+  #overture .kicker{color:var(--accent);margin-bottom:26px;justify-content:center;display:flex;}
+
+  /* ---------- shared kicker ---------- */
+  .kicker{font-size:11.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin:0 0 16px;}
+
+  /* ---------- per-place hero ---------- */
+  .place-hero{position:relative;height:88vh;min-height:480px;display:flex;align-items:flex-end;overflow:hidden;}
+  .place-hero-img{position:absolute;inset:-6% -2%;background-size:cover;background-position:center 32%;will-change:transform;}
+  .place-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg, rgba(16,14,11,.1) 0%, rgba(16,14,11,.3) 45%, rgba(16,14,11,.92) 100%);}
+  .place-hero-content{position:relative;z-index:2;padding:0 7vw 8vh;max-width:1000px;}
+  .place-hero h1{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;font-size:clamp(44px,8vw,120px);line-height:.94;color:#fff;margin:0;}
+  .place-hero .dek{font-family:'Fraunces',Georgia,serif;font-weight:300;font-style:italic;color:rgba(255,255,255,.82);font-size:clamp(15px,1.5vw,19px);line-height:1.6;max-width:600px;margin:22px 0 0;}
+
+  /* ---------- reading column ---------- */
+  .beat{max-width:640px;margin:0 auto;padding:min(14vh,130px) 7vw 0;}
+  .place-block:last-of-type .beat:last-of-type{padding-bottom:min(14vh,130px);}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1);}
+  .reveal.in{opacity:1;transform:translateY(0);}
+  .beat h2{font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:clamp(24px,3.4vw,34px);line-height:1.16;letter-spacing:-.008em;margin:0 0 26px;max-width:16ch;}
+  .beat p{font-family:'Fraunces',Georgia,serif;font-weight:300;font-size:18px;line-height:1.8;color:#2A2622;margin:0 0 24px;}
+  .beat p:last-child{margin-bottom:0;}
+  .pull{font-family:'Fraunces',Georgia,serif;font-style:italic;font-weight:400;font-size:clamp(22px,3vw,30px);line-height:1.42;color:var(--ink);margin:6px 0 40px;}
+  .pull cite{display:block;font-style:normal;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;font-size:12px;font-weight:600;letter-spacing:.03em;color:var(--ink-dim);margin-top:14px;}
+
+  /* ---------- full-bleed image break ---------- */
+  .break{position:relative;width:100%;margin:min(12vh,100px) 0;}
+  .break img{width:100%;display:block;height:58vh;min-height:300px;object-fit:cover;}
+  .break figcaption{max-width:640px;margin:16px auto 0;padding:0 7vw;font-family:'Fraunces',Georgia,serif;font-style:italic;font-size:13px;color:var(--ink-faint);line-height:1.6;}
+  .break.pair{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+  .break.pair img{height:46vh;min-height:260px;}
+  .break.pair figcaption{grid-column:1/-1;}
+
+  /* ---------- connective interstitial (the "meander" transition) ---------- */
+  .bridge{background:#EFE9DC;padding:min(16vh,150px) 8vw;text-align:center;}
+  .bridge p{font-family:'Fraunces',Georgia,serif;font-weight:300;font-style:italic;font-size:clamp(19px,2.6vw,27px);line-height:1.6;max-width:680px;margin:0 auto;color:var(--ink-dim);}
+  .bridge .arrow{margin-top:28px;display:flex;justify-content:center;color:var(--accent);opacity:.7;}
+  .bridge svg{width:18px;height:18px;}
+
+  /* ---------- fork: two narrative doors instead of one forced arrow ---------- */
+  .fork{background:#EFE9DC;padding:min(14vh,120px) 7vw min(16vh,150px);}
+  .fork-label{
+    text-align:center;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--ink-faint);margin-bottom:34px;
+  }
+  .fork-doors{display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:920px;margin:0 auto;}
+  .fork-door{
+    display:block;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:30px 28px;
+    text-decoration:none;color:inherit;cursor:pointer;transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease;
+  }
+  .fork-door:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 14px 34px rgba(22,19,17,.08);}
+  .fork-axis{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;}
+  .fork-door h3{font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:20px;line-height:1.32;margin:0 0 14px;color:var(--ink);}
+  .fork-door p{font-family:'Fraunces',Georgia,serif;font-weight:300;font-size:14.5px;line-height:1.62;color:var(--ink-dim);margin:0 0 18px;}
+  .fork-go{font-size:12px;font-weight:700;color:var(--ink);}
+  @media (max-width:640px){
+    .fork-doors{grid-template-columns:1fr;}
+  }
+
+  /* ---------- closing ---------- */
+  #closing{background:var(--bg);color:rgba(255,255,255,.86);padding:min(20vh,180px) 7vw min(10vh,90px);text-align:center;}
+  #closing .kicker{justify-content:center;display:flex;}
+  #closing p{font-family:'Fraunces',Georgia,serif;font-weight:300;font-size:clamp(19px,2.6vw,26px);line-height:1.6;max-width:740px;margin:0 auto 20px;color:rgba(255,255,255,.92);}
+  #closing p.italic{font-style:italic;}
+  #next-link{display:inline-flex;align-items:center;gap:10px;margin-top:36px;color:#fff;text-decoration:none;font-size:13px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.35);padding-bottom:6px;transition:border-color .2s ease;}
+  #next-link:hover{border-color:#fff;}
+  #next-link svg{width:13px;height:13px;}
+
+  @media (max-width:640px){
+    #wayfind{display:none;}
+    .beat{padding:70px 22px 0;}
+    .beat h2{max-width:none;font-size:26px;}
+    .beat p{font-size:16.5px;}
+    .pull{font-size:21px;}
+    .break img,.break.pair img{height:36vh;}
+    .break.pair{grid-template-columns:1fr;}
+    .place-hero-content{padding:0 22px 6vh;}
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<a id="back" href="index.html">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+  Raised Under Bad Stars
+</a>
+
+<nav id="wayfind" class="on-dark">
+  <a class="wf-stop active" data-target="sec-orleans"><span class="wf-label">New Orleans</span><span class="wf-dot"></span></a>
+  <a class="wf-stop" data-target="sec-santacruz"><span class="wf-label">Santa Cruz</span><span class="wf-dot"></span></a>
+  <a class="wf-stop" data-target="sec-mexicocity"><span class="wf-label">Mexico City &middot; disaster thread</span><span class="wf-dot"></span></a>
+  <a class="wf-stop" data-target="sec-peregian"><span class="wf-label">Peregian &middot; creative thread</span><span class="wf-dot"></span></a>
+</nav>
+
+<aside id="connections" class="on-dark">
+  <div class="conn-head">This place connects to</div>
+  <div class="conn-list" id="conn-list"></div>
+</aside>
+
+<div id="overture">
+  <div>
+    <div class="kicker">A wireframe &middot; three places, one idea</div>
+    <p>Some of the oldest tools for processing a disaster were never meant to be a treatment. They were just something to do with your hands, or a page to write on, while the rest of the world figured out what to do next.</p>
+  </div>
+</div>
+
+<!-- ============================================================ NEW ORLEANS ============================================================ -->
+<div class="place-block" id="sec-orleans">
+  <div class="place-hero">
+    <div class="place-hero-img" style="background-image:url('katrina-x-code-house.jpg')"></div>
+    <div class="place-hero-content">
+      <div class="kicker">2005 &middot; Hurricane Katrina</div>
+      <h1>New&nbsp;Orleans</h1>
+      <div class="dek">A city that drew on tools decades old: a flood song, a spray-painted code, and a culture that refused to wait for permission to start healing.</div>
+    </div>
+  </div>
+
+  <div class="beat reveal">
+    <p class="pull">Louisiana, Louisiana&mdash;they're trying to wash us away.<cite>Randy Newman, "Louisiana 1927"</cite></p>
+    <p>Randy Newman wrote that song more than fifty years after the flood it describes. For decades it stayed a period piece. Then Katrina hit, and the city adopted it as its own anthem. New Orleans native Aaron Neville, who'd performed it for years, put the shift plainly: "when I used to sing that song, it was about something that happened a long time ago. Now when I sing it, it's about something that happened to me and my family."</p>
+  </div>
+
+  <div class="beat reveal">
+    <h2>Finding a voice</h2>
+    <p>Katrina's psychological toll kept climbing for years after landfall. Disaster mental health has leaned increasingly on creative arts therapy, precisely because it can meet people where their own cultural vocabulary already is, instead of importing a clinical language that may not translate.</p>
+  </div>
+
+  <figure class="break reveal">
+    <img src="katrina-x-code-house.jpg" alt="A Katrina search-and-rescue X code on a New Orleans house">
+    <figcaption>A search-and-rescue X on a Mid-City house, still legible nearly two years after the storm.</figcaption>
+  </figure>
+
+  <div class="beat reveal">
+    <h2>The X on the door</h2>
+    <p>Search-and-rescue teams marked every home they checked with a spray-painted X, a working code, never meant as art. Many homeowners kept it anyway. In Bywater, Erica Larkin Gaudet recast her partner's X into an iron sculpture he called his house's "Katrina Stigmata," a tattoo for having made it. The word residents kept reaching for, on their houses if not their own skin, was tattoo: a mark you don't take off, whether or not you'd have chosen it.</p>
+    <p>That instinct, giving a whole community a shared, physical way to hold what just happened to it, wasn't unique to New Orleans, or to adults. It would show up again, decades earlier and two thousand miles away, in a room full of ten-year-olds who didn't yet have the vocabulary for what they'd just lived through either.</p>
+  </div>
+</div>
+
+<div class="bridge">
+  <p>Three decades before Katrina, a different disaster had already taught a very different room the same lesson.</p>
+  <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></div>
+</div>
+
+<!-- ============================================================ SANTA CRUZ ============================================================ -->
+<div class="place-block" id="sec-santacruz">
+  <div class="place-hero">
+    <div class="place-hero-img" style="background-image:url('pacific-garden-mall-1989.jpg')"></div>
+    <div class="place-hero-content">
+      <div class="kicker">1989 &middot; Loma Prieta earthquake</div>
+      <h1>Santa&nbsp;Cruz</h1>
+      <div class="dek">A poet already embedded in one classroom turned a shaken school year into a published book, and, twenty years later, a reunion.</div>
+    </div>
+  </div>
+
+  <div class="beat reveal">
+    <p class="pull">It really messed us up. I was diving under desks at loud sounds for weeks, and we didn't have school for a month.<cite>Gault school student, on the Loma Prieta earthquake</cite></p>
+    <p>Bay Area poet Patrice Vecchione had already been the Gault school's poet-in-residence for two years before the quake hit, so her students "already had poetry as a practice," and thanks to regular drills, "they already had earthquakes as a practice" too. What changed after Loma Prieta was how she used that existing practice.</p>
+  </div>
+
+  <figure class="break reveal">
+    <img src="fault-lines-poem-eight-weeks-ago.png" alt="A page from Fault Lines: Children's Earthquake Poetry">
+    <figcaption>A page from "Fault Lines: Children's Earthquake Poetry," the collection that came out of it.</figcaption>
+  </figure>
+
+  <div class="beat reveal">
+    <h2>A vehicle that was already there</h2>
+    <p>Her core rule: "you are the boss of your poem, you should feel free to change your mind, as often as you change your socks." That gave students permission to approach the quake through whatever reference already felt safe, baseball, Godzilla, an annoying sibling, rather than requiring them to describe the fear directly. It gave them, in her words, "some distance from our experience, and then to look at it in a more stable place."</p>
+    <p>A few months later, once the poems were collected, the owner of the destroyed local bookstore invited the students to a book-tent reading that drew several hundred people. "The organizing process was healing for the community in the act of rebuilding," Vecchione said, "carried by memories that were lodged in the physical books more than by the words on the page."</p>
+  </div>
+
+  <div class="beat reveal">
+    <h2>Twenty years later, together again</h2>
+    <p>In 2009, on the earthquake's twentieth anniversary, the original students, adults by then, came back to read their own poems aloud again. "There was a lot of crying," one said afterward, "but it wasn't actually a sad or traumatic event, it felt really good and happy actually." A shared piece of language written as ten-year-olds was still doing the same job it always had.</p>
+    <p>Nothing about that required a published book or a poet-in-residence. That's one thread worth pulling on its own: how far the same basic idea, giving people a wordless way to hold what happened, stretches when nobody's funding it. But Loma Prieta opens onto a second thread too, just as real: what actually happened to the buildings, the codes, the city itself, the next time the ground in a place like this moved.</p>
+  </div>
+
+  <div class="fork reveal">
+    <div class="fork-label">Two ways to keep going from here</div>
+    <div class="fork-doors">
+      <a class="fork-door" data-target="sec-peregian">
+        <div class="fork-axis">Same idea, another place</div>
+        <h3>Keep following how people process it</h3>
+        <p>Thirty years later, on the other side of the Pacific, a teacher with no training and no program reaches for the same basic idea alone, mid-bushfire.</p>
+        <span class="fork-go">Continue to Peregian &rarr;</span>
+      </a>
+      <a class="fork-door" data-target="sec-mexicocity">
+        <div class="fork-axis">Same disaster, a different outcome</div>
+        <h3>Keep following what earthquakes actually do to a city</h3>
+        <p>Mexico City remembers 1985 as vividly as anywhere on earth. Some of the people it displaced are still waiting for that memory to become anything more.</p>
+        <span class="fork-go">Continue to Mexico City &rarr;</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ MEXICO CITY (disaster-type branch) ============================================================ -->
+<div class="place-block" id="sec-mexicocity">
+  <div class="place-hero">
+    <div class="place-hero-img" style="background-image:url('mexico-city-camp-resident.jpg')"></div>
+    <div class="place-hero-content">
+      <div class="kicker">1985 &amp; 2017 &middot; earthquakes</div>
+      <h1>Mexico&nbsp;City</h1>
+      <div class="dek">A city that remembers its worst earthquake vividly, and in some cases still hasn't finished responding to it.</div>
+    </div>
+  </div>
+
+  <div class="beat reveal">
+    <h2>A quake that changed the rules, and one that didn't finish the job</h2>
+    <p>Mexico City's 1985 earthquake killed thousands and triggered a real, lasting overhaul of the city's structural building codes. The memory of it hasn't faded: it shows up again in the aftermath of 2017's earthquake, when the city drew directly on what it had learned three decades earlier.</p>
+    <p>But commemoration is not support. Even as memorial projects for the 2017 earthquake went up, hundreds of people displaced by 1985 were, as of a few years ago, still living in government camps built to be temporary.</p>
+  </div>
+
+  <figure class="break pair reveal">
+    <img src="mexico-city-camp-resident.jpg" alt="Resident of one of the temporary camps for 1985 Mexico City earthquake survivors">
+    <img src="mexico-city-mural-protest.jpg" alt="Mural reading Monumentos NO reconstruccion, painted by residents protesting a 2017 earthquake memorial">
+    <figcaption>A resident of one of the still-standing "temporary" camps, and a mural reading "Monuments, not reconstruction," painted by residents protesting a 2017 memorial project.</figcaption>
+  </figure>
+
+  <div class="beat reveal">
+    <p>A city can hold a disaster vividly in its public memory while still failing, in very material terms, the people that disaster actually displaced. This branch ends here in the wireframe, but in the real version it would keep going, maybe into 1985's own building-code thread elsewhere, maybe into another city's version of commemoration-without-repair.</p>
+  </div>
+</div>
+
+<!-- ============================================================ PEREGIAN (creative-output branch) ============================================================ -->
+<div class="place-block" id="sec-peregian">
+  <div class="place-hero">
+    <div class="place-hero-img" style="background-image:url('peregian-bushfire-drawings-grid.png');background-size:cover;"></div>
+    <div class="place-hero-content">
+      <div class="kicker">2019 &middot; Queensland bushfires</div>
+      <h1>Peregian</h1>
+      <div class="dek">No outside therapist, no dedicated curriculum. One elementary school teacher improvised, and it worked anyway.</div>
+    </div>
+  </div>
+
+  <div class="beat reveal">
+    <p class="pull">Many of the children experienced nightmares after the fires, and art sessions were a catalyst for conversations that might not otherwise have happened.<cite>Elementary school teacher, Peregian, Queensland, 2019</cite></p>
+    <p>Children used "swirly patterns" to represent the wildfire itself and colorful scarves to represent the different stages of how they felt, a shared, wordless way into a conversation the class might never have had otherwise.</p>
+  </div>
+
+  <figure class="break pair reveal">
+    <img src="peregian-bushfire-drawings-grid.png" alt="Grid of children's crayon drawings responding to the Peregian bushfires">
+    <img src="peregian-arabella-drawing.png" alt="A child's drawing reading Thank you for saving Peregian">
+    <figcaption>Children's drawings from the Peregian art sessions, and one signed "Arabella," thanking the firefighters by name.</figcaption>
+  </figure>
+
+  <div class="beat reveal">
+    <h2>Meeting kids where they already were</h2>
+    <p>Clinical psychologists describe exactly what this teacher stumbled into on her own: art "can allow that emotional expression, and that then can be something to be talked about," especially for children who don't yet have adult language for fear or loss. Done well, it becomes, in one clinician's words, "a very beautiful way of taking the past that's been destroyed and making something beautiful for the future."</p>
+    <p>Nothing about Peregian required advance planning or a published outcome. It required one attentive adult and a box of art supplies, the same basic mechanism as a poet-in-residence in Santa Cruz or a spray-painted code in New Orleans, just caught at its smallest, least funded, most improvised scale.</p>
+  </div>
+</div>
+
+<div id="closing">
+  <div class="kicker">The actual throughline</div>
+  <p>Three rooms, three decades, three continents. None of them waited for a formal protocol to show up. A song, a poem, a drawing, a mark on a door &mdash; the medium changes, the mechanism doesn't.</p>
+  <p class="italic">This is a wireframe: three stops stitched together to test whether the meander itself feels right, before deciding how the rest of the map folds into it.</p>
+  <a id="next-link" href="index.html">Back to the full map<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+</div>
+
+<script>
+  const progress = document.getElementById('progress');
+  const wayfind = document.getElementById('wayfind');
+  const stops = Array.from(document.querySelectorAll('.wf-stop'));
+  const darkZones = ['#overture','#closing']; // sections dark enough to need the light wayfinding style regardless of hero state
+
+  function onScroll(){
+    const h = document.documentElement;
+    const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progress.style.width = pct + '%';
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:0.15, rootMargin:'0px 0px -80px 0px'});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  // ---------- connections rail: what this place shares with other cases in the wider atlas ----------
+  // colors match the hazard palette used in the interconnectedness map (earthquake/tsunami/hurricane/wildfire/etc)
+  const connectionsData = {
+    'sec-orleans': [
+      {name:'Puerto Rico', reason:'Also hurricane season', color:'#3B7A57'},
+      {name:'Tacloban, Philippines', reason:'Also hurricane', color:'#3B7A57'},
+      {name:'Mexico City', reason:'Also song & visual art', color:'#D98A96', target:'sec-mexicocity'},
+      {name:'Hollywood, CA', reason:'Also hurricane, a very different response', color:'#3B7A57'},
+    ],
+    'sec-santacruz': [
+      {name:'Peregian, Australia', reason:'Same idea, a different room', color:'#DCC46B', target:'sec-peregian'},
+      {name:'Mexico City', reason:'Also earthquake', color:'#A23B72', target:'sec-mexicocity'},
+      {name:'Lisbon, Portugal', reason:'Also earthquake', color:'#A23B72'},
+      {name:'Lahaina, Hawaii', reason:'Also grassroots creative response', color:'#DCC46B'},
+    ],
+    'sec-mexicocity': [
+      {name:'New Orleans', reason:'Also song & visual art', color:'#D98A96', target:'sec-orleans'},
+      {name:'Santa Cruz, CA', reason:'Also earthquake', color:'#A23B72', target:'sec-santacruz'},
+      {name:'Haiti', reason:'Also earthquake', color:'#A23B72'},
+      {name:'Corinth, Greece', reason:'Also earthquake, 2,000 years earlier', color:'#A23B72'},
+    ],
+    'sec-peregian': [
+      {name:'Santa Cruz, CA', reason:'Same idea, a different room', color:'#DCC46B', target:'sec-santacruz'},
+      {name:'Northern Australia', reason:'Also wildfire', color:'#E67E22'},
+      {name:'Lahaina, Hawaii', reason:'Also wildfire', color:'#E67E22'},
+      {name:'Oakland, California', reason:'Also wildfire', color:'#E67E22'},
+    ],
+  };
+
+  const connWrap = document.getElementById('connections');
+  const connList = document.getElementById('conn-list');
+  function renderConnections(blockId){
+    const items = connectionsData[blockId];
+    if(!items) return;
+    connWrap.classList.remove('ready');
+    connList.innerHTML = items.map(it=>{
+      const inner = `<span class="conn-dot" style="background:${it.color}"></span><span class="conn-name">${it.name}</span>`;
+      const row = it.target
+        ? `<a class="conn-row" data-target="${it.target}">${inner}</a>`
+        : `<span class="conn-row">${inner}</span>`;
+      return `<div class="conn-item${it.target ? '' : ' elsewhere'}">${row}<span class="conn-reason">${it.reason}</span></div>`;
+    }).join('');
+    bindDataTargets();
+    requestAnimationFrame(()=> connWrap.classList.add('ready'));
+  }
+
+  // active wayfinding stop, tracked against each place-block
+  const blocks = Array.from(document.querySelectorAll('.place-block'));
+  const blockIo = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        const id = e.target.id;
+        stops.forEach(s=>s.classList.toggle('active', s.dataset.target === id));
+        renderConnections(id);
+      }
+    });
+  }, {threshold:0.4});
+  blocks.forEach(b=>blockIo.observe(b));
+  renderConnections('sec-orleans');
+
+  // any element with data-target (wayfinding stops, fork doors, connection rows) scrolls to that section
+  function bindDataTargets(){
+    document.querySelectorAll('[data-target]').forEach(s=>{
+      if(s.dataset.bound) return;
+      s.dataset.bound = '1';
+      s.addEventListener('click', (e)=>{
+        e.preventDefault();
+        const el = document.getElementById(s.dataset.target);
+        if(el) el.scrollIntoView({behavior:'smooth'});
+      });
+    });
+  }
+  bindDataTargets();
+
+  // swap wayfinding rail to dark-on-light styling once we're clearly past all the photographic heroes
+  window.addEventListener('scroll', ()=>{
+    const closing = document.getElementById('closing').getBoundingClientRect().top < window.innerHeight * 0.6;
+    const overture = document.getElementById('overture').getBoundingClientRect().bottom > 0;
+  }, {passive:true});
+</script>
+
+</body>
+</html>

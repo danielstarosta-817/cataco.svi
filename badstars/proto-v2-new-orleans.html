@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Orleans · Raised Under Bad Stars (visual direction test)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,500&family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#100E0B;
+    --paper:#FBF9F3;
+    --ink:#161311;
+    --ink-dim:#5A5449;
+    --ink-faint:#9C978C;
+    --accent:#E8703A;
+    --line:rgba(22,19,17,.12);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--accent);color:#fff;}
+
+  /* ---------- progress + chrome (deliberately almost nothing) ---------- */
+  #progress{position:fixed;top:0;left:0;height:2px;background:var(--accent);z-index:500;width:0%;transition:width .1s linear;}
+  #back{
+    position:fixed;top:20px;left:22px;z-index:400;display:flex;align-items:center;gap:8px;
+    color:#fff;text-decoration:none;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+    opacity:.88;mix-blend-mode:difference;transition:opacity .2s ease;
+  }
+  #back:hover{opacity:1;}
+  #back svg{width:15px;height:15px;}
+
+  /* ---------- hero ---------- */
+  #hero{
+    position:relative;height:100vh;min-height:560px;display:flex;align-items:flex-end;overflow:hidden;
+  }
+  #hero-img{
+    position:absolute;inset:-6% -2%;background-image:url('katrina-x-code-house.jpg');
+    background-size:cover;background-position:center 30%;will-change:transform;
+  }
+  #hero::after{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(180deg, rgba(16,14,11,.15) 0%, rgba(16,14,11,.35) 45%, rgba(16,14,11,.94) 100%);
+  }
+  #hero-content{position:relative;z-index:2;padding:0 7vw 8vh;max-width:1100px;}
+  .kicker{
+    font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);
+    margin:0 0 18px;
+  }
+  #hero h1{
+    font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;
+    font-size:clamp(52px,10vw,150px);line-height:.92;letter-spacing:.001em;color:#fff;margin:0;
+  }
+  #hero .dek{
+    font-family:'Fraunces',Georgia,serif;font-weight:300;font-style:italic;color:rgba(255,255,255,.82);
+    font-size:clamp(16px,1.7vw,21px);line-height:1.6;max-width:640px;margin:26px 0 0;
+  }
+  #scroll-cue{
+    position:absolute;bottom:28px;left:50%;transform:translateX(-50%);z-index:2;
+    display:flex;flex-direction:column;align-items:center;gap:8px;color:rgba(255,255,255,.7);
+    font-size:10px;letter-spacing:.14em;text-transform:uppercase;animation:bob 2.4s ease-in-out infinite;
+  }
+  #scroll-cue svg{width:16px;height:16px;}
+  @keyframes bob{0%,100%{transform:translate(-50%,0);}50%{transform:translate(-50%,7px);}}
+
+  /* ---------- reading column ---------- */
+  .beat{
+    max-width:640px;margin:0 auto;padding:min(16vh,150px) 7vw 0;
+  }
+  .beat:last-of-type{padding-bottom:min(18vh,170px);}
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1);}
+  .reveal.in{opacity:1;transform:translateY(0);}
+
+  .beat h2{
+    font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:clamp(28px,4vw,42px);
+    line-height:1.14;letter-spacing:-.008em;margin:0 0 30px;color:var(--ink);max-width:14ch;
+  }
+  .beat p{
+    font-family:'Fraunces',Georgia,serif;font-weight:300;font-size:19px;line-height:1.82;
+    color:#2A2622;margin:0 0 26px;
+  }
+  .beat p:last-child{margin-bottom:0;}
+
+  .pull{
+    font-family:'Fraunces',Georgia,serif;font-style:italic;font-weight:400;
+    font-size:clamp(24px,3.4vw,34px);line-height:1.42;color:var(--ink);
+    margin:6px 0 44px;letter-spacing:-.005em;
+  }
+  .pull cite{
+    display:block;font-style:normal;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;
+    font-size:12.5px;font-weight:600;letter-spacing:.03em;color:var(--ink-dim);margin-top:16px;
+  }
+
+  .stat-inline{font-family:'Fraunces',Georgia,serif;font-weight:600;color:var(--accent);font-size:1.15em;white-space:nowrap;}
+
+  /* ---------- full-bleed image break ---------- */
+  .break{position:relative;width:100%;margin:min(14vh,120px) 0;}
+  .break img{width:100%;display:block;height:64vh;min-height:340px;object-fit:cover;}
+  .break figcaption{
+    max-width:640px;margin:18px auto 0;padding:0 7vw;font-family:'Fraunces',Georgia,serif;font-style:italic;
+    font-size:13.5px;color:var(--ink-faint);line-height:1.6;
+  }
+
+  /* ---------- closing ---------- */
+  #closing{
+    background:var(--bg);color:rgba(255,255,255,.86);padding:min(20vh,180px) 7vw min(10vh,90px);text-align:center;
+  }
+  #closing p{
+    font-family:'Fraunces',Georgia,serif;font-weight:300;font-style:italic;font-size:clamp(20px,3vw,28px);
+    line-height:1.55;max-width:720px;margin:0 auto;color:rgba(255,255,255,.92);
+  }
+  #closing .kicker{justify-content:center;display:flex;margin-bottom:22px;}
+
+  details.sources{
+    max-width:640px;margin:60px auto 0;border-top:1px solid rgba(255,255,255,.18);padding-top:22px;text-align:left;
+  }
+  details.sources summary{
+    cursor:pointer;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    color:rgba(255,255,255,.5);
+  }
+  details.sources ul{margin:16px 0 0;padding-left:18px;font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.85;}
+
+  #next-link{
+    display:inline-flex;align-items:center;gap:10px;margin-top:52px;color:#fff;text-decoration:none;
+    font-size:13px;font-weight:600;letter-spacing:.03em;border-bottom:1px solid rgba(255,255,255,.35);padding-bottom:6px;
+    transition:border-color .2s ease,opacity .2s ease;
+  }
+  #next-link:hover{border-color:#fff;}
+  #next-link svg{width:13px;height:13px;}
+
+  @media (max-width:640px){
+    .beat{padding:88px 22px 0;}
+    .beat h2{max-width:none;font-size:28px;}
+    .beat p{font-size:17px;}
+    .pull{font-size:23px;}
+    .break img{height:44vh;}
+    #hero-content{padding:0 22px 7vh;}
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<a id="back" href="index.html">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+  Raised Under Bad Stars
+</a>
+
+<div id="hero">
+  <div id="hero-img"></div>
+  <div id="hero-content">
+    <div class="kicker">Strengthening &middot; making it stick</div>
+    <h1>New&nbsp;Orleans</h1>
+    <p class="dek">Hurricane Katrina displaced over a million people in 2005 and left psychological damage that outlasted the physical rebuild. The city answered with tools decades old: a flood song, a spray-painted code, and a culture that refused to wait for permission to start healing.</p>
+  </div>
+  <div id="scroll-cue">
+    <span>Scroll</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+  </div>
+</div>
+
+<div class="beat reveal">
+  <div class="kicker">I.</div>
+  <h2>A song written fifty years late, and thirty years early</h2>
+  <p class="pull">Louisiana, Louisiana&mdash;they're trying to wash us away.<cite>Randy Newman, "Louisiana 1927"</cite></p>
+  <p>Randy Newman didn't write "Louisiana 1927" as an immediate response to anything. He wrote it more than fifty years after the Great Mississippi Flood it describes, after learning his own mother was from New Orleans and getting curious about the region's history: "it was the other place that I knew, and I was interested in the history, and heard about this flood, and I wrote the song." For decades afterward it stayed a period piece, a song about something that happened a long time ago to people who weren't around to hear it.</p>
+  <p>Then Katrina hit, and the city adopted the song as its own post-Katrina anthem, the flood and the callous institutional response it describes suddenly no longer historical. New Orleans native Aaron Neville, who had performed the song for years, put the shift plainly: "when I used to sing that song, it was about something that happened a long time ago. Now when I sing it, it's about something that happened to me and my family, so it's a lot more real." A song written to be historical became, without changing a word, a song about the person singing it.</p>
+</div>
+
+<div class="beat reveal">
+  <div class="kicker">II.</div>
+  <h2>Finding a voice</h2>
+  <p>Katrina's psychological toll did not peak on landfall. It kept climbing for years. PTSD rates in affected regions rose from <span class="stat-inline">15%</span> a few months after the storm to <span class="stat-inline">21%</span> a year later. Twelve years on, roughly <span class="stat-inline">one in six</span> residents still showed symptoms consistent with probable PTSD.</p>
+  <p>Disaster mental health has leaned increasingly on creative arts therapy, precisely because it can meet people where their own cultural vocabulary already is, instead of importing a clinical language that may not translate. The community cohesion people feel right after a disaster can collapse fast, and it is in that gap that locally rooted cultural practice can do work a generic protocol cannot.</p>
+</div>
+
+<figure class="break reveal">
+  <img src="katrina-x-code-house.jpg" alt="A Katrina search-and-rescue X code spray-painted on a New Orleans house">
+  <figcaption>A search-and-rescue X on a Mid-City New Orleans house, still legible nearly two years after the storm: dogs found, K-9 team, injuries flagged.</figcaption>
+</figure>
+
+<div class="beat reveal">
+  <div class="kicker">III.</div>
+  <h2>The X on the door</h2>
+  <p>Search-and-rescue teams marked every home they checked with a spray-painted X, a system developed by FEMA's Urban Search and Rescue program that packed real information into four quadrants: the date and time of the search, which team searched it, what hazards were found inside, and how many people, living or dead, were found. It was never meant to be a piece of public art. It was a working code, left behind for whoever came through next.</p>
+  <p>Many homeowners kept the X anyway once they returned. In Bywater, artist Erica Larkin Gaudet recast her partner's X into an iron sculpture he called his house's "Katrina Stigmata," a tattoo for having made it, he said, describing a mark left by first responders as something closer to a badge than a scar. In Chalmette, Carol Shoemaker commissioned a roller-derby teammate to render her home's neon-orange X in ironwork: "not like a tattoo that I see every day, but part of the history of the house." The word residents kept reaching for, on their houses if not their own skin, was tattoo &mdash; a mark you don't take off, whether or not you'd have chosen it.</p>
+</div>
+
+<div class="beat reveal">
+  <div class="kicker">IV.</div>
+  <h2>Racing to record it while it was still fresh</h2>
+  <p>Within months of the storm, multiple oral history projects moved to record New Orleanians in their own words before memory had time to settle. The Hurricane Digital Memory Bank grew into the largest free public archive of Katrina and Rita material anywhere: more than 25,000 items. None of these projects waited for the story to become history first. They treated the act of recording itself as part of the recovery.</p>
+</div>
+
+<div id="closing">
+  <div class="kicker">Where the culture went next</div>
+  <p>HBO's Treme picked up the story after most of the cameras had already left: musicians, chefs, Mardi Gras Indians, and ordinary residents rebuilding their lives, and their culture, in Katrina's slow, unglamorous aftermath. It treated the city's culture itself as the thing worth watching rebuild, not just the levees.</p>
+  <a id="next-link" href="index.html">Back to the map<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+  <details class="sources">
+    <summary>Sources for this section</summary>
+    <ul>
+      <li>Reardon, S., 2015</li>
+      <li>Rhodes, J. et al., 2012</li>
+      <li>Raker, E. et al., 2019</li>
+      <li>WQCS, "Randy Newman interview," 2005</li>
+      <li>Southern Spaces, "Katrina + 5: An X-Code Exhibition"</li>
+      <li>Langenhennig, S., "Memorializing Katrina X Marks," NOLA.com, 2014</li>
+      <li>Hurricane Digital Memory Bank, George Mason University and University of New Orleans</li>
+      <li>HBO, "Treme," created by David Simon and Eric Overmyer, 2010</li>
+    </ul>
+  </details>
+</div>
+
+<script>
+  // scroll progress bar
+  const progress = document.getElementById('progress');
+  function onScroll(){
+    const h = document.documentElement;
+    const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progress.style.width = pct + '%';
+    // subtle parallax on hero
+    const hero = document.getElementById('hero-img');
+    if(h.scrollTop < window.innerHeight){
+      hero.style.transform = 'translateY(' + (h.scrollTop * 0.18) + 'px)';
+    }
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+
+  // scroll-reveal
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, {threshold:0.15, rootMargin:'0px 0px -80px 0px'});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+
+</body>
+</html>

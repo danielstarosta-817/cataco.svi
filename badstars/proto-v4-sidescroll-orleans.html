@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Orleans · a single storyline wireframe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,500&family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4ECDA; --ink:#161311; --ink-dim:#5A5449; --ink-faint:#9C978C;
+    --accent:#E8703A; --sky-top:#EAD9A8; --sky-bot:#F0C98C;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;overflow:hidden;background:var(--sky-bot);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;-webkit-font-smoothing:antialiased;}
+
+  #back{
+    position:fixed;top:20px;left:22px;z-index:400;display:flex;align-items:center;gap:8px;color:var(--ink);text-decoration:none;
+    font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;opacity:.75;
+  }
+  .hint{
+    position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:400;color:rgba(22,19,17,.55);
+    font-size:11px;letter-spacing:.05em;text-transform:uppercase;font-weight:600;text-align:center;
+  }
+  .hint span{display:block;font-size:9.5px;opacity:.75;margin-top:3px;}
+
+  #progress-wrap{position:fixed;top:0;left:0;width:100%;height:3px;background:rgba(22,19,17,.1);z-index:400;}
+  #progress{height:100%;background:var(--accent);width:0%;}
+
+  #sky{position:fixed;inset:0;background:linear-gradient(180deg,var(--sky-top),var(--sky-bot));z-index:0;}
+  #stage{position:relative;width:100vw;height:100vh;overflow:hidden;}
+
+  .parallax{position:absolute;bottom:0;left:0;height:60vh;z-index:1;}
+  #far{opacity:.5;}
+  #mid{opacity:.75;}
+
+  #world{position:absolute;bottom:0;left:0;height:100vh;z-index:3;}
+  #ground{position:absolute;bottom:0;left:0;width:5200px;height:22vh;background:#4A5A3C;border-top:6px solid #6B7A4E;}
+
+  #player{position:absolute;bottom:22vh;z-index:20;width:34px;height:58px;transform:translateX(-50%);}
+  #player .shadow{position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:26px;height:8px;background:rgba(0,0,0,.35);border-radius:50%;filter:blur(2px);}
+  #player .figure{position:relative;width:100%;height:100%;transform-origin:50% 100%;}
+  #player.walking .figure{animation:walk-bob .34s ease-in-out infinite;}
+  #player.jumping{animation:jump-arc .55s ease-out;}
+  #player.face-left .figure{transform:scaleX(-1);}
+  @keyframes walk-bob{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-4px) rotate(3deg);}}
+  @keyframes jump-arc{0%{transform:translateY(0);}45%{transform:translateY(-64px);}100%{transform:translateY(0);}}
+  #player .body{position:absolute;bottom:0;left:6px;width:22px;height:38px;background:var(--accent);border-radius:9px 9px 5px 5px;box-shadow:0 3px 8px rgba(0,0,0,.25);}
+  #player .head{position:absolute;top:0;left:9px;width:16px;height:16px;background:#F2D9B8;border-radius:50%;}
+
+  .porch{position:absolute;bottom:22vh;width:220px;height:64px;background:#8B6A4A;border-radius:4px 4px 0 0;box-shadow:0 -4px 0 #6B4E34 inset;}
+  .porch::after{content:'';position:absolute;top:-14px;left:14px;right:14px;height:16px;background:#5A4030;border-radius:3px 3px 0 0;}
+
+  .signpost{position:absolute;bottom:22vh;width:6px;height:78px;background:#5A4A3C;}
+  .signpost::after{
+    content:attr(data-label);position:absolute;top:-6px;left:-52px;width:120px;text-align:center;
+    background:var(--paper);border:2px solid #5A4A3C;border-radius:6px;padding:8px 6px;
+    font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:11.5px;line-height:1.3;color:var(--ink);
+    box-shadow:0 6px 14px rgba(0,0,0,.2);
+  }
+
+  #finish{position:absolute;bottom:22vh;width:10px;height:130px;background:repeating-linear-gradient(180deg,var(--ink) 0 14px, var(--paper) 14px 28px);}
+
+  #panel{
+    position:fixed;left:50%;bottom:0;transform:translateX(-50%);z-index:300;
+    background:linear-gradient(180deg,rgba(244,236,218,.88),var(--paper) 22px);
+    border-radius:16px 16px 0 0;padding:24px 34px 28px;width:min(640px,90vw);max-height:44vh;overflow-y:auto;
+    box-shadow:0 -10px 40px rgba(0,0,0,.22);pointer-events:auto;
+  }
+  #panel-body{transition:opacity .28s ease;}
+  #panel-body.fading{opacity:0;}
+  #panel h3{font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:20px;margin:0 0 14px;}
+  #panel .locked-hint{font-family:'Fraunces',Georgia,serif;font-style:italic;font-size:14px;color:var(--ink-faint);text-align:center;padding:10px 0;}
+  #panel .pq{font-family:'Fraunces',Georgia,serif;font-style:italic;font-size:18px;line-height:1.5;margin:0 0 16px;}
+  #panel .pq cite{display:block;font-style:normal;font-family:-apple-system,sans-serif;font-size:11.5px;font-weight:600;color:var(--ink-dim);margin-top:8px;}
+  #panel p{font-family:'Fraunces',Georgia,serif;font-weight:300;font-size:15px;line-height:1.7;color:#2A2622;margin:0 0 16px;}
+  #panel p:last-child{margin-bottom:0;}
+  #panel img{width:100%;border-radius:8px;margin:6px 0 8px;}
+  #panel figcaption{font-family:'Fraunces',Georgia,serif;font-style:italic;font-size:12px;color:var(--ink-faint);margin-bottom:16px;}
+  #panel .return{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--ink);padding-bottom:3px;}
+</style>
+</head>
+<body>
+
+<a id="back" href="proto-v3-map.html">&larr; Back to the map</a>
+<div class="hint">New Orleans &middot; a single storyline<span>walk with arrow keys or WASD, jump with space</span></div>
+<div id="progress-wrap"><div id="progress"></div></div>
+
+<div id="sky"></div>
+<div id="stage">
+  <svg id="far" class="parallax" viewBox="0 0 1600 300" preserveAspectRatio="xMidYMax slice" style="width:200%;"><g fill="#D9A86C" opacity=".8"><rect x="0" y="180" width="90" height="120"/><polygon points="0,180 45,140 90,180"/><rect x="220" y="170" width="100" height="130"/><polygon points="220,170 270,125 320,170"/><rect x="520" y="185" width="85" height="115"/><polygon points="520,185 562,150 605,185"/><rect x="820" y="175" width="95" height="125"/><polygon points="820,175 867,135 915,175"/><rect x="1150" y="180" width="90" height="120"/><polygon points="1150,180 1195,140 1240,180"/></g></svg>
+  <svg id="mid" class="parallax" viewBox="0 0 1600 300" preserveAspectRatio="xMidYMax slice" style="width:150%;"><g fill="#B98A56"><rect x="60" y="200" width="70" height="100"/><rect x="300" y="190" width="80" height="110"/><rect x="620" y="205" width="65" height="95"/><rect x="900" y="195" width="75" height="105"/><rect x="1250" y="200" width="70" height="100"/></g></svg>
+
+  <div id="world">
+    <div id="ground"></div>
+    <div class="signpost" style="left:120px;" data-label="The song" data-beat="0"></div>
+    <div class="signpost" style="left:800px;" data-label="Finding a voice" data-beat="1"></div>
+    <div class="porch" style="left:1500px;" data-beat="2"></div>
+    <div class="signpost" style="left:2200px;" data-label="Racing to record it" data-beat="3"></div>
+    <div class="signpost" style="left:2900px;" data-label="Treme" data-beat="4"></div>
+    <div id="finish" style="left:3550px;"></div>
+
+    <div id="player">
+      <div class="shadow"></div>
+      <div class="figure"><div class="body"></div><div class="head"></div></div>
+    </div>
+  </div>
+</div>
+
+<div id="panel">
+  <div id="panel-body"></div>
+</div>
+
+<script>
+  const beats = [
+    { from:0, to:750, html:`
+      <h3>A song written fifty years late, and thirty years early</h3>
+      <p class="pq">Louisiana, Louisiana, they're trying to wash us away<cite>Randy Newman, "Louisiana 1927"</cite></p>
+      <p>Randy Newman didn't write "Louisiana 1927" as an immediate response to anything. He wrote it more than fifty years after the Great Mississippi Flood it describes, after learning his own mother was from New Orleans and getting curious about the region's history: "it was the other place that I knew, and I was interested in the history, and heard about this flood, and I wrote the song." For decades afterward it stayed a period piece, a song about something that happened a long time ago to people who weren't around to hear it.</p>
+      <p>Then Katrina hit, and the city adopted the song as its own post-Katrina anthem, the flood and the "callous institutional response" it describes suddenly no longer historical. New Orleans native Aaron Neville, who had performed the song for years, put the shift plainly: "when I used to sing that song, it was about something that happened a long time ago. Now when I sing it, it's about something that happened to me and my family, so it's a lot more real." Fellow New Orleans musician John Boutté described the same weight from the other side of it: "I can't sing that song too often because it takes too much out of me." A song written to be historical became, without changing a word, a song about the person singing it.</p>
+    `},
+    { from:750, to:1300, html:`
+      <h3>Finding a voice</h3>
+      <p>Katrina's psychological toll did not peak on landfall, it kept climbing for years. PTSD rates in affected regions rose from 15% a few months after the storm to 21% a year later; reported suicidal ideation more than doubled. A study of low-income single mothers in New Orleans found one in five still had elevated anxiety and depression four years on. Twelve years later, roughly one in six residents still showed symptoms consistent with probable PTSD.</p>
+      <p>Disaster mental health has leaned increasingly on creative arts therapy, music and art-based treatment, precisely because it can meet people where their own cultural vocabulary already is, instead of importing a clinical language that may not translate across emotional expression, shame, power distance, collectivism, and spiritual belief.</p>
+    `},
+    { from:1300, to:2000, jumpGated:true,
+      lockedHtml:`<p class="locked-hint">There's a porch up ahead. Press space to look up at it.</p>`,
+      html:`
+      <h3>The X on the door</h3>
+      <p>Search-and-rescue teams marked every home they checked with a spray-painted X, a system developed by FEMA's Urban Search and Rescue program that packed real information into four quadrants: the top recorded the date and time of the search, the left noted which team searched it, the right listed hazards found inside, and the bottom tallied how many people, living or dead, were found. It was never meant to be a piece of public art. It was a working code, left behind for whoever came through next.</p>
+      <img src="katrina-x-code-house.jpg" alt="A Katrina search-and-rescue X code spray-painted on a New Orleans house">
+      <figcaption>A search-and-rescue X on a Mid-City New Orleans house, still legible nearly two years after the storm: dogs found, K-9 team, injuries flagged.</figcaption>
+      <p>Many homeowners kept the X anyway once they returned. Photographer Dorothy Moye curated "Katrina + 5: An X-Code Exhibition," pulling together photographs from more than two dozen photographers to trace what the mark had become: not a wound to paint over, but a record of what the house, and the person who owned it, had actually survived. In Bywater, artist Erica Larkin Gaudet recast her partner's X into an iron sculpture he called his house's "Katrina Stigmata," "a tattoo for having made it." In Chalmette, Carol Shoemaker commissioned a roller-derby teammate to render her home's neon-orange X in ironwork, keeping it half-hidden behind a hedge, "not like a tattoo that I see every day, but part of the history of the house." One Uptown homeowner cut his X out of an old porch board before replacing it, and still hangs the painted wood inside his front door. The word residents kept reaching for was tattoo: a mark you don't take off, whether or not you'd have chosen it.</p>
+    `},
+    { from:2000, to:2700, html:`
+      <h3>Racing to record it while it was still fresh</h3>
+      <p>Within months of the storm, multiple oral history projects moved to record New Orleanians in their own words before memory had time to settle. The Imagining New Orleans Oral History Project, a joint effort between researchers at the University of North Carolina, Yale, and the Louisiana State Museum, began collecting interviews as early as May and June of 2006. Alive in Truth: The New Orleans Disaster Oral History and Memory Project set out with a broader mission built directly into its name. The Hurricane Digital Memory Bank, organized by George Mason University and the University of New Orleans, grew into the largest free public archive of Katrina and Rita material anywhere, more than 25,000 items.</p>
+      <p>None of these projects waited for the story to become history first. They treated the act of recording itself as part of the recovery.</p>
+    `},
+    { from:2700, to:3350, html:`
+      <h3>A show about what came after</h3>
+      <p>HBO's Treme, which premiered in 2010, picked up the story after most of the cameras had already left: musicians, chefs, Mardi Gras Indians, and ordinary residents rebuilding their lives, their homes, and their culture in Katrina's slow, unglamorous aftermath. Its focus on second lines, jazz funerals, and Mardi Gras Indian traditions treated the city's culture itself as the thing worth watching rebuild, giving the recovery a texture most disaster coverage never bothers to show.</p>
+    `},
+    { from:3350, to:3700, html:`
+      <h3>End of this walk</h3>
+      <p>Three sources fed this one storyline: song, spray paint, and testimony. In the full version, this walk would meet a fork here, back out into places that share New Orleans's hazard or its creative approach.</p>
+      <a class="return" href="proto-v3-map.html">Back to the map &rarr;</a>
+    `},
+  ];
+
+  const world = document.getElementById('world');
+  const far = document.getElementById('far');
+  const mid = document.getElementById('mid');
+  const player = document.getElementById('player');
+  const panel = document.getElementById('panel');
+  const panelBody = document.getElementById('panel-body');
+  const progress = document.getElementById('progress');
+
+  const WORLD_LEN = 3700;
+  let x = 0, facing = 'right', jumping = false, activeIndex = -1, showingLocked = false;
+  const unlocked = new Set();
+  const speed = 300; // px/sec
+  const keys = new Set();
+
+  window.addEventListener('keydown', e=>{
+    const k = e.key.toLowerCase();
+    if(['arrowleft','arrowright','a','d'].includes(k)){ keys.add(k); e.preventDefault(); }
+    if(k===' '||k==='arrowup'||k==='w'){
+      if(!jumping){
+        jumping = true; player.classList.add('jumping');
+        setTimeout(()=>{ jumping=false; player.classList.remove('jumping'); }, 550);
+      }
+      e.preventDefault();
+    }
+  });
+  window.addEventListener('keyup', e=> keys.delete(e.key.toLowerCase()));
+
+  function renderPanel(i, locked){
+    if(activeIndex === i && showingLocked === locked) return;
+    activeIndex = i; showingLocked = locked;
+    panelBody.classList.add('fading');
+    setTimeout(()=>{
+      panelBody.innerHTML = locked ? beats[i].lockedHtml : beats[i].html;
+      panelBody.classList.remove('fading');
+    }, 140);
+  }
+
+  function currentBeatIndex(){
+    for(let i=0;i<beats.length;i++){ if(x >= beats[i].from && x < beats[i].to) return i; }
+    return beats.length-1;
+  }
+
+  let last = performance.now();
+  function tick(now){
+    const dt = Math.min((now-last)/1000, 0.05); last = now;
+    let dx = 0;
+    if(keys.has('arrowleft')||keys.has('a')) dx -= 1;
+    if(keys.has('arrowright')||keys.has('d')) dx += 1;
+    const walking = dx !== 0;
+    if(walking){
+      x += dx*speed*dt;
+      x = Math.max(0, Math.min(WORLD_LEN, x));
+      facing = dx < 0 ? 'left' : 'right';
+    }
+    player.classList.toggle('walking', walking);
+    player.classList.toggle('face-left', facing==='left');
+
+    const camX = Math.max(0, Math.min(WORLD_LEN - window.innerWidth, x - window.innerWidth/2));
+    world.style.transform = `translateX(${-camX}px)`;
+    far.style.transform = `translateX(${-camX*0.25}px)`;
+    mid.style.transform = `translateX(${-camX*0.55}px)`;
+    player.style.left = (x - camX) + 'px';
+
+    const i = currentBeatIndex();
+    const b = beats[i];
+    if(b.jumpGated && !unlocked.has(i)){
+      if(jumping) unlocked.add(i);
+      renderPanel(i, !unlocked.has(i));
+    } else {
+      renderPanel(i, false);
+    }
+
+    progress.style.width = (x/WORLD_LEN*100) + '%';
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+</script>
+
+</body>
+</html>
